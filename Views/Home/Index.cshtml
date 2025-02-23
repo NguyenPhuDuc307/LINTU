@@ -1,0 +1,31 @@
+﻿@model IEnumerable<LMS.Data.Entities.ClassRoom>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">@item.Name</h3>
+                    <div class="card-tools">
+                        <a asp-controller="ClassRooms" asp-action="Details" asp-route-id="@item.Id" class="btn btn-tool"><i
+                                class="fas fa-graduation-cap"></i></a>
+                    </div>
+                </div>
+                <img src="@item.ImageUrl" style="width: 100%;" />
+                <div class="card-body">
+                    <p class="card-text">@item.Introduction</p>
+                    <h5 class="card-text text-danger">@String.Format("{0:0,0}", item.Price) VND</h5>
+                    <p class="card-text">@(item.Students == 0 ? "0" : String.Format("{0:0,0}", item.Students)) students have joined</p>
+                </div>
+                <div class="card-footer">
+                    <span class="badge badge-info">@item.Topic!.Name</span>
+                </div>
+            </div>
+        </div>
+    }
+</div>
