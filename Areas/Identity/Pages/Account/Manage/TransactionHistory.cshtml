@@ -1,0 +1,51 @@
+@page
+@model TransactionHistoryModel
+@{
+    ViewData["Title"] = "Lịch sử giao dịch";
+    Layout = "_Layout";
+}
+
+<h2 class="mb-4">Lịch sử giao dịch</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Số tiền</th>
+            <th>Loại giao dịch</th>
+            <th>Ngày giao dịch</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Transactions != null && Model.Transactions.Count > 0)
+        {
+            int index = 1;
+            @foreach (var transaction in Model.Transactions)
+            {
+                <tr>
+                    <td>@(index++)</td>
+                    <td>@String.Format("{0:0,0}", transaction.Amount) VND</td>
+                    <td>
+                        @if (transaction.TransactionType == LMS.Data.Entities.Enums.TransactionType.Deposit)
+                        {
+                            <span class="text-success">Nạp tiền</span>
+                        }
+                        else if (transaction.TransactionType == LMS.Data.Entities.Enums.TransactionType.Withdraw)
+                        {
+                            <span class="text-danger">Trừ tiền</span>
+                        }
+                    </td>
+                    <td>@transaction.CreateDate.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="4" class="text-center">Không có giao dịch nào.</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a class="btn btn-primary" asp-page="/Account/Manage/Index">Quay lại</a>

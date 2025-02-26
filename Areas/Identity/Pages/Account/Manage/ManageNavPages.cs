@@ -31,6 +31,9 @@ namespace  LMS.Areas.Identity.Pages.Account.Manage
         /// </summary>
         public static string ChangePassword => "ChangePassword";
 
+
+        public static string TransactionHistory => "TransactionHistory";
+
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
@@ -78,6 +81,12 @@ namespace  LMS.Areas.Identity.Pages.Account.Manage
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public static string ChangePasswordNavClass(ViewContext viewContext) => PageNavClass(viewContext, ChangePassword);
+
+        /// <summary>
+        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+        ///     directly from your code. This API may change or be removed in future releases.
+        /// </summary>
+        public static string TransactionHistoryClass(ViewContext viewContext) => PageNavClass(viewContext, TransactionHistory);
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used

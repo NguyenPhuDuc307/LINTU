@@ -1,92 +1,139 @@
-<!-- Main Sidebar Container -->
-<aside class="main-sidebar sidebar-light-primary elevation-4">
-  <!-- Brand Logo -->
-  <a href="index3.html" class="brand-link">
-    <img src="~/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-    <span class="brand-text font-weight-light">AdminLTE 3</span>
-  </a>
-
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <!-- Sidebar user panel (optional) -->
-    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-      <div class="image">
-        <img src="~/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
-      </div>
-      <div class="info">
-        <a href="#" class="d-block">Alexander Pierce</a>
-      </div>
+<nav class="pcoded-navbar">
+    <div class="pcoded-inner-navbar main-menu">
+        <div class="pcoded-navigatio-lavel">Navigation</div>
+        <ul class="pcoded-item pcoded-left-item">
+            <li class="pcoded-hasmenu">
+                <a href="javascript:void(0)">
+                    <span class="pcoded-micon"><i class="feather icon-home"></i></span>
+                    <span class="pcoded-mtext">Dashboard</span>
+                </a>
+                <ul class="pcoded-submenu">
+                    <li class="">
+                        <a asp-controller="ClassRooms" asp-action="Index">
+                            <span class="pcoded-mtext">Classroom</span>
+                        </a>
+                    </li>
+                    <li class="">
+                        <a asp-controller="Topics" asp-action="Index">
+                            <span class="pcoded-mtext">Topic</span>
+                        </a>
+                    </li>
+                    <li class=" ">
+                        <a href="dashboard-analytics.html">
+                            <span class="pcoded-mtext">Analytics</span>
+                            <span class="pcoded-badge label label-info">NEW</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="pcoded-hasmenu">
+                <a href="javascript:void(0)">
+                    <span class="pcoded-micon"><i class="feather icon-sidebar"></i></span>
+                    <span class="pcoded-mtext">Page layouts</span>
+                    <span class="pcoded-badge label label-warning">NEW</span>
+                </a>
+                <ul class="pcoded-submenu">
+                    <li class="pcoded-hasmenu">
+                        <a href="javascript:void(0)">
+                            <span class="pcoded-mtext">Vertical</span>
+                        </a>
+                        <ul class="pcoded-submenu">
+                            <li class=" ">
+                                <a href="menu-static.html">
+                                    <span class="pcoded-mtext">Static Layout</span>
+                                </a>
+                            </li>
+                            <li class=" ">
+                                <a href="menu-header-fixed.html">
+                                    <span class="pcoded-mtext">Header Fixed</span>
+                                </a>
+                            </li>
+                            <li class=" ">
+                                <a href="menu-compact.html">
+                                    <span class="pcoded-mtext">Compact</span>
+                                </a>
+                            </li>
+                            <li class=" ">
+                                <a href="menu-sidebar.html">
+                                    <span class="pcoded-mtext">Sidebar Fixed</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="pcoded-hasmenu">
+                        <a href="javascript:void(0)">
+                            <span class="pcoded-mtext">Horizontal</span>
+                        </a>
+                        <ul class="pcoded-submenu">
+                            <li class=" ">
+                                <a href="menu-horizontal-static.html" target="_blank">
+                                    <span class="pcoded-mtext">Static Layout</span>
+                                </a>
+                            </li>
+                            <li class=" ">
+                                <a href="menu-horizontal-fixed.html" target="_blank">
+                                    <span class="pcoded-mtext">Fixed layout</span>
+                                </a>
+                            </li>
+                            <li class=" ">
+                                <a href="menu-horizontal-icon.html" target="_blank">
+                                    <span class="pcoded-mtext">Static With Icon</span>
+                                </a>
+                            </li>
+                            <li class=" ">
+                                <a href="menu-horizontal-icon-fixed.html" target="_blank">
+                                    <span class="pcoded-mtext">Fixed With Icon</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class=" ">
+                        <a href="menu-bottom.html">
+                            <span class="pcoded-mtext">Bottom Menu</span>
+                        </a>
+                    </li>
+                    <li class=" ">
+                        <a href="box-layout.html" target="_blank">
+                            <span class="pcoded-mtext">Box Layout</span>
+                        </a>
+                    </li>
+                    <li class=" ">
+                        <a href="menu-rtl.html" target="_blank">
+                            <span class="pcoded-mtext">RTL</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="">
+                <a href="navbar-light.html">
+                    <span class="pcoded-micon"><i class="feather icon-menu"></i></span>
+                    <span class="pcoded-mtext">Navigation</span>
+                </a>
+            </li>
+            <li class="pcoded-hasmenu">
+                <a href="javascript:void(0)">
+                    <span class="pcoded-micon"><i class="feather icon-layers"></i></span>
+                    <span class="pcoded-mtext">Widget</span>
+                    <span class="pcoded-badge label label-danger">100+</span>
+                </a>
+                <ul class="pcoded-submenu">
+                    <li class="">
+                        <a href="widget-statistic.html">
+                            <span class="pcoded-mtext">Statistic</span>
+                        </a>
+                    </li>
+                    <li class=" ">
+                        <a href="widget-data.html">
+                            <span class="pcoded-mtext">Data</span>
+                        </a>
+                    </li>
+                    <li class="">
+                        <a href="widget-chart.html">
+                            <span class="pcoded-mtext">Chart Widget</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
     </div>
-
-    <!-- SidebarSearch Form -->
-    <div class="form-inline">
-      <div class="input-group" data-widget="sidebar-search">
-        <input class="form-control form-control-sidebar" type="search" placeholder="Search" aria-label="Search">
-        <div class="input-group-append">
-          <button class="btn btn-sidebar">
-            <i class="fas fa-search fa-fw"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Sidebar Menu -->
-    <nav class="mt-2">
-      <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-        <!-- Add icons to the links using the .nav-icon class
-               with font-awesome or any other icon font library -->
-        
-        <li class="nav-item">
-          <a href="#" class="nav-link">
-            <i class="nav-icon fas fa-table"></i>
-            <p>
-              Tables
-              <i class="fas fa-angle-left right"></i>
-            </p>
-          </a>
-          <ul class="nav nav-treeview">
-            <li class="nav-item">
-              <a href="pages/tables/simple.html" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Simple Tables</p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="pages/tables/data.html" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>DataTables</p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="pages/tables/jsgrid.html" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>jsGrid</p>
-              </a>
-            </li>
-          </ul>
-        </li>
-        <li class="nav-header">EXAMPLES</li>
-        <li class="nav-item">
-          <a href="pages/calendar.html" class="nav-link">
-            <i class="nav-icon fas fa-calendar-alt"></i>
-            <p>
-              Calendar
-              <span class="badge badge-info right">2</span>
-            </p>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="pages/gallery.html" class="nav-link">
-            <i class="nav-icon far fa-image"></i>
-            <p>
-              Gallery
-            </p>
-          </a>
-        </li>
-        
-      </ul>
-    </nav>
-    <!-- /.sidebar-menu -->
-  </div>
-  <!-- /.sidebar -->
-</aside>
+</nav>

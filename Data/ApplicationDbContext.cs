@@ -43,9 +43,13 @@ public class ApplicationDbContext : IdentityDbContext<User>
         builder.Entity<IdentityUserLogin<string>>().ToTable("UserLogins");
         builder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaims");
         builder.Entity<IdentityUserToken<string>>().ToTable("UserTokens");
+
+        builder.Entity<ClassDetail>().HasKey(cd => new { cd.ClassRoomId, cd.UserId });
     }
     public DbSet<Topic> Topics { get; set; }
-    public DbSet<ClassRoom> ClassRooms { get; set; }                  
+    public DbSet<ClassRoom> ClassRooms { get; set; }
     public DbSet<Post> Posts { get; set; }
+    public DbSet<Transaction> Transactions { get; set; }
+    public DbSet<ClassDetail> ClassDetails { get; set; }
 
 }

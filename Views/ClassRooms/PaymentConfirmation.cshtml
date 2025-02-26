@@ -1,0 +1,25 @@
+@{
+    ViewData["Title"] = "Xác nhận thanh toán";
+}
+
+<h2>Xác nhận thanh toán</h2>
+
+@if (ViewBag.ConfirmMessage != null)
+{
+    <div class="alert alert-warning">
+        @ViewBag.ConfirmMessage
+    </div>
+
+    <form method="post" asp-controller="ClassRooms" asp-action="ConfirmPayment">
+        <input type="hidden" name="code" value="@ViewBag.ClassCode" />
+        <button type="submit" class="btn btn-primary">Xác nhận thanh toán</button>
+        <a href="@Url.Action("Introduction", "ClassRooms", new { code = ViewBag.ClassCode })"
+            class="btn btn-secondary">Hủy</a>
+    </form>
+}
+else
+{
+    <div class="alert alert-danger">
+        Lỗi: Không có dữ liệu thanh toán.
+    </div>
+}

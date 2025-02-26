@@ -1,26 +1,71 @@
-﻿@using Microsoft.AspNetCore.Identity
-@inject SignInManager<IdentityUser> SignInManager
-@inject UserManager<IdentityUser> UserManager
+﻿@using LMS.Data.Entities
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
 
 <ul class="navbar-nav">
-@if (SignInManager.IsSignedIn(User))
-{
-    <li class="nav-item">
-        <a  class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity?.Name!</a>
-    </li>
-    <li class="nav-item">
-        <form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-            <button  type="submit" class="nav-link btn btn-link text-dark">Logout</button>
-        </form>
-    </li>
-}
-else
-{
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Register</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">Login</a>
-    </li>
-}
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="user-profile header-notification">
+            <div class="dropdown-primary dropdown">
+                <div class="dropdown-toggle" data-toggle="dropdown">
+                    <img src="../files/assets/images/avatar-4.jpg" class="img-radius" alt="User-Profile-Image" />
+                    <span>@(UserManager.GetUserAsync(User).Result?.FullName)!</span>
+                    <i class="feather icon-chevron-down"></i>
+                </div>
+                <ul class="show-notification profile-notification dropdown-menu" data-dropdown-in="fadeIn"
+                    data-dropdown-out="fadeOut">
+                    <li>
+                        <a href="#!">
+                            <i class="feather icon-settings"></i> Settings
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-area="Identity" asp-page="/Account/Manage/Index">
+                            <i class="feather icon-user"></i> Profile
+                        </a>
+                    </li>
+                    <li>
+                        <a href="email-inbox.html">
+                            <i class="feather icon-mail"></i> My Messages
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" id="userBalance">
+                            <i class="feather icon-credit-card"></i> Balance: <span id="balanceAmount">Loading...</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a  asp-area="Identity" asp-page="/Account/Logout"
+                            asp-route-returnUrl="@Url.Action("Index", "Home")">
+                            <i class="feather icon-log-out"></i> Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">
+                <i class="feather icon-log-in"></i> Login
+            </a>
+        </li>
+    }
 </ul>
+
+<script>
+    async function fetchBalance() {
+        try {
+            const response = await fetch('/Account/GetBalance');
+            const data = await response.json();
+            const formattedBalance = data.balance.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+            document.getElementById('balanceAmount').innerText = formattedBalance;
+        } catch (error) {
+            console.error('Error fetching balance:', error);
+        }
+    }
+
+    fetchBalance(); // Call when page loads
+</script>

@@ -2,6 +2,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using LMS.Data;
 using LMS.Data.Entities;
+using Serilog;
+using LMS.Services;
+using Microsoft.Extensions.FileProviders;
+using LMS.ViewModels.VNPay;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +18,12 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<DbInitializer>();
+builder.Services.AddTransient<IStorageService, FileStorageService>();
+builder.Services.AddSingleton<IVnPayService, VnPayService>();
+builder.Services.Configure<VnPayConfigOptions>(
+    builder.Configuration.GetSection("VnPay"));
 
 var app = builder.Build();
 
@@ -30,6 +40,9 @@ else
 }
 
 app.UseHttpsRedirection();
+
+app.UseStaticFiles();
+
 app.UseRouting();
 
 app.UseAuthentication();
@@ -48,10 +61,21 @@ app.MapRazorPages()
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    var services = scope.ServiceProvider;
-
     db.Database.Migrate();
-    DbInitializer.Seed(services);
+    var serviceProvider = scope.ServiceProvider;
+    try
+    {
+        Log.Information("Seeding data...");
+        var dbInitializer = serviceProvider.GetService<DbInitializer>();
+        if (dbInitializer != null)
+            dbInitializer.Seed()
+                         .Wait();
+    }
+    catch (Exception ex)
+    {
+        var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while seeding the database.");
+    }
 }
 
 app.Run();

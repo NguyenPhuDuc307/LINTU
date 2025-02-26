@@ -133,14 +133,17 @@ namespace LMS.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var post = await _context.Posts.FindAsync(id);
-            if (post != null)
+            if (post == null)
             {
-                _context.Posts.Remove(post);
+                return Json(new { success = false, message = "Bài viết không tồn tại." });
             }
 
+            _context.Posts.Remove(post);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return Json(new { success = true, message = "Xóa bài viết thành công!" });
         }
+
 
         private bool PostExists(int id)
         {

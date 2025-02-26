@@ -1,15 +1,40 @@
+using LMS.Data;
 using LMS.Data.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMS.Data;
 
-public static class DbInitializer
+public class DbInitializer
 {
-    public static void Seed(IServiceProvider serviceProvider)
+    private readonly ApplicationDbContext _context;
+    private readonly UserManager<User> _userManager;
+
+    public DbInitializer(ApplicationDbContext context,
+      UserManager<User> userManager)
     {
-        using (var context = new ApplicationDbContext(serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>()))
+        _context = context;
+        _userManager = userManager;
+    }
+
+    public async Task Seed()
+    {
+        if (!_userManager.Users.Any())
         {
-            var topics = new List<Topic>
+            await _userManager.CreateAsync(new User
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserName = "trungnguyen7358@gmail.com",
+                FullName = "Quản trị",
+                DateOfBirth = DateTime.Now,
+                Email = "trungnguyen7358@gmail.com",
+                LockoutEnabled = false,
+                PhoneNumber = "0964732231",
+                EmailConfirmed = true
+            }, "Admin@123");
+        }
+
+        var topics = new List<Topic>
             {
                 new Topic
                 {
@@ -54,16 +79,16 @@ public static class DbInitializer
                     ParentTopicId = 0
                 }
             };
-            // Look for any products.
-            if (context.Topics.Any())
-            {
-                return;   // DB has been seeded
-            }
+        // Look for any products.
+        if (_context.Topics.Any())
+        {
+            return;   // DB has been seeded
+        }
 
-            context.Topics.AddRange(topics);
-            context.SaveChanges();
+        _context.Topics.AddRange(topics);
+        await _context.SaveChangesAsync();
 
-            var classRooms = new List<ClassRoom>
+        var classRooms = new List<ClassRoom>
             {
                 new ClassRoom
                 {
@@ -176,14 +201,15 @@ public static class DbInitializer
                     Students = 0
                 }
             };
-            // Look for any products.
-            if (context.ClassRooms.Any())
-            {
-                return;   // DB has been seeded
-            }
-
-            context.ClassRooms.AddRange(classRooms);
-            context.SaveChanges();
+        // Look for any products.
+        if (_context.ClassRooms.Any())
+        {
+            return;   // DB has been seeded
         }
+
+        _context.ClassRooms.AddRange(classRooms);
+
+        await _context.SaveChangesAsync();
     }
 }
+
