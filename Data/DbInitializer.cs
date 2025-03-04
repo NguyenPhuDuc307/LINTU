@@ -92,6 +92,7 @@ public class DbInitializer
             {
                 new ClassRoom
                 {
+                    Id = Guid.NewGuid(),
                     TopicId = 1,
                     Name = ".NET Programming",
                     Introduction = "This class is about .NET Programming",
@@ -103,6 +104,7 @@ public class DbInitializer
                 },
                 new ClassRoom
                 {
+                    Id = Guid.NewGuid(),
                     TopicId = 2,
                     Name = "Java Basics",
                     Introduction = "This class is about Java Basics",
@@ -114,6 +116,7 @@ public class DbInitializer
                 },
                 new ClassRoom
                 {
+                    Id = Guid.NewGuid(),
                     TopicId = 3,
                     Name = "Python for Data Science",
                     Introduction = "This class is about Python for Data Science",
@@ -125,6 +128,7 @@ public class DbInitializer
                 },
                 new ClassRoom
                 {
+                    Id = Guid.NewGuid(),
                     TopicId = 4,
                     Name = "JavaScript Essentials",
                     Introduction = "This class is about JavaScript Essentials",
@@ -136,6 +140,7 @@ public class DbInitializer
                 },
                 new ClassRoom
                 {
+                    Id = Guid.NewGuid(),
                     TopicId = 5,
                     Name = "Ruby on Rails",
                     Introduction = "This class is about Ruby on Rails",
@@ -147,6 +152,7 @@ public class DbInitializer
                 },
                 new ClassRoom
                 {
+                    Id = Guid.NewGuid(),
                     TopicId = 6,
                     Name = "Go Programming",
                     Introduction = "This class is about Go Programming",
@@ -158,6 +164,7 @@ public class DbInitializer
                 },
                 new ClassRoom
                 {
+                    Id = Guid.NewGuid(),
                     TopicId = 1,
                     Name = "Advanced .NET",
                     Introduction = "This class is about Advanced .NET",
@@ -169,6 +176,7 @@ public class DbInitializer
                 },
                 new ClassRoom
                 {
+                    Id = Guid.NewGuid(),
                     TopicId = 2,
                     Name = "Spring Framework with Java",
                     Introduction = "This class is about Spring Framework with Java",
@@ -180,6 +188,7 @@ public class DbInitializer
                 },
                 new ClassRoom
                 {
+                    Id = Guid.NewGuid(),
                     TopicId = 3,
                     Name = "Machine Learning with Python",
                     Introduction = "This class is about Machine Learning with Python",
@@ -191,6 +200,7 @@ public class DbInitializer
                 },
                 new ClassRoom
                 {
+                    Id = Guid.NewGuid(),
                     TopicId = 4,
                     Name = "Full-Stack JavaScript",
                     Introduction = "This class is about Full-Stack JavaScript",

@@ -45,12 +45,13 @@
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
                         <a class="dropdown-item" href="#" onclick="copyCodeToClipboard('@Model.ClassRoom.Code')"><i
                                 class="fas fa-copy mr-2"></i>Copy code</a>
-                        <a class="dropdown-item" href="#" onclick="changeCode(@Model.ClassRoom.Id)"><i
-                                class="fas fa-edit mr-2"></i>Change code</a>
+                        <a class="dropdown-item" href="#" onclick="changeCode('@Model.ClassRoom.Id')">
+                            <i class="fas fa-edit mr-2"></i>Change code
+                        </a>
                     </div>
                 </div>
             </div>
-            <h4 class="card-text m-auto pt-3 pb-3">@Html.DisplayFor(model => model.ClassRoom!.Code)</h4>
+            <h4 class="card-text m-auto pt-3 pb-3" id="classCodeDisplay">@Model.ClassRoom.Code</h4>
         </div>
         <div class="card bg-c-blue order-card">
             <div class="card-block">
@@ -201,7 +202,6 @@
             toastInstance.show();
         }
 
-
         function createPost() {
             var form = $('#postModal form');
             $.ajax({
@@ -244,7 +244,6 @@
             });
         }
 
-
         function copyCodeToClipboard(code) {
             navigator.clipboard.writeText(code).then(function () {
                 showToast('Code copied to clipboard!');
@@ -252,12 +251,45 @@
                 console.error('Could not copy text: ', err);
             });
         }
+        function changeCode(classRoomId) {
+            if (!confirm("Bạn có chắc muốn đổi mã lớp không?")) return;
 
-        showToast("Bạn đã thanh toán thành công!", "success");
-        showToast("Số dư không đủ. Vui lòng nạp tiền!", "error");
+            $.ajax({
+                url: '@Url.Action("ChangeCode", "ClassRooms")',
+                type: 'POST',
+                data: { id: classRoomId },
+                success: function (response) {
+                    if (response.success) {
+                        $('#classCodeDisplay').text(response.newCode);
+                        showToast("Mã lớp đã được cập nhật!", "success");
+                    } else {
+                        showToast("Lỗi khi đổi mã lớp!", "error");
+                    }
+                },
+                error: function () {
+                    showToast("Có lỗi xảy ra, vui lòng thử lại!", "error");
+                }
+            });
+        }
+        function showToast(message, type = 'info', duration = 5000) {
+            var toastEl = document.getElementById('adminToast');
+            var toastBody = document.getElementById('toastMessage');
+            var toastContainer = toastEl.querySelector('.toast');
 
+            toastBody.innerText = message;
+            toastContainer.classList.remove('bg-success', 'bg-danger', 'bg-warning', 'bg-info', 'bg-primary', 'bg-dark');
 
+            switch (type) {
+                case 'success': toastContainer.classList.add('bg-success'); break;
+                case 'error': toastContainer.classList.add('bg-danger'); break;
+                case 'warning': toastContainer.classList.add('bg-warning'); break;
+                case 'info': toastContainer.classList.add('bg-info'); break;
+                default: toastContainer.classList.add('bg-dark');
+            }
 
+            var toastInstance = new bootstrap.Toast(toastContainer, { autohide: duration > 0, delay: duration || 5000 });
+            toastInstance.show();
+        }
         var editor = new FroalaEditor('#postMessage', {
             imageUploadURL: '/File/UploadImage',
             videoUploadURL: '/File/UploadVideo',

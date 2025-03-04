@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace LMS.Data.Migrtions
+namespace LMS.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class addData : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -48,6 +48,7 @@ namespace LMS.Data.Migrtions
                     Id = table.Column<string>(type: "varchar(50)", unicode: false, maxLength: 50, nullable: false),
                     FullName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -93,15 +94,14 @@ namespace LMS.Data.Migrtions
                 name: "ClassRooms",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TopicId = table.Column<int>(type: "int", nullable: false),
                     Introduction = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Code = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    decimal180 = table.Column<double>(name: "decimal(18,0)", type: "float", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
                     Students = table.Column<int>(type: "int", nullable: false),
                     CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -115,6 +115,28 @@ namespace LMS.Data.Migrtions
                         principalTable: "Topics",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Transactions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "varchar(50)", nullable: true),
+                    Amount = table.Column<decimal>(type: "decimal(18,0)", nullable: false),
+                    TransactionType = table.Column<int>(type: "int", nullable: false),
+                    CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Transactions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Transactions_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -203,6 +225,32 @@ namespace LMS.Data.Migrtions
                 });
 
             migrationBuilder.CreateTable(
+                name: "ClassDetails",
+                columns: table => new
+                {
+                    ClassRoomId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<string>(type: "varchar(50)", nullable: false),
+                    CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ClassDetails", x => new { x.ClassRoomId, x.UserId });
+                    table.ForeignKey(
+                        name: "FK_ClassDetails_ClassRooms_ClassRoomId",
+                        column: x => x.ClassRoomId,
+                        principalTable: "ClassRooms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ClassDetails_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Posts",
                 columns: table => new
                 {
@@ -211,7 +259,7 @@ namespace LMS.Data.Migrtions
                     UserId = table.Column<string>(type: "varchar(50)", nullable: true),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Message = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClassRoomId = table.Column<int>(type: "int", nullable: false),
+                    ClassRoomId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
@@ -230,6 +278,11 @@ namespace LMS.Data.Migrtions
                         principalTable: "Users",
                         principalColumn: "Id");
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClassDetails_UserId",
+                table: "ClassDetails",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClassRooms_TopicId",
@@ -257,6 +310,11 @@ namespace LMS.Data.Migrtions
                 column: "NormalizedName",
                 unique: true,
                 filter: "[NormalizedName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Transactions_UserId",
+                table: "Transactions",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserClaims_UserId",
@@ -290,10 +348,16 @@ namespace LMS.Data.Migrtions
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "ClassDetails");
+
+            migrationBuilder.DropTable(
                 name: "Posts");
 
             migrationBuilder.DropTable(
                 name: "RoleClaims");
+
+            migrationBuilder.DropTable(
+                name: "Transactions");
 
             migrationBuilder.DropTable(
                 name: "UserClaims");

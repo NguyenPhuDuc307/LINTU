@@ -10,6 +10,7 @@ using LMS.Data.Entities;
 using LMS.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using LMS.Data.Entities.Enums;
+using Microsoft.Extensions.Logging;
 
 namespace LMS.Controllers
 {
@@ -17,11 +18,13 @@ namespace LMS.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<User> _userManager;
+        private readonly ILogger<ClassRoomsController> _logger;
 
-        public ClassRoomsController(ApplicationDbContext context, UserManager<User> userManager)
+        public ClassRoomsController(ApplicationDbContext context, UserManager<User> userManager, ILogger<ClassRoomsController> logger)
         {
             _context = context;
             _userManager = userManager;
+            _logger = logger;
         }
 
         // GET: ClassRooms
@@ -33,54 +36,54 @@ namespace LMS.Controllers
 
         // GET: ClassRooms/Details/5
 
-        public async Task<IActionResult> Introduction(string? code)
+        public async Task<IActionResult> Introduction(string? id)
         {
-            if (code == null)
+            if (string.IsNullOrEmpty(id))
             {
+                _logger.LogWarning("ID is null or empty.");
                 return NotFound();
             }
 
-            var classRoom = await _context.ClassRooms.FirstOrDefaultAsync(m => m.Code == code);
-            if (classRoom == null)
+            if (!Guid.TryParse(id, out Guid classRoomGuid))
             {
+                _logger.LogWarning($"Invalid GUID format: {id}");
                 return NotFound();
             }
+            var classRoom = await _context.ClassRooms
+                .Include(c => c.Topic) 
+                .FirstOrDefaultAsync(m => m.Id == classRoomGuid);
+            if (classRoom == null)
+            {
+                _logger.LogWarning($"ClassRoom not found for ID: {classRoomGuid}");
+                return NotFound();
+            }
+
             var user = await _userManager.GetUserAsync(User);
-            if (user != null)
-            {
-                bool isAlreadyJoined = await _context.ClassDetails
-                    .AnyAsync(cd => cd.ClassRoomId == classRoom.Id && cd.UserId == user.Id);
-                ViewBag.IsJoined = isAlreadyJoined;
-            }
-            else
-            {
-                ViewBag.IsJoined = false; // Nếu chưa đăng nhập, mặc định chưa tham gia
-            }
-            // Đếm số lượng thành viên chính xác từ ClassDetails
+            ViewBag.IsJoined = user != null && await _context.ClassDetails
+                .AnyAsync(cd => cd.ClassRoomId == classRoom.Id && cd.UserId == user.Id);
+
             ViewBag.MembersCount = await _context.ClassDetails
-                .Where(cd => cd.ClassRoomId == classRoom.Id)
-                .CountAsync();
+                .CountAsync(cd => cd.ClassRoomId == classRoom.Id);
             return View(classRoom);
         }
 
-        [Route("classroom/{code}")]
-        public async Task<IActionResult> Details(string? code)
+        [Route("classroom/{id}")]
+        public async Task<IActionResult> Details(string? id)
         {
-            if (code == null)
+            if (string.IsNullOrEmpty(id) || !Guid.TryParse(id, out Guid classRoomGuid))
             {
                 return NotFound();
             }
-
             var classRoom = await _context.ClassRooms
                 .Include(c => c.Topic)
-                .FirstOrDefaultAsync(m => m.Code == code);
+                .FirstOrDefaultAsync(m => m.Id == classRoomGuid);
             if (classRoom == null)
             {
                 return NotFound();
             }
 
             var posts = await _context.Posts.Where(p => p.ClassRoomId == classRoom.Id).OrderByDescending(p => p.CreateDate).ToListAsync();
-            
+
             int membersCount = await _context.ClassDetails
                 .Where(cd => cd.ClassRoomId == classRoom.Id)
                 .CountAsync();
@@ -93,9 +96,13 @@ namespace LMS.Controllers
             return View(classRoomViewModel);
         }
         [HttpPost]
-        public async Task<IActionResult> JoinFreeClass(string code)
+        public async Task<IActionResult> JoinFreeClass(string id)
         {
-            var classRoom = await _context.ClassRooms.FirstOrDefaultAsync(c => c.Code == code);
+            if (string.IsNullOrEmpty(id) || !Guid.TryParse(id, out Guid classRoomGuid))
+            {
+                return NotFound();
+            }
+            var classRoom = await _context.ClassRooms.FirstOrDefaultAsync(c => c.Id == classRoomGuid);
             if (classRoom == null)
                 return NotFound();
 
@@ -103,22 +110,24 @@ namespace LMS.Controllers
             if (user == null)
                 return Unauthorized();
 
-            // Kiểm tra nếu user đã tham gia khóa học chưa
             bool alreadyJoined = await _context.ClassDetails
                 .AnyAsync(cd => cd.ClassRoomId == classRoom.Id && cd.UserId == user.Id);
 
             if (!alreadyJoined)
             {
-                // Nếu chưa tham gia, thêm vào ClassDetails
                 await AddUserToClassroom(classRoom, user.Id);
             }
 
-            return RedirectToAction("Details", new { code = classRoom.Code });
+            return RedirectToAction("Details", new { id = classRoom.Id });
         }
 
-        public IActionResult PaymentConfirmation(string code)
+        public IActionResult PaymentConfirmation(string id)
         {
-            var classRoom = _context.ClassRooms.FirstOrDefault(c => c.Code == code);
+            if (string.IsNullOrEmpty(id) || !Guid.TryParse(id, out Guid classRoomGuid))
+            {
+                return NotFound();
+            }
+            var classRoom = _context.ClassRooms.FirstOrDefault(c => c.Id == classRoomGuid);
             if (classRoom == null)
             {
                 return RedirectToAction("Index");
@@ -131,33 +140,37 @@ namespace LMS.Controllers
 
         // Xử lý sau khi thanh toán thành công
         [HttpPost]
-        public async Task<IActionResult> ConfirmPayment(string code)
+        public async Task<IActionResult> ConfirmPayment(string id)
         {
-            var classRoom = await _context.ClassRooms.FirstOrDefaultAsync(c => c.Code == code);
+            if (string.IsNullOrEmpty(id) || !Guid.TryParse(id, out Guid classRoomGuid))
+            {
+                return NotFound();
+            }
+            var classRoom = await _context.ClassRooms.FirstOrDefaultAsync(c => c.Id == classRoomGuid);
             if (classRoom == null)
                 return NotFound();
 
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
                 return Unauthorized();
-            // Nếu khóa học miễn phí, tự động thêm user vào lớp học mà không cần thanh toán
+            
             if (classRoom.Price == 0)
             {
                 await AddUserToClassroom(classRoom, user.Id);
-                return RedirectToAction("Details", new { code = classRoom.Code });
+                return RedirectToAction("Details", new { id = classRoom.Id });
             }
 
             decimal userBalance = await GetUserBalance(user.Id);
 
             if (userBalance < (decimal)classRoom.Price)
             {
-                // Nếu không đủ tiền, chuyển sang trang nạp tiền
-                return RedirectToAction("Index", "Pays", new { code = classRoom.Code });
+                TempData["ErrorMessage"] = "Bạn không đủ tiền để mua khóa học. Vui lòng nạp thêm!";
+                return RedirectToAction("Index", "Pays", new { id = classRoom.Id });
             }
             await ProcessPayment(user.Id, classRoom.Price);
             await AddUserToClassroom(classRoom, user.Id);
 
-            return RedirectToAction("Details", new { code = classRoom.Code });
+            return RedirectToAction("Details", new { id = classRoom.Id });
         }
         // GET: ClassRooms/Create
         public IActionResult Create()
@@ -170,7 +183,7 @@ namespace LMS.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,TopicId,Description,ImageUrl,Code,Price,Students")] ClassRoom classRoom)
+        public async Task<IActionResult> Create([Bind("Id,Name,TopicId,Introduction,Description,ImageUrl,Code,Price,Students")] ClassRoom classRoom)
         {
             if (ModelState.IsValid)
             {
@@ -181,9 +194,8 @@ namespace LMS.Controllers
             ViewData["TopicId"] = new SelectList(_context.Topics, "Id", "Name", classRoom.TopicId);
             return View(classRoom);
         }
-
         // GET: ClassRooms/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
@@ -204,11 +216,11 @@ namespace LMS.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,TopicId,Description,ImageUrl,Code,Price,Students")] ClassRoom classRoom)
+        public async Task<IActionResult> Edit(Guid id, ClassRoom classRoom)
         {
             if (id != classRoom.Id)
             {
-                return NotFound();
+                return BadRequest();
             }
 
             if (ModelState.IsValid)
@@ -220,7 +232,7 @@ namespace LMS.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ClassRoomExists(classRoom.Id))
+                    if (!ClassRoomExists(classRoom.Id.ToString()))
                     {
                         return NotFound();
                     }
@@ -236,7 +248,7 @@ namespace LMS.Controllers
         }
 
         // GET: ClassRooms/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
             {
@@ -290,10 +302,11 @@ namespace LMS.Controllers
                 .Where(t => t.UserId == userId)
                 .SumAsync(t => t.Amount);
         }
-        private bool ClassRoomExists(int id)
+        private bool ClassRoomExists(string id)
         {
-            return _context.ClassRooms.Any(e => e.Id == id);
+            return Guid.TryParse(id, out Guid classRoomGuid) && _context.ClassRooms.Any(e => e.Id == classRoomGuid);
         }
+
         // Hàm chung để thêm user vào lớp học
         private async Task AddUserToClassroom(ClassRoom classroom, string userId)
         {
@@ -312,15 +325,35 @@ namespace LMS.Controllers
                 _context.ClassDetails.Add(classDetail);
                 await _context.SaveChangesAsync();
             }
-            // var classDetail = new ClassDetail
-            // {
-            //     ClassRoomId = classroom.Id,
-            //     UserId = userId,
-            //     CreateDate = DateTime.Now
-            // };
+        }
+        [HttpPost]
+        public async Task<IActionResult> ChangeCode(Guid id)
+        {
+            var classRoom = await _context.ClassRooms.FindAsync(id);
+            if (classRoom == null)
+            {
+                return NotFound();
+            }
 
-            // _context.ClassDetails.Add(classDetail);
-            // await _context.SaveChangesAsync();
+            string newCode;
+            do
+            {
+                newCode = GenerateRandomCode(6); 
+            } while (await _context.ClassRooms.AnyAsync(c => c.Code == newCode)); 
+
+            classRoom.Code = newCode;
+            _context.Update(classRoom);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, newCode = classRoom.Code });
+        }
+
+        private static string GenerateRandomCode(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            Random random = new Random();
+            return new string(Enumerable.Repeat(chars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
         }
     }
 }

@@ -31,10 +31,13 @@ namespace LMS.Controllers
             {
                 // Lấy UserId từ người dùng hiện tại
                 var userId = User.GetUserId();
-
+                if (!Guid.TryParse(request.ClassRoomId, out Guid classRoomGuid))
+                {
+                    return BadRequest("Invalid ClassRoomId");
+                }
                 var post = new Post()
                 {
-                    ClassRoomId = request.ClassRoomId,
+                    ClassRoomId = classRoomGuid,
                     UserId = userId,
                     Title = request.Title,
                     Message = request.Message,

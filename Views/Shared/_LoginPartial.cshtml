@@ -6,28 +6,21 @@
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
     {
+        var currentUser = await UserManager.GetUserAsync(User);
+        var profileImage = string.IsNullOrEmpty(currentUser?.ImageUrl) ? Url.Content("~/files/assets/images/user.png") : currentUser.ImageUrl;
         <li class="user-profile header-notification">
             <div class="dropdown-primary dropdown">
                 <div class="dropdown-toggle" data-toggle="dropdown">
-                    <img src="../files/assets/images/avatar-4.jpg" class="img-radius" alt="User-Profile-Image" />
-                    <span>@(UserManager.GetUserAsync(User).Result?.FullName)!</span>
+                    <img src="@profileImage" class="img-radius" alt="User-Image"
+                        style="width:40px; height:40px; border-radius:50%;border: 1px solid #F1B44C" />
+                    <span>@(UserManager.GetUserAsync(User).Result?.FullName)</span>
                     <i class="feather icon-chevron-down"></i>
                 </div>
                 <ul class="show-notification profile-notification dropdown-menu" data-dropdown-in="fadeIn"
                     data-dropdown-out="fadeOut">
                     <li>
-                        <a href="#!">
-                            <i class="feather icon-settings"></i> Settings
-                        </a>
-                    </li>
-                    <li>
                         <a asp-area="Identity" asp-page="/Account/Manage/Index">
                             <i class="feather icon-user"></i> Profile
-                        </a>
-                    </li>
-                    <li>
-                        <a href="email-inbox.html">
-                            <i class="feather icon-mail"></i> My Messages
                         </a>
                     </li>
                     <li>
@@ -36,7 +29,7 @@
                         </a>
                     </li>
                     <li>
-                        <a  asp-area="Identity" asp-page="/Account/Logout"
+                        <a asp-area="Identity" asp-page="/Account/Logout"
                             asp-route-returnUrl="@Url.Action("Index", "Home")">
                             <i class="feather icon-log-out"></i> Logout
                         </a>

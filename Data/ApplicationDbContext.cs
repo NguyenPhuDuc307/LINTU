@@ -43,8 +43,20 @@ public class ApplicationDbContext : IdentityDbContext<User>
         builder.Entity<IdentityUserLogin<string>>().ToTable("UserLogins");
         builder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaims");
         builder.Entity<IdentityUserToken<string>>().ToTable("UserTokens");
-
+        // Cấu hình `ClassRoomId` là `Guid`
+        builder.Entity<ClassRoom>()
+            .Property(cr => cr.Id)
+            .HasDefaultValueSql("NEWID()");
         builder.Entity<ClassDetail>().HasKey(cd => new { cd.ClassRoomId, cd.UserId });
+        // Cấu hình mối quan hệ giữa `ClassDetail` và `ClassRoom`
+        builder.Entity<ClassDetail>()
+            .Property(cd => cd.ClassRoomId)
+            .HasColumnType("uniqueidentifier");
+
+        // Cấu hình mối quan hệ giữa `Post` và `ClassRoom`
+        builder.Entity<Post>()
+            .Property(p => p.ClassRoomId)
+            .HasColumnType("uniqueidentifier");
     }
     public DbSet<Topic> Topics { get; set; }
     public DbSet<ClassRoom> ClassRooms { get; set; }

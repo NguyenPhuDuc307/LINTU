@@ -4,19 +4,16 @@ using LMS.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace LMS.Data.Migrtions
+namespace LMS.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250225092509_AddcountMember")]
-    partial class AddcountMember
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -27,8 +24,8 @@ namespace LMS.Data.Migrtions
 
             modelBuilder.Entity("LMS.Data.Entities.ClassDetail", b =>
                 {
-                    b.Property<int>("ClassRoomId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ClassRoomId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UserId")
                         .HasColumnType("varchar(50)");
@@ -48,11 +45,10 @@ namespace LMS.Data.Migrtions
 
             modelBuilder.Entity("LMS.Data.Entities.ClassRoom", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("Code")
                         .HasColumnType("nvarchar(max)");
@@ -99,8 +95,8 @@ namespace LMS.Data.Migrtions
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ClassRoomId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ClassRoomId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
@@ -206,6 +202,9 @@ namespace LMS.Data.Migrtions
                         .HasColumnType("bit");
 
                     b.Property<string>("FullName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")

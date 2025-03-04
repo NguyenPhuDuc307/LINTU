@@ -17,7 +17,6 @@
                 <h4>Price</h4>
                 <p class="card-text">@String.Format("{0:0,0}", Model.Price) VND</p>
                 <h4>Number of Students</h4>
-                @* <p class="card-text">@(Model.Students == 0 ? "0" : String.Format("{0:0,0}", Model.Students))</p> *@
                 <p class="card-text">@ViewBag.MembersCount</p>
                 <h4>Creation Date</h4>
                 <p class="card-text">@Model.CreateDate.ToString("dd/MM/yyyy HH:mm:ss")</p>
@@ -28,30 +27,32 @@
                 }
             </div>
         </div>
-        @if (User.Identity!.IsAuthenticated) 
+        @if (User.Identity!.IsAuthenticated)
         {
             @if (ViewBag.IsJoined)
             {
-                <a class="btn btn-success btn-sm" asp-controller="ClassRooms" asp-action="Details"
-                    asp-route-code="@Model.Code">Join class</a>
+                <a class="btn btn-success btn-sm" asp-controller="ClassRooms" asp-action="Details" asp-route-id="@Model.Id">
+                    Join class</a>
             }
             else if (Model.Price == 0)
             {
                 <form method="post" asp-controller="ClassRooms" asp-action="JoinFreeClass">
-                    <input type="hidden" name="code" value="@Model.Code" />
+                    <input type="hidden" name="id" value="@Model.Id" />
                     <button type="submit" class="btn btn-success btn-sm">Join Free</button>
                 </form>
             }
             else
             {
-                <a class="btn btn-danger btn-sm" asp-controller="ClassRooms" asp-action="PaymentConfirmation"
-                    asp-route-code="@Model.Code">Buy Course</a>
+                <form method="post" asp-controller="ClassRooms" asp-action="ConfirmPayment">
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-danger btn-sm">Buy Course</button>
+                </form>
             }
         }
-        else 
+        else
         {
             <a class="btn btn-primary btn-sm" asp-area="Identity" asp-page="/Account/Login"
-                asp-route-returnUrl="@Url.Action("Introduction", "ClassRooms", new { code = Model.Code })">
+                asp-route-returnUrl="@Url.Action("Introduction", "ClassRooms", new { id = Model.Id })">
                 Login to Join
             </a>
         }

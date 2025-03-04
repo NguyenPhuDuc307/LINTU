@@ -25,7 +25,7 @@ public class HomeController : Controller
         .ToListAsync();
 
         var studentCounts = await _context.ClassDetails
-            .GroupBy(cd => cd.ClassRoomId)
+            .GroupBy(cd => cd.ClassRoomId!)
             .Select(g => new { ClassRoomId = g.Key, Count = g.Count() })
             .ToDictionaryAsync(x => x.ClassRoomId, x => x.Count);
 
@@ -33,7 +33,7 @@ public class HomeController : Controller
 
         foreach (var classRoom in classRooms)
         {
-            classRoom.Students = studentCounts.ContainsKey(classRoom.Id) ? studentCounts[classRoom.Id] : 0;
+            classRoom.Students = studentCounts.ContainsKey(classRoom.Id!) ? studentCounts[classRoom.Id!] : 0;
         }
 
         if (!string.IsNullOrEmpty(searchString))

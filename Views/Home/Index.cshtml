@@ -69,60 +69,7 @@
                 <div class="card-footer">
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="badge badge-info">@item.Topic!.Name</span>
-                        <a asp-controller="ClassRooms" asp-action="Introduction" asp-route-code="@item.Code"
-                            class="btn btn-success btn-sm">
-                            Show more
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
-</div>
-
-<div class="row">
-    @foreach (var item in Model)
-    {
-        var isNew = (now - item.CreateDate).TotalDays <= 1;
-        <div class="col-md-6 col-lg-4">
-            <div class="card shadow-sm">
-                <!-- Header -->
-                <div class="card-header">
-                    <div class="media">
-                        <div class="media-body media-middle">
-                            <div class="company-name">
-                                <p class="font-weight-bold mb-1">@item.Name</p>
-                                <span class="text-muted f-14">@item.CreateDate.ToString("MMMM dd, yyyy")</span>
-                            </div>
-                        </div>
-                        @if (isNew)
-                        {
-                            <div class="job-badge">
-                                <label class="label bg-primary text-white">New</label>
-                            </div>
-                        }
-                    </div>
-                </div>
-
-                <!-- Ảnh lớn của lớp học -->
-                <img src="@item.ImageUrl" class="card-img-top" alt="@item.Name">
-
-                <!-- Nội dung lớp học -->
-                <div class="card-body">
-                    <p class="card-text">@item.Introduction</p>
-                    <p class="card-text">
-                        @(item.Students == 0 ? "0" : String.Format("{0:0,0}", item.Students)) students have joined
-                    </p>
-                    <h5 class="card-text text-danger">
-                        @(item.Price == 0 ? "Free" : String.Format("{0:0,0} VND", item.Price))
-                    </h5>
-                </div>
-
-                <!-- Footer -->
-                <div class="card-footer">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="badge badge-info">@item.Topic!.Name</span>
-                        <a asp-controller="ClassRooms" asp-action="Introduction" asp-route-code="@item.Code"
+                        <a asp-controller="ClassRooms" asp-action="Introduction" asp-route-id="@item.Id"
                             class="btn btn-success btn-sm">
                             Show more
                         </a>

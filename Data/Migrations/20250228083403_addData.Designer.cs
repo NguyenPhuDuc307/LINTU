@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace LMS.Data.Migrtions
+namespace LMS.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250224041517_AddClassDetail")]
-    partial class AddClassDetail
+    [Migration("20250228083403_addData")]
+    partial class addData
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,8 +27,8 @@ namespace LMS.Data.Migrtions
 
             modelBuilder.Entity("LMS.Data.Entities.ClassDetail", b =>
                 {
-                    b.Property<int>("ClassRoomId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ClassRoomId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UserId")
                         .HasColumnType("varchar(50)");
@@ -43,16 +43,15 @@ namespace LMS.Data.Migrtions
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ClassDetail");
+                    b.ToTable("ClassDetails");
                 });
 
             modelBuilder.Entity("LMS.Data.Entities.ClassRoom", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("Code")
                         .HasColumnType("nvarchar(max)");
@@ -75,9 +74,8 @@ namespace LMS.Data.Migrtions
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("Price")
-                        .HasColumnType("float")
-                        .HasColumnName("decimal(18,0)");
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,0)");
 
                     b.Property<int>("Students")
                         .HasColumnType("int");
@@ -100,8 +98,8 @@ namespace LMS.Data.Migrtions
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ClassRoomId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("ClassRoomId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("CreateDate")
                         .HasColumnType("datetime2");
@@ -152,6 +150,36 @@ namespace LMS.Data.Migrtions
                     b.ToTable("Topics");
                 });
 
+            modelBuilder.Entity("LMS.Data.Entities.Transaction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,0)");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("LastModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TransactionType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("varchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Transactions");
+                });
+
             modelBuilder.Entity("LMS.Data.Entities.User", b =>
                 {
                     b.Property<string>("Id")
@@ -177,6 +205,9 @@ namespace LMS.Data.Migrtions
                         .HasColumnType("bit");
 
                     b.Property<string>("FullName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
@@ -407,6 +438,15 @@ namespace LMS.Data.Migrtions
                         .HasForeignKey("UserId");
 
                     b.Navigation("ClassRoom");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("LMS.Data.Entities.Transaction", b =>
+                {
+                    b.HasOne("LMS.Data.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });

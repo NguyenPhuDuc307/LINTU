@@ -17,13 +17,16 @@ namespace LMS.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
         public IndexModel(
             UserManager<User> userManager,
-            SignInManager<User> signInManager)
+            SignInManager<User> signInManager,
+            IWebHostEnvironment webHostEnvironment)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         /// <summary>
@@ -59,6 +62,10 @@ namespace LMS.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+            public string ImageUrl { get; set; }
+
+            [Display(Name = "Profile Picture")]
+            public IFormFile ImageFile { get; set; }
         }
 
         private async Task LoadAsync(User user)
@@ -70,7 +77,8 @@ namespace LMS.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                ImageUrl = user.ImageUrl
             };
         }
 
@@ -110,7 +118,21 @@ namespace LMS.Areas.Identity.Pages.Account.Manage
                     return RedirectToPage();
                 }
             }
+            if (Input.ImageFile != null)
+            {
+                var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
+                Directory.CreateDirectory(uploadsFolder);
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(Input.ImageFile.FileName);
+                var filePath = Path.Combine(uploadsFolder, fileName);
 
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await Input.ImageFile.CopyToAsync(fileStream);
+                }
+
+                user.ImageUrl = "/uploads/" + fileName;
+            }
+            await _userManager.UpdateAsync(user);
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";
             return RedirectToPage();
