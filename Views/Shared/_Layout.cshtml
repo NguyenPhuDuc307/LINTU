@@ -41,6 +41,51 @@
         src='https://cdn.jsdelivr.net/npm/froala-editor@latest/js/froala_editor.pkgd.min.js'></script>
 
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <style>
+        .floating-sidebar {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: #2196f3;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            z-index: 999;
+        }
+
+        .floating-sidebar:hover {
+            width: 180px;
+            height: auto;
+            border-radius: 10px;
+            flex-direction: column;
+            padding: 10px;
+            background: white;
+        }
+
+        .floating-sidebar:hover .sidebar-toggle {
+            display: none;
+        }
+
+        .sidebar-toggle {
+            font-size: 20px;
+        }
+
+        .sidebar-content {
+            display: none;
+            width: 160px;
+        }
+
+        .floating-sidebar:hover .sidebar-content {
+            display: block;
+        }
+    </style>
 </head>
 
 <body>
@@ -100,9 +145,12 @@
                                                 <div class="page-header-title">
                                                     <div class="d-inline">
                                                         <h4>LMS</h4>
-                                                        <span style="font-family: 'Quicksand', sans-serif; font-size: 1.1em; line-height: 1.6; color: #333;">
-                                                            Hệ thống này không chỉ cung cấp tài liệu học phong phú mà còn
-                                                            tích hợp nhiều công cụ hỗ trợ giúp nâng cao trải nghiệm học tập,
+                                                        <span
+                                                            style="font-family: 'Quicksand', sans-serif; font-size: 1.1em; line-height: 1.6; color: #333;">
+                                                            Hệ thống này không chỉ cung cấp tài liệu học phong phú mà
+                                                            còn
+                                                            tích hợp nhiều công cụ hỗ trợ giúp nâng cao trải nghiệm học
+                                                            tập,
                                                             khuyến khích sự chủ động và sáng tạo.
                                                         </span>
                                                     </div>
@@ -144,8 +192,6 @@
         </div>
     </div>
 
-
-
     @* @await Component.InvokeAsync("Footer") *@
     <script type="text/javascript" src="~/files/bower_components/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="~/files/bower_components/jquery-ui/jquery-ui.min.js"></script>
@@ -178,8 +224,6 @@
     <script src="~/files/assets/js/jquery.mCustomScrollbar.concat.min.js"></script>
     <!-- Custom js -->
     <script type="text/javascript" src="~/files/assets/js/script.js"></script>
-
-
 
     <!-- PAGE PLUGINS -->
     <!-- AdminLTE for demo purposes -->

@@ -11,6 +11,7 @@ using LMS.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using LMS.Data.Entities.Enums;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LMS.Controllers
 {
@@ -26,7 +27,7 @@ namespace LMS.Controllers
             _userManager = userManager;
             _logger = logger;
         }
-
+        [Authorize(Roles = "Administrator,Manager")]
         // GET: ClassRooms
         public async Task<IActionResult> Index()
         {
@@ -100,15 +101,17 @@ namespace LMS.Controllers
         {
             if (string.IsNullOrEmpty(id) || !Guid.TryParse(id, out Guid classRoomGuid))
             {
-                return NotFound();
+                return Json(new { success = false, message = "Mã lớp không hợp lệ!" });
             }
             var classRoom = await _context.ClassRooms.FirstOrDefaultAsync(c => c.Id == classRoomGuid);
-            if (classRoom == null)
-                return NotFound();
-
+            if (classRoom == null){
+                return Json(new { success = false, message = "Không tìm thấy lớp học!" });
+            } 
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
-                return Unauthorized();
+            { 
+                return Json(new { success = false, message = "Bạn cần đăng nhập để tham gia lớp!" }); 
+            }
 
             bool alreadyJoined = await _context.ClassDetails
                 .AnyAsync(cd => cd.ClassRoomId == classRoom.Id && cd.UserId == user.Id);
@@ -183,10 +186,13 @@ namespace LMS.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,TopicId,Introduction,Description,ImageUrl,Code,Price,Students")] ClassRoom classRoom)
+        public async Task<IActionResult> Create([Bind("Name,TopicId,Introduction,Description,ImageUrl,Price")] ClassRoom classRoom)
         {
             if (ModelState.IsValid)
             {
+                classRoom.Code = GenerateRandomCode(6);
+                classRoom.Students = 0;
+                classRoom.CreateDate = DateTime.Now;
                 _context.Add(classRoom);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -194,6 +200,7 @@ namespace LMS.Controllers
             ViewData["TopicId"] = new SelectList(_context.Topics, "Id", "Name", classRoom.TopicId);
             return View(classRoom);
         }
+        [Authorize(Roles = "Administrator,Manager")]
         // GET: ClassRooms/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
@@ -248,6 +255,7 @@ namespace LMS.Controllers
         }
 
         // GET: ClassRooms/Delete/5
+        [Authorize(Roles = "Administrator,Manager")]
         public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)

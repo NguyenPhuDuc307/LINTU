@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LMS.Data;
 using LMS.Data.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LMS.Controllers
 {
+    [Authorize(Roles = "Administrator,Manager")]
     [Route("topic")]
     public class TopicsController : Controller
     {

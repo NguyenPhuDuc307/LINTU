@@ -56,16 +56,5 @@
                 Login to Join
             </a>
         }
-        @* <form method="post" asp-controller="ClassRooms" asp-action="JoinClass">
-            <input type="hidden" name="code" value="@Model.Code" />
-            @if (Model.Price == 0)
-            {
-                <button type="submit" class="btn btn-success btn-sm">Join Class</button>
-            }
-            else
-            {
-                <button type="submit" class="btn btn-danger btn-sm">Buy @String.Format("{0:0,0}", Model.Price) VND</button>
-            }
-        </form> *@
     </div>
 </div>

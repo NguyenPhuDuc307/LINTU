@@ -3,58 +3,100 @@
 @{
     ViewData["Title"] = "Create";
 }
+<!-- Floating Sidebar Button -->
+<div class="floating-sidebar">
+    <div class="sidebar-toggle">
+        <i class="feather icon-plus"></i>
+    </div>
+    <div class="sidebar-content">
+        @if (User.Identity!.IsAuthenticated)
+        {
+            <a asp-action="Create" class="btn btn-primary btn-block">
+                <i class="feather icon-plus"></i> Create Class
+            </a>
+        }
+        else
+        {
+            <p class="text-danger">You must be logged in to create a class.</p>
+        }
+    </div>
+</div>
+<h1>Create a New Class</h1>
 
-<h1>Create</h1>
-
-<h4>ClassRoom</h4>
 <hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="card-title">Classroom Details</h4>
             </div>
-            <div class="form-group">
-                <label asp-for="TopicId" class="control-label"></label>
-                <select asp-for="TopicId" class ="form-control" asp-items="ViewBag.TopicId"></select>
+            <div class="card-body">
+                @if (User.Identity.IsAuthenticated)
+                {
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <label asp-for="Name" class="control-label">Class Name</label>
+                        <input asp-for="Name" class="form-control" placeholder="Enter class name" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="TopicId" class="control-label">Select Topic</label>
+                        <select asp-for="TopicId" class="form-control" asp-items="ViewBag.TopicId">
+                            <option value="">-- Select Topic --</option>
+                        </select>
+                        <span asp-validation-for="TopicId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Introduction" class="control-label">Introduction</label>
+                        <textarea asp-for="Introduction" class="form-control" rows="4"
+                            placeholder="Enter introduction..."></textarea>
+                        <span asp-validation-for="Introduction" class="text-danger"></span>
+                    </div>
+                    <!-- Description -->
+                    <div class="form-group">
+                        <label asp-for="Description" class="control-label">Description</label>
+                        <textarea asp-for="Description" class="form-control" rows="4"
+                            placeholder="Enter description..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                    <!-- Image URL -->
+                    <div class="form-group">
+                        <label asp-for="ImageUrl" class="control-label">Class Image URL</label>
+                        <input asp-for="ImageUrl" class="form-control" placeholder="Enter image URL" />
+                        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="form-group">
+                        <label asp-for="Price" class="control-label">Price (VND)</label>
+                        <input asp-for="Price" class="form-control" type="number" placeholder="Enter price" />
+                        <span asp-validation-for="Price" class="text-danger"></span>
+                    </div>
+
+                    <!-- Students -->
+                    <div class="form-group">
+                        <label asp-for="Students" class="control-label">Number of Students</label>
+                        <input asp-for="Students" class="form-control" type="number" value="0" readonly />
+                        <span asp-validation-for="Students" class="text-danger"></span>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="form-group text-center">
+                        <input type="submit" value="Create Class" class="btn btn-success btn-lg" />
+                    </div>
+                </form> 
+                }
+                else
+                {
+                    <p class="text-danger">You must be logged in to create a class. <a asp-area="Identity"
+                            asp-page="/Account/Login" asp-route-returnUrl="@Url.Action("Create", "ClassRooms")">Login
+                            here</a>
+                    </p>
+                }
             </div>
-            <div class="form-group">
-                <label asp-for="Introduction" class="control-label"></label>
-                <input asp-for="Introduction" class="form-control" />
-                <span asp-validation-for="Introduction" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ImageUrl" class="control-label"></label>
-                <input asp-for="ImageUrl" class="form-control" />
-                <span asp-validation-for="ImageUrl" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Code" class="control-label"></label>
-                <input asp-for="Code" class="form-control" />
-                <span asp-validation-for="Code" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Price" class="control-label"></label>
-                <input asp-for="Price" class="form-control" />
-                <span asp-validation-for="Price" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Students" class="control-label"></label>
-                <input asp-for="Students" class="form-control" />
-                <span asp-validation-for="Students" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 

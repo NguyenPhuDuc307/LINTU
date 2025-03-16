@@ -1,0 +1,72 @@
+﻿@model LMS.Core.ViewModels.EditUserViewModel
+
+@{
+    ViewData["Title"] = "Edit User";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="bi bi-person-fill"></i> Edit User</h4>
+                </div>
+                <div class="card-body">
+                    @using (Html.BeginForm("OnPost", "UserRoles"))
+                    {
+                        @Html.HiddenFor(h => @Model.User!.Id)
+
+                        <div class="mb-3">
+                            <label asp-for="@Model.User!.FullName" class="form-label"><i class="bi bi-person"></i> Full
+                                Name</label>
+                            <input asp-for="@Model.User!.FullName" class="form-control" autocomplete="username"
+                                aria-required="true" />
+                            <span asp-validation-for="@Model.User!.FullName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="@Model.User!.Email" class="form-label"><i class="bi bi-envelope"></i>
+                                Email</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
+                                <input asp-for="@Model.User!.Email" class="form-control" autocomplete="username"
+                                    aria-required="true" />
+                            </div>
+                            <span asp-validation-for="@Model.User!.Email" class="text-danger"></span>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <h5 class="mb-3"><i class="bi bi-shield-lock"></i> Assign Roles</h5>
+
+                        <div class="row">
+                            @for (int i = 0; i < @Model.Roles!.Count(); i++)
+                            {
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        @Html.CheckBoxFor(c => @Model.Roles![i].Selected, new { @class = "form-check-input" })
+                                        @Html.HiddenFor(h => @Model.Roles![i].Value)
+                                        @Html.LabelFor(l => @Model.Roles![i].Selected, @Model.Roles![i].Text, new { @class =
+                                        "form-check-label" })
+                                @Html.HiddenFor(h => @Model.Roles[i].Text)
+                            </div>
+                        </div>
+                                                }
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex justify-content-between">
+                        <a href="@Url.Action("Index", "UserRoles")" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Back
+                        </a>
+                        <button class="btn btn-primary" type="submit">
+                            <i class="bi bi-save"></i> Save Changes
+                        </button>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

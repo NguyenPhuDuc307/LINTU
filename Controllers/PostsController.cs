@@ -5,9 +5,11 @@ using LMS.Data.Entities;
 using System.Security.Claims;
 using LMS.ViewModels;
 using LMS.Extensions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LMS.Controllers
 {
+    [Authorize(Roles = "Administrator,Manager")]
     public class PostsController : Controller
     {
         private readonly ApplicationDbContext _context;

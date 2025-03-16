@@ -8,73 +8,94 @@
                     <span class="pcoded-mtext">Dashboard</span>
                 </a>
                 <ul class="pcoded-submenu">
+                    @if (User.IsInRole("Administrator") || User.IsInRole("Manager"))
+                    {
+                        <li class="">
+                            <a asp-controller="ClassRooms" asp-action="Index">
+                                <span class="pcoded-mtext">Classroom</span>
+                            </a>
+                        </li>
+                        <li class="">
+                            <a asp-controller="Topics" asp-action="Index">
+                                <span class="pcoded-mtext">Topic</span>
+                            </a>
+                        </li>
+                        <li class="">
+                            <a asp-controller="UserRoles" asp-action="Index">
+                                <span class="pcoded-mtext">Role User</span>
+                            </a>
+                        </li>
+                    }
                     <li class="">
-                        <a asp-controller="ClassRooms" asp-action="Index">
-                            <span class="pcoded-mtext">Classroom</span>
+                        <a>
+                            <span class="pcoded-mtext">Calendar</span>
                         </a>
                     </li>
-                    <li class="">
-                        <a asp-controller="Topics" asp-action="Index">
-                            <span class="pcoded-mtext">Topic</span>
-                        </a>
-                    </li>
-                    @* <li class=" ">
-                        <a href="dashboard-analytics.html">
-                            <span class="pcoded-mtext">Analytics</span>
-                            <span class="pcoded-badge label label-info">NEW</span>
-                        </a>
-                    </li> *@
                 </ul>
             </li>
             <li class="pcoded-hasmenu">
                 <a href="javascript:void(0)">
                     <span class="pcoded-micon"><i class="feather icon-sidebar"></i></span>
-                    <span class="pcoded-mtext">Classroom</span>
+                    <span class="pcoded-mtext">Community</span>
                     <span class="pcoded-badge label label-warning">NEW</span>
                 </a>
                 <ul class="pcoded-submenu">
                     <li class=" ">
                         <a href="menu-bottom.html">
-                            <span class="pcoded-mtext">Create class</span>
+                            <span class="pcoded-mtext">Blog</span>
                         </a>
                     </li>
                     <li class=" ">
                         <a href="box-layout.html" target="_blank">
-                            <span class="pcoded-mtext">Join class</span>
-                        </a>
-                    </li>
-                </ul>
-            </li>
-            @* <li class="">
-                <a href="navbar-light.html">
-                    <span class="pcoded-micon"><i class="feather icon-menu"></i></span>
-                    <span class="pcoded-mtext">Navigation</span>
-                </a>
-            </li>
-            <li class="pcoded-hasmenu">
-                <a href="javascript:void(0)">
-                    <span class="pcoded-micon"><i class="feather icon-layers"></i></span>
-                    <span class="pcoded-mtext">Widget</span>
-                    <span class="pcoded-badge label label-danger">100+</span>
-                </a>
-                <ul class="pcoded-submenu">
-                    <li class="">
-                        <a href="widget-statistic.html">
-                            <span class="pcoded-mtext">Statistic</span>
+                            <span class="pcoded-mtext">Teach</span>
                         </a>
                     </li>
                     <li class=" ">
-                        <a href="widget-data.html">
-                            <span class="pcoded-mtext">Data</span>
-                        </a>
-                    </li>
-                    <li class="">
-                        <a href="widget-chart.html">
-                            <span class="pcoded-mtext">Chart Widget</span>
+                        <a href="box-layout.html" target="_blank">
+                            <span class="pcoded-mtext">Registered</span>
                         </a>
                     </li>
                 </ul>
-            </li> *@
+            </li>
         </ul>
     </div>
 </nav>
+<!-- Floating Sidebar -->
+<div id="floatingSidebar" class="floating-sidebar">
+    <div class="sidebar-toggle">
+        <i class="feather icon-plus"></i>
+    </div>
+    <div id="sidebarContent" class="sidebar-content">
+        <a asp-action="Create" asp-controller="ClassRooms" class="btn btn-primary btn-block">
+            <i class="feather icon-plus"></i> Create Class
+        </a>
+        <button class="btn btn-success btn-block" data-toggle="modal" data-target="#joinClassModal">
+            <i class="feather icon-log-in"></i> Join Class
+        </button>
+    </div>
+</div>
+
+<!-- Modal Tham gia lớp -->
+<div class="modal fade" id="joinClassModal" tabindex="-1" role="dialog" aria-labelledby="joinClassLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="joinClassLabel">Nhập mã lớp để tham gia</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="Home/JoinClass" method="post">
+                    <div class="form-group">
+                        <input type="text" name="code" class="form-control" placeholder="Nhập mã lớp (Code)" required>
+                    </div>
+                    <button type="submit" class="btn btn-success btn-block">
+                        Tham gia ngay
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

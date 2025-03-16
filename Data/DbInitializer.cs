@@ -16,7 +16,26 @@ public class DbInitializer
         _context = context;
         _userManager = userManager;
     }
+    public static async Task CreateRoles(IServiceProvider serviceProvider, UserManager<User> userManager)
+    {
+        var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        string[] roleNames = { "Administrator", "Manager", "User" };
 
+        // Tạo các vai trò nếu chưa tồn tại
+        foreach (var roleName in roleNames)
+        {
+            var roleExist = await roleManager.RoleExistsAsync(roleName);
+            if (!roleExist)
+            {
+                await roleManager.CreateAsync(new IdentityRole(roleName));
+            }
+        }
+        var user = await userManager.FindByEmailAsync("trungnguyen7358@gmail.com");
+        if (user != null)
+        {
+            await userManager.AddToRoleAsync(user, "Administrator");
+        }
+    }
     public async Task Seed()
     {
         if (!_userManager.Users.Any())

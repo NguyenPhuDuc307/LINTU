@@ -6,6 +6,9 @@ using Serilog;
 using LMS.Services;
 using Microsoft.Extensions.FileProviders;
 using LMS.ViewModels.VNPay;
+using LMS.Core;
+using LMS.Core.Repositories;
+using LMS.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +19,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
@@ -23,8 +27,14 @@ builder.Services.AddScoped<DbInitializer>();
 builder.Services.AddTransient<IStorageService, FileStorageService>();
 builder.Services.AddSingleton<IVnPayService, VnPayService>();
 builder.Services.Configure<VnPayConfigOptions>(
-    builder.Configuration.GetSection("VnPay"));
+builder.Configuration.GetSection("VnPay"));
 
+#region Authorization
+
+AddAuthorizationPolicies();
+
+#endregion
+AddScoped();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -38,7 +48,6 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
@@ -79,3 +88,22 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
+void AddAuthorizationPolicies()
+{
+    builder.Services.AddAuthorization(options =>
+    {
+        options.AddPolicy("EmployeeOnly", policy => policy.RequireClaim("EmployeeNumber"));
+    });
+
+    builder.Services.AddAuthorization(options =>
+    {
+        options.AddPolicy(Constants.Policies.RequireAdmin, policy => policy.RequireRole(Constants.Roles.Administrator));
+        options.AddPolicy(Constants.Policies.RequireManager, policy => policy.RequireRole(Constants.Roles.Manager));
+    });
+}
+void AddScoped()
+{
+    builder.Services.AddScoped<IUserRepository, UserRepository>();
+    builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+    builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+}

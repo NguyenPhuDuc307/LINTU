@@ -52,6 +52,17 @@ public class HomeController : Controller
         return View(classRooms);
     }
 
+    [HttpPost]
+    public async Task<IActionResult> JoinClass(string code)
+    {
+        var classRoom = await _context.ClassRooms.FirstOrDefaultAsync(x => x.Code == code);
+        if (classRoom != null)
+        {
+            return RedirectToAction("Introduction", "ClassRooms", new { id = classRoom!.Id });
+        }
+        return RedirectToAction(nameof(Index),"Home");
+    }
+
     [Route("template")]
     public IActionResult Template()
     {
