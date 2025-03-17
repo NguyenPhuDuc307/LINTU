@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using LMS.Data.Entities.Enums;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 
 namespace LMS.Controllers
 {
@@ -31,11 +32,43 @@ namespace LMS.Controllers
         // GET: ClassRooms
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.ClassRooms.Include(c => c.Topic);
-            return View(await applicationDbContext.ToListAsync());
-        }
 
-        // GET: ClassRooms/Details/5
+            var classRooms = await _context.ClassRooms
+                .Include(c => c.Topic)
+                .Select(c => new ClassRoom
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    Topic = c.Topic,
+                    Description = c.Description,
+                    ImageUrl = c.ImageUrl,
+                    Code = c.Code,
+                    Price = c.Price,
+                    Students = _context.ClassDetails.Count(cd => cd.ClassRoomId == c.Id),
+                    Status = c.Status
+                })
+                .ToListAsync();
+            return View(classRooms);
+        }
+        [Authorize(Roles = "Administrator,Manager")]
+        [HttpPost]
+        public async Task<IActionResult> ApproveClassRoom(Guid id)
+        {
+            var classRoom = await _context.ClassRooms.FindAsync(id);
+            if (classRoom == null)
+            {
+                return NotFound();
+            }
+
+            if (classRoom.Status == ClassRoomStatus.Pending)
+            {
+                classRoom.Status = ClassRoomStatus.Approved;
+                _context.Update(classRoom);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
 
         public async Task<IActionResult> Introduction(string? id)
         {
@@ -51,7 +84,7 @@ namespace LMS.Controllers
                 return NotFound();
             }
             var classRoom = await _context.ClassRooms
-                .Include(c => c.Topic) 
+                .Include(c => c.Topic)
                 .FirstOrDefaultAsync(m => m.Id == classRoomGuid);
             if (classRoom == null)
             {
@@ -67,7 +100,7 @@ namespace LMS.Controllers
                 .CountAsync(cd => cd.ClassRoomId == classRoom.Id);
             return View(classRoom);
         }
-
+        // GET: ClassRooms/Details/5
         [Route("classroom/{id}")]
         public async Task<IActionResult> Details(string? id)
         {
@@ -88,11 +121,24 @@ namespace LMS.Controllers
             int membersCount = await _context.ClassDetails
                 .Where(cd => cd.ClassRoomId == classRoom.Id)
                 .CountAsync();
+
+            var assignments = await _context.Assignments
+                .Where(a => a.ClassRoomId == classRoom.Id)
+                .OrderBy(a => a.DueDate)
+                .ToListAsync();
+
+            var participants = await _context.ClassDetails
+                .Where(cd => cd.ClassRoomId == classRoom.Id)
+                .Select(cd => cd.User)
+                .ToListAsync();
+
             var classRoomViewModel = new ClassRoomViewModel
             {
                 ClassRoom = classRoom,
                 Posts = posts,
-                MembersCount = membersCount
+                MembersCount = membersCount,
+                Assignments = assignments,
+                Participants = participants!
             };
             return View(classRoomViewModel);
         }
@@ -104,13 +150,14 @@ namespace LMS.Controllers
                 return Json(new { success = false, message = "Mã lớp không hợp lệ!" });
             }
             var classRoom = await _context.ClassRooms.FirstOrDefaultAsync(c => c.Id == classRoomGuid);
-            if (classRoom == null){
+            if (classRoom == null)
+            {
                 return Json(new { success = false, message = "Không tìm thấy lớp học!" });
-            } 
+            }
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
-            { 
-                return Json(new { success = false, message = "Bạn cần đăng nhập để tham gia lớp!" }); 
+            {
+                return Json(new { success = false, message = "Bạn cần đăng nhập để tham gia lớp!" });
             }
 
             bool alreadyJoined = await _context.ClassDetails
@@ -156,7 +203,7 @@ namespace LMS.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
                 return Unauthorized();
-            
+
             if (classRoom.Price == 0)
             {
                 await AddUserToClassroom(classRoom, user.Id);
@@ -173,6 +220,25 @@ namespace LMS.Controllers
             await ProcessPayment(user.Id, classRoom.Price);
             await AddUserToClassroom(classRoom, user.Id);
 
+            var classDetail = await _context.ClassDetails
+                .FirstOrDefaultAsync(cd => cd.ClassRoomId == classRoom.Id && cd.UserId == user.Id);
+
+            if (classDetail != null)
+            {
+                classDetail.IsPaid = true;  
+                _context.Update(classDetail);
+                await _context.SaveChangesAsync();
+            }
+            // Thêm giao dịch vào Transaction
+            var transaction = new Transaction
+            {
+                UserId = user.Id,
+                Amount = (decimal)-classRoom.Price,  // Trừ tiền khi thanh toán
+                TransactionType = TransactionType.Withdraw, // Hoặc TransactionType.Payment nếu bạn có loại này
+                CreateDate = DateTime.Now
+            };
+            _context.Transactions.Add(transaction);
+            await _context.SaveChangesAsync();
             return RedirectToAction("Details", new { id = classRoom.Id });
         }
         // GET: ClassRooms/Create
@@ -188,14 +254,29 @@ namespace LMS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Name,TopicId,Introduction,Description,ImageUrl,Price")] ClassRoom classRoom)
         {
+            var userId = _userManager.GetUserId(User);
             if (ModelState.IsValid)
             {
+                classRoom.UserId = userId;
                 classRoom.Code = GenerateRandomCode(6);
                 classRoom.Students = 0;
                 classRoom.CreateDate = DateTime.Now;
+
                 _context.Add(classRoom);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                var classDetail = new ClassDetail
+                {
+                    ClassRoomId = classRoom.Id,
+                    UserId = userId,
+                    CreateDate = DateTime.Now,
+                    IsPaid = true
+                };
+
+                _context.ClassDetails.Add(classDetail);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Details", new { id = classRoom.Id });
             }
             ViewData["TopicId"] = new SelectList(_context.Topics, "Id", "Name", classRoom.TopicId);
             return View(classRoom);
@@ -214,7 +295,7 @@ namespace LMS.Controllers
             {
                 return NotFound();
             }
-            ViewData["TopicId"] = new SelectList(_context.Topics, "Id", "Id", classRoom.TopicId);
+            ViewData["TopicList"] = new SelectList(_context.Topics, "Id", "Name", classRoom.TopicId);
             return View(classRoom);
         }
 
@@ -223,7 +304,7 @@ namespace LMS.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, ClassRoom classRoom)
+        public async Task<IActionResult> Edit(Guid id, ClassRoom classRoom, IFormFile? ImageFile)
         {
             if (id != classRoom.Id)
             {
@@ -234,6 +315,27 @@ namespace LMS.Controllers
             {
                 try
                 {
+                    var existingClassRoom = await _context.ClassRooms.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+                    if (existingClassRoom == null)
+                    {
+                        return NotFound();
+                    }
+                    if (ImageFile != null && ImageFile.Length > 0)
+                    {
+                        var fileName = $"{Guid.NewGuid()}{Path.GetExtension(ImageFile.FileName)}";
+                        var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads", fileName);
+
+                        using (var stream = new FileStream(uploadPath, FileMode.Create))
+                        {
+                            await ImageFile.CopyToAsync(stream);
+                        }
+
+                        classRoom.ImageUrl = "/uploads/" + fileName;
+                    }
+                    else
+                    {
+                        classRoom.ImageUrl = existingClassRoom.ImageUrl;
+                    }
                     _context.Update(classRoom);
                     await _context.SaveChangesAsync();
                 }
@@ -250,7 +352,7 @@ namespace LMS.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["TopicId"] = new SelectList(_context.Topics, "Id", "Id", classRoom.TopicId);
+            ViewData["TopicList"] = new SelectList(_context.Topics, "Id", "Name", classRoom.TopicId);
             return View(classRoom);
         }
 
@@ -277,7 +379,7 @@ namespace LMS.Controllers
         // POST: ClassRooms/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var classRoom = await _context.ClassRooms.FindAsync(id);
             if (classRoom != null)
@@ -314,6 +416,42 @@ namespace LMS.Controllers
         {
             return Guid.TryParse(id, out Guid classRoomGuid) && _context.ClassRooms.Any(e => e.Id == classRoomGuid);
         }
+        [Authorize]
+        public async Task<IActionResult> Teach()
+        {
+            // var userId = _userManager.GetUserId(User);
+            // var teachClasses = await _context.ClassRooms
+            //     .Where(c => c.UserId == userId) // Chỉ lấy lớp mà người dùng đã tạo
+            //     .ToListAsync();
+
+            // return View(teachClasses);
+            var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return RedirectToAction("Login", "Account"); 
+            }
+
+            var classes = await _context.ClassRooms
+                .Where(c => c.UserId == userId)
+                .Include(c => c.Topic) 
+                .ToListAsync();
+
+            return View(classes);
+        }
+        [Authorize]
+        public async Task<IActionResult> Registered()
+        {
+            var userId = _userManager.GetUserId(User);
+
+            // Lấy các lớp mà người dùng đã tham gia hoặc đã mua
+            var registeredClasses = await _context.ClassDetails
+                .Where(cd => cd.UserId == userId && cd.ClassRoom!.UserId != userId)
+                .Include(cd => cd.ClassRoom)
+                .ThenInclude(c => c!.Topic)
+                .ToListAsync();
+
+            return View(registeredClasses.Select(cd => cd.ClassRoom).ToList());
+        }
 
         // Hàm chung để thêm user vào lớp học
         private async Task AddUserToClassroom(ClassRoom classroom, string userId)
@@ -331,6 +469,9 @@ namespace LMS.Controllers
                 };
 
                 _context.ClassDetails.Add(classDetail);
+
+                classroom.Students = await _context.ClassDetails.CountAsync(cd => cd.ClassRoomId == classroom.Id);
+                _context.Update(classroom);
                 await _context.SaveChangesAsync();
             }
         }
@@ -346,8 +487,8 @@ namespace LMS.Controllers
             string newCode;
             do
             {
-                newCode = GenerateRandomCode(6); 
-            } while (await _context.ClassRooms.AnyAsync(c => c.Code == newCode)); 
+                newCode = GenerateRandomCode(6);
+            } while (await _context.ClassRooms.AnyAsync(c => c.Code == newCode));
 
             classRoom.Code = newCode;
             _context.Update(classRoom);
@@ -363,5 +504,6 @@ namespace LMS.Controllers
             return new string(Enumerable.Repeat(chars, length)
                 .Select(s => s[random.Next(s.Length)]).ToArray());
         }
+
     }
 }

@@ -1,0 +1,32 @@
+@model List<LMS.Data.Entities.ClassRoom>
+
+<h2>Classes I Created</h2>
+
+<div class="row">
+    @foreach (var classRoom in Model)
+    {
+        <div class="col-md-4 mb-4"> <!-- Chia thành 3 cột -->
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">@classRoom.Name</h5>
+                    <p class="card-text">@classRoom.Introduction</p>
+                </div>
+                <img src="@classRoom.ImageUrl" class="card-img-top mx-auto d-block" alt="Class Image"
+                    style="width: 100%; height: 150px; object-fit: contain;">
+                <div class="card-body">
+                    <p><strong>Status:</strong> @classRoom.Status</p>
+                    <p><strong>Price:</strong> $@classRoom.Price</p>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge badge-info">@classRoom.Topic!.Name</span>
+                        <a asp-controller="ClassRooms" asp-action="Introduction" asp-route-id="@classRoom.Id"
+                            class="btn btn-success btn-sm">
+                            View Class
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

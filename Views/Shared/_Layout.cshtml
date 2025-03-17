@@ -34,6 +34,14 @@
 
     <link rel="stylesheet" type="text/css" href="~/files/assets/css/jquery.mCustomScrollbar.css" />
 
+    <!-- FullCalendar CSS từ CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.2.0/fullcalendar.min.css" rel="stylesheet" />
+
+    <!-- jQuery từ CDN -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+    <!-- FullCalendar JS từ CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.2.0/fullcalendar.min.js"></script>
 
     <link href='https://cdn.jsdelivr.net/npm/froala-editor@latest/css/froala_editor.pkgd.min.css' rel='stylesheet'
         type='text/css' />
@@ -86,6 +94,7 @@
             display: block;
         }
     </style>
+    @RenderSection("Styles", required: false)
 </head>
 
 <body>
@@ -229,6 +238,7 @@
     <!-- AdminLTE for demo purposes -->
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+    
 
 </body>
 

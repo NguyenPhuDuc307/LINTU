@@ -1,0 +1,20 @@
+@section Styles {
+        <link rel="stylesheet" href="~/css/chat.css">
+}
+
+<h2 class="mb-4">Tạo phòng chat</h2>
+
+@if (TempData["Error"] != null)
+{
+        <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<form asp-action="CreateRoom" method="post">
+    <div class="form-group">
+        <label for="name">Tên phòng:</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">
+        <i class="feather icon-check"></i> Tạo phòng
+    </button>
+</form>

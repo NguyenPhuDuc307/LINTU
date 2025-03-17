@@ -1,0 +1,27 @@
+@model IEnumerable<LMS.Data.Entities.ChatRoom>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/chat.css">
+}
+
+<h2 class="mb-4">Danh sách phòng chat</h2>
+
+<div class="row">
+    @foreach (var room in Model)
+    {
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title">@room.Name</h5>
+                    <a asp-action="Room" asp-route-id="@room.Id" class="btn btn-primary">Tham gia</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="text-center mt-4">
+    <a asp-action="Create" class="btn btn-success">
+        <i class="feather icon-plus"></i> Tạo phòng mới
+    </a>
+</div>

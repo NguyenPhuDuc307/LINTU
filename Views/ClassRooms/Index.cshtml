@@ -1,5 +1,4 @@
 @model IEnumerable<LMS.Data.Entities.ClassRoom>
-
 @{
     ViewData["Title"] = "Index";
 }
@@ -25,47 +24,56 @@
                 @Html.DisplayNameFor(model => model.ImageUrl)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Code)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.Price)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Students)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Topic!.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ImageUrl)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Code)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Students)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Introduction" asp-route-code="@item.Code">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @(item.Name!.Length > 10 ? item.Name!.Substring(0, 10) + "..." : item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Topic!.Name)
+                </td>
+                <td>
+                    @(item.Description!.Length > 20 ? item.Description!.Substring(0, 20) + "..." : item.Description)
+                </td>
+                <td>
+                    <img src="@item.ImageUrl" alt="Classroom Image" style="width: 100px; height: auto;" />
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Students)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                <td>
+                    @if (User.IsInRole("Administrator") || User.IsInRole("Manager"))
+                    {
+                        @if (item.Status == LMS.Data.Entities.ClassRoomStatus.Pending)
+                        {
+                            <form method="post" action="@Url.Action("ApproveClassRoom", "ClassRooms", new { id = item.Id })">
+                                <button type="submit" class="btn btn-success">Duyệt</button>
+                            </form>
+                        }
+                    }
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

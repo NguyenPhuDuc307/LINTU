@@ -8,6 +8,11 @@
                     <span class="pcoded-mtext">Dashboard</span>
                 </a>
                 <ul class="pcoded-submenu">
+                    <li>
+                        <a asp-controller="Home" asp-action="Index">
+                            <span class="pcoded-mtext">Home</span>
+                        </a>
+                    </li>
                     @if (User.IsInRole("Administrator") || User.IsInRole("Manager"))
                     {
                         <li class="">
@@ -27,7 +32,7 @@
                         </li>
                     }
                     <li class="">
-                        <a>
+                        <a asp-action="Index" asp-controller="Calendar">
                             <span class="pcoded-mtext">Calendar</span>
                         </a>
                     </li>
@@ -41,17 +46,17 @@
                 </a>
                 <ul class="pcoded-submenu">
                     <li class=" ">
-                        <a href="menu-bottom.html">
+                        <a asp-controller="Chat" asp-action="Index">
                             <span class="pcoded-mtext">Blog</span>
                         </a>
                     </li>
                     <li class=" ">
-                        <a href="box-layout.html" target="_blank">
+                        <a asp-controller="ClassRooms" asp-action="Teach" target="_blank">
                             <span class="pcoded-mtext">Teach</span>
                         </a>
                     </li>
                     <li class=" ">
-                        <a href="box-layout.html" target="_blank">
+                        <a asp-controller="ClassRooms" asp-action="Registered" target="_blank">
                             <span class="pcoded-mtext">Registered</span>
                         </a>
                     </li>

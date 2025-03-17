@@ -1,0 +1,48 @@
+@model List<LMS.Data.Entities.ClassRoom>
+
+<h2>Classes I Registered For</h2>
+
+@if (Model.Count == 0)
+{
+    <p>You have not registered for any classes yet.</p>
+}
+
+<div class="row">
+    @foreach (var classRoom in Model)
+    {
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>@classRoom.Name</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Hiển thị ảnh nhỏ, cùng kích thước cho tất cả các ảnh -->
+                    <img src="@(!string.IsNullOrEmpty(classRoom.ImageUrl) ? classRoom.ImageUrl : Url.Content("~/files/assets/images/user.png"))"
+                        class="img-fluid" alt="Classroom Image"
+                        style="width: 100%; height: auto; max-height: 150px; object-fit: cover;" />
+                    <p class="mt-2">@classRoom.Introduction</p>
+
+                    <p><strong>Status:</strong>
+                        @if (classRoom.ClassDetails!.Any(cd => cd.UserId == User.Identity!.Name && cd.IsPaid))
+                        {
+                            <span class="text-success">Paid</span>
+                        }
+                        else
+                        {
+                            <span class="text-danger">Not Paid</span>
+                        }
+                    </p>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge badge-info">@classRoom.Topic!.Name</span>
+                        <a asp-controller="ClassRooms" asp-action="Introduction" asp-route-id="@classRoom.Id"
+                            class="btn btn-success btn-sm">
+                            View Class
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

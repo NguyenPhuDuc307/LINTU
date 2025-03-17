@@ -114,7 +114,10 @@ namespace LMS.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
-
+                 if (user == null) 
+                {
+                    throw new InvalidOperationException("User could not be created.");
+                }
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var result = await _userManager.CreateAsync(user, Input.Password);
@@ -126,14 +129,19 @@ namespace LMS.Areas.Identity.Pages.Account
                     var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                    var callbackUrl = Url.Page(
+                    
+                    // Generate email confirmation token
+                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    var encodedToken = Encoding.UTF8.GetBytes(token);
+                    var validToken = WebEncoders.Base64UrlEncode(encodedToken);
+                    var emailConfirmationUrl = Url.Page(
                         "/Account/ConfirmEmail",
                         pageHandler: null,
-                        values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
+                        values: new { area = "Identity", userId = userId, code = validToken },
                         protocol: Request.Scheme);
-
+                    // Send email confirmation message
                     await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                        $"Please confirm your account by <a href='{emailConfirmationUrl}'>clicking here</a>.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
@@ -175,7 +183,7 @@ namespace LMS.Areas.Identity.Pages.Account
             {
                 throw new NotSupportedException("The default UI requires a user store with email support.");
             }
-            return (IUserEmailStore<User>)_userStore;
+            return (IUserEmailStore<User>)_userStore;        
         }
     }
 }

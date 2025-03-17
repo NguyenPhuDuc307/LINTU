@@ -6,17 +6,20 @@ using LMS.Core.Repositories;
 using LMS.Data.Entities;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using LMS.Core.ViewModels;
+using LMS.Data;
 
 namespace LMS.Controllers
 { 
     public class UserRolesController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly ApplicationDbContext _context;
         private readonly SignInManager<User> _signInManager;
-        public UserRolesController(IUnitOfWork unitOfWork, SignInManager<User> signInManager)
+        public UserRolesController(IUnitOfWork unitOfWork, SignInManager<User> signInManager, ApplicationDbContext context)
         {
             _unitOfWork = unitOfWork;
             _signInManager = signInManager;
+            _context = context;
         }
         [Authorize(Roles = "Administrator,Manager")]
         public IActionResult Index()
@@ -46,6 +49,36 @@ namespace LMS.Controllers
 
             return View(vm);
         }
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            var user = _unitOfWork.User.GetUser(id);
+            
+            if (user == null)
+            {
+                return NotFound("Không tìm thấy người dùng.");
+            }
+
+            var userRolesInDb = await _signInManager.UserManager.GetRolesAsync(user);
+            if (userRolesInDb != null && userRolesInDb.Any())
+            {
+                await _signInManager.UserManager.RemoveFromRolesAsync(user, userRolesInDb);
+            }
+            // Xóa các bài viết liên quan trước
+            var posts = _context.Posts.Where(p => p.UserId == user.Id);
+            _context.Posts.RemoveRange(posts);
+            // Xóa các giao dịch liên quan trước
+            var transactions = _context.Transactions.Where(t => t.UserId == user.Id);
+            _context.Transactions.RemoveRange(transactions);
+
+            await _context.SaveChangesAsync();
+            _unitOfWork.User.DeleteUser(user);
+
+            await _unitOfWork.CommitAsync();
+
+            return RedirectToAction("Index");
+        }
+
         [HttpPost]
         public async Task<IActionResult> OnPostAsync(EditUserViewModel data)
         {

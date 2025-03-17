@@ -8,4 +8,5 @@ public class ClassDetail : IDateTracking
     public User? User { get; set; }
     public DateTime CreateDate { get; set; }
     public DateTime? LastModifiedDate { get; set; }
+    public bool IsPaid { get; set; }
 }

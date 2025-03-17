@@ -6,57 +6,41 @@ using System.Security.Claims;
 using LMS.ViewModels;
 using LMS.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using LMS.Services;
 
 namespace LMS.Controllers
 {
-    [Authorize(Roles = "Administrator,Manager")]
     public class PostsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IPostService _postService;
 
-        public PostsController(ApplicationDbContext context)
+        public PostsController(IPostService postService)
         {
-            _context = context;
+            _postService = postService;
         }
-
+        [Authorize(Roles = "Administrator,Manager")]
         // GET: Posts
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Posts.ToListAsync());
+            return View(await _postService.GetAllPostsAsync());
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(PostCreateRequest request)
         {
             if (ModelState.IsValid)
             {
-                // Lấy UserId từ người dùng hiện tại
                 var userId = User.GetUserId();
-                if (!Guid.TryParse(request.ClassRoomId, out Guid classRoomGuid))
+                bool isSuccess = await _postService.CreatePostAsync(request, userId);
+                if (!isSuccess)
                 {
-                    return BadRequest("Invalid ClassRoomId");
+                    return BadRequest("Invalid ClassRoomId.");
                 }
-                var post = new Post()
-                {
-                    ClassRoomId = classRoomGuid,
-                    UserId = userId,
-                    Title = request.Title,
-                    Message = request.Message,
-                    CreateDate = DateTime.Now,
-                    LastModifiedDate = DateTime.Now
-                };
-
-                _context.Add(post);
-                await _context.SaveChangesAsync();
-
-                // Kiểm tra xem có phải yêu cầu AJAX không
                 if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
                 {
                     return Json(new { success = true, message = "Bài viết đã được tạo thành công!" });
                 }
 
-                // Sau khi tạo xong, quay lại trang chi tiết lớp học với danh sách bài viết mới
                 return RedirectToAction("Details", "ClassRooms", new { id = request.ClassRoomId });
             }
 
@@ -71,7 +55,7 @@ namespace LMS.Controllers
                 return NotFound();
             }
 
-            var post = await _context.Posts.FindAsync(id);
+            var post = await _postService.GetPostByIdAsync(id.Value);
             if (post == null)
             {
                 return NotFound();
@@ -93,27 +77,16 @@ namespace LMS.Controllers
 
             if (ModelState.IsValid)
             {
-                try
+                bool isSuccess = await _postService.UpdatePostAsync(post);
+                if (!isSuccess)
                 {
-                    _context.Update(post);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PostExists(post.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    return NotFound();
                 }
                 return RedirectToAction(nameof(Index));
             }
             return View(post);
         }
-
+        
         // GET: Posts/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -122,8 +95,7 @@ namespace LMS.Controllers
                 return NotFound();
             }
 
-            var post = await _context.Posts
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var post = await _postService.GetPostByIdAsync(id.Value);
             if (post == null)
             {
                 return NotFound();
@@ -137,22 +109,14 @@ namespace LMS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var post = await _context.Posts.FindAsync(id);
-            if (post == null)
+            var isDeleted = await _postService.DeletePostAsync(id);
+            if (!isDeleted)
             {
                 return Json(new { success = false, message = "Bài viết không tồn tại." });
             }
 
-            _context.Posts.Remove(post);
-            await _context.SaveChangesAsync();
-
             return Json(new { success = true, message = "Xóa bài viết thành công!" });
         }
 
-
-        private bool PostExists(int id)
-        {
-            return _context.Posts.Any(e => e.Id == id);
-        }
     }
 }

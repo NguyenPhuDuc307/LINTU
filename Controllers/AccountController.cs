@@ -59,7 +59,6 @@ public class AccountController : Controller
         return Json(new { success = true, balance = await GetUserBalance(user.Id) });
     }
 
-    // Rút tiền từ tài khoản
     [HttpPost]
     public async Task<IActionResult> Withdraw(decimal amount)
     {

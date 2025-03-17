@@ -119,7 +119,8 @@ public class DbInitializer
                     ImageUrl = "/images/dotnet_programming.png",
                     Code = "DFGVIL",
                     Price = 0,
-                    Students = 0
+                    Students = 0,
+                    Status = ClassRoomStatus.Approved
                 },
                 new ClassRoom
                 {
@@ -131,7 +132,8 @@ public class DbInitializer
                     ImageUrl = "/images/java_basics.png",
                     Code = "HJKLOP",
                     Price = 90000,
-                    Students = 0
+                    Students = 0,
+                    Status = ClassRoomStatus.Approved
                 },
                 new ClassRoom
                 {
@@ -143,7 +145,8 @@ public class DbInitializer
                     ImageUrl = "/images/python_data_science.png",
                     Code = "QWERTY",
                     Price = 120000,
-                    Students = 0
+                    Students = 0,
+                    Status = ClassRoomStatus.Approved
                 },
                 new ClassRoom
                 {
@@ -155,7 +158,8 @@ public class DbInitializer
                     ImageUrl = "/images/javascript_essentials.png",
                     Code = "ZXCVBN",
                     Price = 85000,
-                    Students = 0
+                    Students = 0,
+                    Status = ClassRoomStatus.Approved
                 },
                 new ClassRoom
                 {
@@ -167,7 +171,8 @@ public class DbInitializer
                     ImageUrl = "/images/ruby_on_rails.png",
                     Code = "ASDFGH",
                     Price = 95000,
-                    Students = 0
+                    Students = 0,
+                    Status = ClassRoomStatus.Approved
                 },
                 new ClassRoom
                 {
@@ -179,7 +184,8 @@ public class DbInitializer
                     ImageUrl = "/images/go_programming.png",
                     Code = "TYUIOP",
                     Price = 110000,
-                    Students = 0
+                    Students = 0,
+                    Status = ClassRoomStatus.Approved
                 },
                 new ClassRoom
                 {
@@ -191,7 +197,8 @@ public class DbInitializer
                     ImageUrl = "/images/advanced_dotnet.png",
                     Code = "GFDSEA",
                     Price = 0,
-                    Students = 0
+                    Students = 0,
+                    Status = ClassRoomStatus.Approved
                 },
                 new ClassRoom
                 {
@@ -203,7 +210,8 @@ public class DbInitializer
                     ImageUrl = "/images/spring_framework.png",
                     Code = "LKJHGF",
                     Price = 140000,
-                    Students = 0
+                    Students = 0,
+                    Status = ClassRoomStatus.Approved
                 },
                 new ClassRoom
                 {
@@ -215,7 +223,8 @@ public class DbInitializer
                     ImageUrl = "/images/ml_with_python.png",
                     Code = "POIUYT",
                     Price = 0,
-                    Students = 0
+                    Students = 0,
+                    Status = ClassRoomStatus.Approved
                 },
                 new ClassRoom
                 {
@@ -227,7 +236,8 @@ public class DbInitializer
                     ImageUrl = "/images/full_stack_js.png",
                     Code = "QAZXSW",
                     Price = 150000,
-                    Students = 0
+                    Students = 0,
+                    Status = ClassRoomStatus.Approved
                 }
             };
         // Look for any products.

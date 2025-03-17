@@ -1,4 +1,4 @@
-﻿using LMS.Data.Entities;
+using LMS.Data.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +12,11 @@ public class ApplicationDbContext : IdentityDbContext<User>
         : base(options)
     {
     }
+
+    public ApplicationDbContext()
+    {
+    }
+
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default(CancellationToken))
     {
         IEnumerable<EntityEntry> modified = ChangeTracker.Entries()
@@ -47,7 +52,8 @@ public class ApplicationDbContext : IdentityDbContext<User>
         builder.Entity<ClassRoom>()
             .Property(cr => cr.Id)
             .HasDefaultValueSql("NEWID()");
-        builder.Entity<ClassDetail>().HasKey(cd => new { cd.ClassRoomId, cd.UserId });
+        builder.Entity<ClassDetail>()
+            .HasKey(cd => new { cd.ClassRoomId, cd.UserId });
         // Cấu hình mối quan hệ giữa `ClassDetail` và `ClassRoom`
         builder.Entity<ClassDetail>()
             .Property(cd => cd.ClassRoomId)
@@ -57,11 +63,16 @@ public class ApplicationDbContext : IdentityDbContext<User>
         builder.Entity<Post>()
             .Property(p => p.ClassRoomId)
             .HasColumnType("uniqueidentifier");
+
     }
     public DbSet<Topic> Topics { get; set; }
     public DbSet<ClassRoom> ClassRooms { get; set; }
     public DbSet<Post> Posts { get; set; }
     public DbSet<Transaction> Transactions { get; set; }
     public DbSet<ClassDetail> ClassDetails { get; set; }
+    public DbSet<Assignment> Assignments { get; set; }
+    public DbSet<Event> Events { get; set; }
+    public DbSet<ChatRoom> ChatRooms { get; set; }
+    public DbSet<Message> Messages { get; set; }
 
 }

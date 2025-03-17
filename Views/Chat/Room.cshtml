@@ -1,0 +1,135 @@
+@* @model LMS.Data.Entities.ChatRoom
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/chat.css">
+}
+
+<h2>Phòng: @Model.Name</h2>
+<div class="chat-container">
+    <div id="chatBox">
+        @foreach (var msg in Model.Messages!)
+        {
+            <p><strong>@msg.UserId:</strong> @msg.Content <small>@msg.Timestamp.ToString("HH:mm")</small></p>
+        }
+    </div>
+    <div class="emoji-container">
+        @foreach (var emoji in new Dictionary<string, string>
+                {
+                { ":grinning:", "😁" }, { ":smiling_face_with_heart_eyes:", "😍" }, { ":face_with_tears_of_joy:", "😂" },
+                { ":heart:", "❤️" }, { ":ok_hand:", "👌" }, { ":clap:", "👏" }, { ":waving_hand:", "👋" }, { ":v:", "✌️" }
+                })
+        {
+            <span class="emoji" onclick="addEmoji('@emoji.Value')">@emoji.Value</span>
+        }
+    </div>
+    <input type="text" id="messageInput" class="form-control" placeholder="Nhập tin nhắn..." />
+    <button id="sendButton" class="btn btn-primary mt-2">Gửi</button>
+    <button id="leaveRoom" class="btn btn-danger mt-2">Rời khỏi phòng</button>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.7/signalr.min.js"></script>
+    <script>
+        var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+        var roomId = "@Model.Id";
+        var userName = "@User.Identity!.Name";
+
+        connection.start().then(function () {
+            connection.invoke("JoinRoom", roomId);
+        });
+
+        document.getElementById("sendButton").addEventListener("click", function () {
+            var message = document.getElementById("messageInput").value;
+            if (message) {
+                connection.invoke("SendMessage", roomId, userName, message);
+                document.getElementById("messageInput").value = "";
+            }
+        });
+
+        document.getElementById("leaveRoom").addEventListener("click", function () {
+            connection.invoke("LeaveRoom", roomId).then(function () {
+                window.location.href = "/Chat/Index";
+            });
+        });
+
+        connection.on("ReceiveMessage", function (user, message, time) {
+            var newMessage = `<p><strong>${user}:</strong> ${message} <small>${time}</small></p>`;
+            document.getElementById("chatBox").innerHTML += newMessage;
+        });
+
+        function addEmoji(emoji) {
+            document.getElementById("messageInput").value += emoji;
+        }
+    </script>
+} *@
+@model LMS.Data.Entities.ChatRoom
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/chat.css">
+}
+
+<h2>Phòng: @Model.Name</h2>
+
+<div class="chat-container">
+    <div id="chatBox">
+        @foreach (var msg in Model.Messages!)
+        {
+            <p><strong>@msg.UserId:</strong> @msg.Content <small>@msg.Timestamp.ToString("HH:mm")</small></p>
+        }
+    </div>
+
+    <div class="emoji-container">
+        <span class="emoji" onclick="addEmoji('😁')">😁</span>
+        <span class="emoji" onclick="addEmoji('😂')">😂</span>
+        <span class="emoji" onclick="addEmoji('😍')">😍</span>
+        <span class="emoji" onclick="addEmoji('❤️')">❤️</span>
+    </div>
+
+    <input type="text" id="messageInput" class="form-control" placeholder="Nhập tin nhắn..." />
+    <button id="sendButton" class="btn btn-primary mt-2">Gửi</button>
+    <button id="leaveRoom" class="btn btn-danger mt-2">Rời khỏi phòng</button>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.7/signalr.min.js"></script>
+    <script>
+        var connection = new signalR.HubConnectionBuilder().withUrl("/chatHub").build();
+        var roomId = @Model.Id;
+        var userName = "@User.Identity!.Name";
+
+        connection.start().then(function () {
+            connection.invoke("JoinRoom", roomId);
+        });
+
+        document.getElementById("sendButton").addEventListener("click", function () {
+            var message = document.getElementById("messageInput").value;
+            if (message.trim() !== "") {
+                connection.invoke("SendMessage", roomId, userName, message);
+                document.getElementById("messageInput").value = "";
+            }
+        });
+
+        document.getElementById("leaveRoom").addEventListener("click", function () {
+            connection.invoke("LeaveRoom", roomId).then(function () {
+                window.location.href = "/Chat/Index";
+            });
+        });
+
+        connection.on("ReceiveMessage", function (user, message, time) {
+            var newMessage = `<p><strong>${user}:</strong> ${message} <small>${time}</small></p>`;
+            document.getElementById("chatBox").innerHTML += newMessage;
+        });
+
+        connection.on("UserJoined", function (message) {
+            document.getElementById("chatBox").innerHTML += `<p><em>${message}</em></p>`;
+        });
+
+        connection.on("UserLeft", function (message) {
+            document.getElementById("chatBox").innerHTML += `<p><em>${message}</em></p>`;
+        });
+
+        function addEmoji(emoji) {
+            document.getElementById("messageInput").value += emoji;
+        }
+    </script>
+}

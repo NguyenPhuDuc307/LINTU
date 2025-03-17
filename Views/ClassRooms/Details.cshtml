@@ -14,6 +14,12 @@
         margin: 0 auto;
         /* Căn giữa video */
     }
+
+    input.form-control,
+    textarea.form-control {
+        margin-top: 15px;
+        /* Khoảng cách từ trên */
+    }
 </style>
 
 <h1 class="card-header"
@@ -31,54 +37,164 @@
     </div>
 }
 <hr>
-
-
-<div class="row">
-    <div class="col-md-4">
-        <div class="card shadow-sm">
-            <div class="card-header bg-white">
-                <span class="font-weight-bold">Class code</span>
-                <div class="dropdown float-right">
-                    <button class="btn btn-tool btn-sm dropdown-toggle mr-2" type="button" id="dropdownMenuButton"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    </button>
-                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" href="#" onclick="copyCodeToClipboard('@Model.ClassRoom.Code')"><i
-                                class="fas fa-copy mr-2"></i>Copy code</a>
-                        <a class="dropdown-item" href="#" onclick="changeCode('@Model.ClassRoom.Id')">
-                            <i class="fas fa-edit mr-2"></i>Change code
-                        </a>
+<ul class="nav nav-tabs">
+    <li class="nav-item">
+        <a class="nav-link active" id="post-tab" data-toggle="tab" href="#post" role="tab" aria-controls="post"
+            aria-selected="true">Active</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="assignment-tab" data-toggle="tab" href="#assignment" role="tab"
+            aria-controls="assignment" aria-selected="false">Assignment</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="participants-tab" data-toggle="tab" href="#participants" role="tab"
+            aria-controls="participants" aria-selected="false">Participants</a>
+    </li>
+</ul>
+<!-- Nội dung Tabs -->
+<div class="tab-content" id="classroomTabsContent">
+    <!-- Tab: Post -->
+    <div class="tab-pane fade show active" id="post" role="tabpanel" aria-labelledby="post-tab">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-white">
+                        <span class="font-weight-bold">Class code</span>
+                        <div class="dropdown float-right">
+                            <button class="btn btn-tool btn-sm dropdown-toggle mr-2" type="button"
+                                id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                                aria-expanded="false">
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                                <a class="dropdown-item" href="#"
+                                    onclick="copyCodeToClipboard('@Model.ClassRoom.Code')"><i
+                                        class="fas fa-copy mr-2"></i>Copy code</a>
+                                <a class="dropdown-item" href="#" onclick="changeCode('@Model.ClassRoom.Id')">
+                                    <i class="fas fa-edit mr-2"></i>Change code
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <h4 class="card-text m-auto pt-3 pb-3" id="classCodeDisplay">@Model.ClassRoom.Code</h4>
+                </div>
+                <div class="card bg-c-blue order-card">
+                    <div class="card-block">
+                        <h6>Members</h6>
+                        <h2>@Model.MembersCount</h2>
+                        <i class="card-icon feather icon-users"></i>
                     </div>
                 </div>
             </div>
-            <h4 class="card-text m-auto pt-3 pb-3" id="classCodeDisplay">@Model.ClassRoom.Code</h4>
-        </div>
-        <div class="card bg-c-blue order-card">
-            <div class="card-block">
-                <h6>Members</h6>
-                <h2>@Model.MembersCount</h2>
-                <i class="card-icon feather icon-users"></i>
+            <div class="col-md-8">
+                <input data-toggle="modal" data-target="#postModal" type="text" class="form-control"
+                    placeholder="Create a new post now">
+
+                <!-- Modal -->
+                <div class="modal fade" id="postModal" tabindex="-1" role="dialog" aria-labelledby="postModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="postModalLabel">Create a new post</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+                                    @Html.AntiForgeryToken()
+                                    <div class="mb-3">
+                                        <label for="ClassRoomId" class="form-label">Lớp học</label>
+                                        @Model.ClassRoom.Name
+                                        <input type="hidden" name="ClassRoomId" value="@Model.ClassRoom.Id" />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="Title" class="form-label">Title</label>
+                                        <input type="text" id="postTitle" name="Title" class="form-control" />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="Content" class="form-label">Message</label>
+                                        <textarea id="postMessage" name="Message" style="height: 400px;"></textarea>
+                                    </div>
+                                    <button type="button" class="btn btn-primary" onclick="createPost()">Post</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                @foreach (var post in Model.Posts!)
+                {
+                    var timeSpan = DateTime.Now - post.CreateDate;
+
+                    string timeString;
+                    if (timeSpan.TotalSeconds < 60)
+                    {
+                        timeString = "now";
+                    }
+                    else if (timeSpan.TotalMinutes < 60)
+                    {
+                        timeString = $"{timeSpan.Minutes} minutes ago";
+                    }
+                    else if (timeSpan.TotalHours < 24)
+                    {
+                        timeString = $"{timeSpan.Hours} hours ago";
+                    }
+                    else if (timeSpan.TotalDays < 7)
+                    {
+                        timeString = $"{timeSpan.Days} days ago";
+                    }
+                    else
+                    {
+                        timeString = post.CreateDate.ToString("dd/MM/yyyy");
+                    }
+
+                    <div class="card shadow-sm mt-2">
+                        <div class="card-header bg-white">
+                            <span class="font-weight-bold">@post.Title</span>
+                            <span class="float-right">@timeString</span>
+                            <div class="dropdown float-right">
+                                <button class="btn btn-tool btn-sm dropdown-toggle mr-2" type="button"
+                                    id="dropdownMenuButton_@post.Id" data-toggle="dropdown" aria-haspopup="true"
+                                    aria-expanded="false">
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right"
+                                    aria-labelledby="dropdownMenuButton_@post.Id">
+                                    <a class="dropdown-item" href="#" onclick="deletePost(@post.Id)"><i
+                                            class="fas fa-trash mr-2"></i>Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="media-container">
+                                @Html.Raw(post.Message)
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
     </div>
-    <div class="col-md-8">
+    <!-- Tab: Assignment -->
+    <div class="tab-pane fade" id="assignment" role="tabpanel" aria-labelledby="assignment-tab">
+        <h3>Assignments</h3>
+        <!-- Button để mở Modal tạo bài tập -->
+        <input data-toggle="modal" data-target="#assignmentModal" type="text" class="form-control"
+            placeholder="Create a new assignment now">
 
-        <input data-toggle="modal" data-target="#postModal" type="text" class="form-control"
-            placeholder="Create a new post now">
-
-        <!-- Modal -->
-        <div class="modal fade" id="postModal" tabindex="-1" role="dialog" aria-labelledby="postModalLabel"
+        <!-- Modal: Create Assignment -->
+        <div class="modal fade" id="assignmentModal" tabindex="-1" role="dialog" aria-labelledby="assignmentModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="postModalLabel">Create a new post</h5>
+                        <h5 class="modal-title" id="assignmentModalLabel">Create a new assignment</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                        <form>
+                        <form id="assignmentForm" enctype="multipart/form-data">
                             @Html.AntiForgeryToken()
                             <div class="mb-3">
                                 <label for="ClassRoomId" class="form-label">Lớp học</label>
@@ -87,78 +203,71 @@
                             </div>
                             <div class="mb-3">
                                 <label for="Title" class="form-label">Title</label>
-                                <input type="text" id="postTitle" name="Title" class="form-control" />
+                                <input type="text" id="assignmentTitle" name="Title" class="form-control" required />
                             </div>
                             <div class="mb-3">
-                                <label for="Content" class="form-label">Message</label>
-                                <textarea id="postMessage" name="Message" style="height: 400px;"></textarea>
+                                <label for="Description" class="form-label">Description</label>
+                                <textarea id="assignmentDescription" name="Description" class="form-control" rows="5"
+                                    required></textarea>
                             </div>
-                            <button type="button" class="btn btn-primary" onclick="createPost()">Post</button>
+                            <div class="mb-3">
+                                <label for="FileUrl" class="form-label">Upload File</label>
+                                <input type="file" id="assignmentFileUrl" name="FileUrl" class="form-control" />
+                            </div>
+                            <div class="mb-3">
+                                <label for="DueDate" class="form-label">Due Date</label>
+                                <input type="date" id="dueDate" name="DueDate" class="form-control" required />
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="createAssignment()">Create
+                                Assignment</button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
 
-        @foreach (var post in Model.Posts!)
+        <!-- Hiển thị các bài tập đã tạo -->
+        @foreach (var assignment in Model.Assignments!)
         {
-            var timeSpan = DateTime.Now - post.CreateDate;
-
-            string timeString;
-            if (timeSpan.TotalSeconds < 60)
-            {
-                timeString = "now";
-            }
-            else if (timeSpan.TotalMinutes < 60)
-            {
-                timeString = $"{timeSpan.Minutes} minutes ago";
-            }
-            else if (timeSpan.TotalHours < 24)
-            {
-                timeString = $"{timeSpan.Hours} hours ago";
-            }
-            else if (timeSpan.TotalDays < 7)
-            {
-                timeString = $"{timeSpan.Days} days ago";
-            }
-            else
-            {
-                timeString = post.CreateDate.ToString("dd/MM/yyyy");
-            }
-
             <div class="card shadow-sm mt-2">
                 <div class="card-header bg-white">
-                    <span class="font-weight-bold">@post.Title</span>
-                    <span class="float-right">@timeString</span>
-                    <div class="dropdown float-right">
-                        <button class="btn btn-tool btn-sm dropdown-toggle mr-2" type="button"
-                            id="dropdownMenuButton_@post.Id" data-toggle="dropdown" aria-haspopup="true"
-                            aria-expanded="false">
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton_@post.Id">
-                            <a class="dropdown-item" href="#" onclick="deletePost(@post.Id)"><i
-                                    class="fas fa-trash mr-2"></i>Delete</a>
-                        </div>
-                    </div>
+                    <span class="font-weight-bold">@assignment.Title</span>
+                    <span class="float-right">Hạn: @assignment.DueDate.ToString("dd/MM/yyyy")</span>
                 </div>
                 <div class="card-body">
-                    <div class=" media-container">
-                        @Html.Raw(post.Message)
-                    </div>
+                    <p>@assignment.Description</p>
+                    @if (!string.IsNullOrEmpty(assignment.FileUrl))
+                    {
+                        <a href="@assignment.FileUrl" class="btn btn-info btn-sm">Download File</a>
+                    }
                 </div>
-
             </div>
         }
     </div>
-    <div class="col-md-3"></div>
+    <!-- Tab: Participants -->
+    <div class="tab-pane fade" id="participants" role="tabpanel" aria-labelledby="participants-tab">
+        <h3>Participants</h3>
+        <div class="row">
+            @foreach (var participant in Model.Participants!)
+            {
+                <div class="col-md-4">
+                    <div class="card shadow-sm">
+                        <div class="card-body text-center">
+                            <!-- Hiển thị ảnh đại diện nếu có, nếu không thì dùng ảnh mặc định -->
+                            <img src="@(!string.IsNullOrEmpty(participant.ImageUrl) ? participant.ImageUrl : Url.Content("~/files/assets/images/user.png"))"
+                                class="rounded-circle" style="width: 60px; height: 60px;" alt="Participant Image">
+                            <h5 class="mt-2">@participant.FullName</h5>
+                            <p class="text-muted">@participant.UserName</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
 </div>
 
 <div>
     <hr />
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.ClassRoom!.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
@@ -217,6 +326,45 @@
                 },
                 error: function () {
                     alert('Có lỗi xảy ra khi tạo bài viết.');
+                }
+            });
+        }
+        function createAssignment() {
+            var title = $('#assignmentTitle').val();
+            var description = $('#assignmentDescription').val();
+            var fileUrl = $('#assignmentFileUrl').val();
+            var dueDate = $('#dueDate').val();
+            var classRoomId = $('input[name="ClassRoomId"]').val();  // ClassRoomId dưới dạng GUID
+
+            // Kiểm tra nếu có trường nào bị rỗng
+            if (!title || !description || !dueDate || !classRoomId) {
+                alert("Vui lòng điền đầy đủ thông tin.");
+                return;
+            }
+
+            // Gửi dữ liệu qua AJAX
+            $.ajax({
+                url: '@Url.Action("Create", "Assignments")',
+                type: 'POST',
+                data: {
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val(),
+                    Title: title,
+                    Description: description,
+                    FileUrl: fileUrl,
+                    DueDate: dueDate,
+                    ClassRoomId: classRoomId  // Đảm bảo là GUID hợp lệ
+                },
+                success: function (result) {
+                    if (result.success) {
+                        $('#assignmentModal').modal('hide');
+                        alert("Bài tập đã được tạo thành công!");
+                        location.reload();  // Reload lại trang để hiển thị bài tập mới
+                    } else {
+                        alert("Có lỗi xảy ra khi tạo bài tập: " + result.message);
+                    }
+                },
+                error: function () {
+                    alert('Có lỗi xảy ra khi gửi yêu cầu tạo bài tập.');
                 }
             });
         }
@@ -299,6 +447,25 @@
             toolbarButtons: ['bold', 'italic', 'underline', 'strikeThrough', 'align', 'undo', 'redo'],
             pastePlain: true,
             placeholderText: 'Input your message...',
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#post-tab').on('click', function () {
+                $('#assignment').removeClass('show active');
+                $('#participants').removeClass('show active');
+                $('#post').addClass('show active');
+            });
+
+            $('#assignment-tab').on('click', function () {
+                $('#post').removeClass('show active');
+                $('#participants').removeClass('show active');
+                $('#assignment').addClass('show active');
+            });
+            $('#participants-tab').on('click', function () {
+                $('#post').removeClass('show active');
+                $('#assignment').removeClass('show active');
+                $('#participants').addClass('show active');
         });
     </script>
     <style>

@@ -31,7 +31,10 @@ namespace LMS.Repositories
 
              return user;
         }
-
+        public void DeleteUser(User user)
+        {
+            _context.Users.Remove(user);
+        }
     }
 }
 

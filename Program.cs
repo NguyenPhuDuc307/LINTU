@@ -1,15 +1,17 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.Extensions.FileProviders;
 using LMS.Data;
 using LMS.Data.Entities;
 using Serilog;
 using LMS.Services;
-using Microsoft.Extensions.FileProviders;
 using LMS.ViewModels.VNPay;
 using LMS.Core;
 using LMS.Core.Repositories;
 using LMS.Repositories;
-
+using LMS.ViewModels;
+using LMS.Hubs;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -22,21 +24,23 @@ builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfi
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
-
-builder.Services.AddScoped<DbInitializer>();
+// builder.Services.AddScoped<DbInitializer>();
 builder.Services.AddTransient<IStorageService, FileStorageService>();
 builder.Services.AddSingleton<IVnPayService, VnPayService>();
 builder.Services.Configure<VnPayConfigOptions>(
 builder.Configuration.GetSection("VnPay"));
 
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddTransient<IEmailSender, EmailSenderService>();
 #region Authorization
 
 AddAuthorizationPolicies();
 
 #endregion
+builder.Services.AddSignalR();
 AddScoped();
 var app = builder.Build();
-
+app.MapHub<ChatHub>("/chatHub");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -64,6 +68,7 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
+
 app.MapRazorPages()
    .WithStaticAssets();
 
@@ -88,6 +93,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
+
 void AddAuthorizationPolicies()
 {
     builder.Services.AddAuthorization(options =>
@@ -101,9 +107,13 @@ void AddAuthorizationPolicies()
         options.AddPolicy(Constants.Policies.RequireManager, policy => policy.RequireRole(Constants.Roles.Manager));
     });
 }
+#region Scoped
 void AddScoped()
 {
+    builder.Services.AddScoped<DbInitializer>();
     builder.Services.AddScoped<IUserRepository, UserRepository>();
     builder.Services.AddScoped<IRoleRepository, RoleRepository>();
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+    builder.Services.AddScoped<IPostService, PostService>();
 }
+#endregion

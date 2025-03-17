@@ -6,5 +6,7 @@ namespace LMS.Core.Repositories
         IUserRepository User { get; }
 
         IRoleRepository Role { get; }
+        // ITransactionRepository Transaction { get; }
+        Task CommitAsync();
     }
 }

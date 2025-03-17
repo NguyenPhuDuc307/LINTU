@@ -3,6 +3,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LMS.Data.Entities;
 
+public enum ClassRoomStatus
+{
+    Pending,    // Chờ Duyệt
+    Approved    // Đã Duyệt
+}
 public class ClassRoom : IDateTracking
 {
     [Key]
@@ -18,9 +23,10 @@ public class ClassRoom : IDateTracking
     [Column(TypeName = "decimal(18,0)")]
     public double Price { get; set; }
     public int Students { get; set; }
+    public string? UserId { get; set; }
     public DateTime CreateDate { get; set; }
     public DateTime? LastModifiedDate { get; set; }
-
+    public ClassRoomStatus Status { get; set; } = ClassRoomStatus.Pending;
     public ICollection<Post>? Posts { get; set; }
     public ICollection<ClassDetail>? ClassDetails { get; set; }
 }

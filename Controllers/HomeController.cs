@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using LMS.Models;
 using LMS.Data;
+using LMS.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace LMS.Controllers;
@@ -18,11 +19,22 @@ public class HomeController : Controller
     }
 
     // GET: ClassRooms
-    public async Task<IActionResult> Index(string searchString, string sortBy, string sortOrder)
+    public async Task<IActionResult> Index(string searchString, string sortBy, string sortOrder, int page = 1)
     {
-        var classRooms = await _context.ClassRooms
-        .Include(c => c.Topic)
-        .ToListAsync();
+        // Define the number of items per page
+        int pageSize = 6;
+
+        // Start with the queryable for ClassRooms
+        var classRoomsQuery = _context.ClassRooms
+            .Include(c => c.Topic)
+            .Where(c => c.Status == ClassRoomStatus.Approved)
+            .AsQueryable();
+        // Apply pagination
+        var totalItems = await classRoomsQuery.CountAsync();
+        var classRooms = await classRoomsQuery
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
 
         var studentCounts = await _context.ClassDetails
             .GroupBy(cd => cd.ClassRoomId!)
@@ -48,7 +60,9 @@ public class HomeController : Controller
             "students" => sortOrder == "asc" ? classRooms.OrderBy(c => c.Students).ToList() : classRooms.OrderByDescending(c => c.Students).ToList(),
             _ => classRooms.OrderByDescending(c => c.CreateDate).ToList(), // Mặc định: Lớp mới nhất lên đầu
         };
-
+        // Create a ViewModel or ViewData for pagination
+        ViewBag.PageNumber = page;
+        ViewBag.TotalPages = (int)Math.Ceiling((double)totalItems / pageSize);
         return View(classRooms);
     }
 
@@ -60,7 +74,7 @@ public class HomeController : Controller
         {
             return RedirectToAction("Introduction", "ClassRooms", new { id = classRoom!.Id });
         }
-        return RedirectToAction(nameof(Index),"Home");
+        return RedirectToAction(nameof(Index), "Home");
     }
 
     [Route("template")]

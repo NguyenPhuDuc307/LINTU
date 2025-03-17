@@ -28,7 +28,15 @@
     </form>
 </div>
 
-
+<style>
+    .card-img-top {
+        width: 100%;
+        height: 200px;
+        /* You can adjust the height as needed */
+        object-fit: cover;
+        /* Ensures the image covers the area without distortion */
+    }
+</style>
 <div class="row">
     @foreach (var item in Model)
     {
@@ -78,4 +86,26 @@
             </div>
         </div>
     }
+</div>
+<!-- Pagination Controls -->
+<div class="d-flex justify-content-center">
+    <nav>
+        <ul class="pagination">
+            <li class="page-item @(ViewBag.PageNumber == 1 ? "disabled" : "")">
+                <a class="page-link"
+                    href="?page=@(ViewBag.PageNumber - 1)&searchString=@Context.Request.Query["searchString"]&sortBy=@Context.Request.Query["sortBy"]&sortOrder=@Context.Request.Query["sortOrder"]">Previous</a>
+            </li>
+            @for (var i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                <li class="page-item @(i == ViewBag.PageNumber ? "active" : "")">
+                    <a class="page-link"
+                        href="?page=@i&searchString=@Context.Request.Query["searchString"]&sortBy=@Context.Request.Query["sortBy"]&sortOrder=@Context.Request.Query["sortOrder"]">@i</a>
+                </li>
+            }
+            <li class="page-item @(ViewBag.PageNumber == ViewBag.TotalPages ? "disabled" : "")">
+                <a class="page-link"
+                    href="?page=@(ViewBag.PageNumber + 1)&searchString=@Context.Request.Query["searchString"]&sortBy=@Context.Request.Query["sortBy"]&sortOrder=@Context.Request.Query["sortOrder"]">Next</a>
+            </li>
+        </ul>
+    </nav>
 </div>

@@ -10,5 +10,7 @@ namespace LMS.Core.Repositories
         User GetUser(string id);
 
         User UpdateUser(User user);
+
+        void DeleteUser(User user);
     }
 }
