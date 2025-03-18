@@ -74,5 +74,5 @@ public class ApplicationDbContext : IdentityDbContext<User>
     public DbSet<Event> Events { get; set; }
     public DbSet<ChatRoom> ChatRooms { get; set; }
     public DbSet<Message> Messages { get; set; }
-
+    public DbSet<Submission> Submissions { get; set; }
 }

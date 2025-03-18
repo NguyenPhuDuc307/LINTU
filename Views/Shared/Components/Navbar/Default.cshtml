@@ -4,8 +4,14 @@
             <a class="mobile-menu" id="mobile-collapse" href="#!">
                 <i class="feather icon-menu"></i>
             </a>
-            <a href="../index.html">
-                <img class="img-fluid" src="../files/assets/images/logo.png" alt="Theme-Logo" />
+            <a asp-controller="Home" asp-action="Index" class="navbar-brand" style="background: linear-gradient(to right, #4facfe, #00f2fe); 
+           -webkit-background-clip: text; 
+           -webkit-text-fill-color: transparent;
+           font-family: 'Rubik Bubbles', sans-serif;
+           font-size: 26px;
+           font-weight: bold;
+           text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);">
+                <span>LINTU</span>
             </a>
             <a class="mobile-options">
                 <i class="feather icon-more-horizontal"></i>
@@ -32,54 +38,15 @@
             <ul class="nav-right">
                 <li class="header-notification">
                     <div class="dropdown-primary dropdown">
-                        <div class="dropdown-toggle" data-toggle="dropdown">
+                        <div class="dropdown-toggle" data-toggle="dropdown" id="notificationDropdown">
                             <i class="feather icon-bell"></i>
-                            <span class="badge bg-c-pink">5</span>
+                            <span class="badge bg-c-pink" id="notificationCount">0</span>
                         </div>
                         <ul class="show-notification notification-view dropdown-menu" data-dropdown-in="fadeIn"
-                            data-dropdown-out="fadeOut">
+                            data-dropdown-out="fadeOut" id="notificationList">
                             <li>
                                 <h6>Notifications</h6>
                                 <label class="label label-danger">New</label>
-                            </li>
-                            <li>
-                                <div class="media">
-                                    <img class="d-flex align-self-center img-radius"
-                                        src="../files/assets/images/avatar-4.jpg" alt="Generic placeholder image" />
-                                    <div class="media-body">
-                                        <h5 class="notification-user">John Doe</h5>
-                                        <p class="notification-msg">
-                                            Lorem ipsum dolor sit amet, consectetuer elit.
-                                        </p>
-                                        <span class="notification-time">30 minutes ago</span>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="media">
-                                    <img class="d-flex align-self-center img-radius"
-                                        src="../files/assets/images/avatar-3.jpg" alt="Generic placeholder image" />
-                                    <div class="media-body">
-                                        <h5 class="notification-user">Joseph William</h5>
-                                        <p class="notification-msg">
-                                            Lorem ipsum dolor sit amet, consectetuer elit.
-                                        </p>
-                                        <span class="notification-time">30 minutes ago</span>
-                                    </div>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="media">
-                                    <img class="d-flex align-self-center img-radius"
-                                        src="../files/assets/images/avatar-4.jpg" alt="Generic placeholder image" />
-                                    <div class="media-body">
-                                        <h5 class="notification-user">Sara Soudein</h5>
-                                        <p class="notification-msg">
-                                            Lorem ipsum dolor sit amet, consectetuer elit.
-                                        </p>
-                                        <span class="notification-time">30 minutes ago</span>
-                                    </div>
-                                </div>
                             </li>
                         </ul>
                     </div>

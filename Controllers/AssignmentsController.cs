@@ -7,16 +7,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LMS.Data;
 using LMS.Data.Entities;
+using System.Security.Claims;
 
 namespace LMS.Controllers
 {
     public class AssignmentsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _environment;
 
-        public AssignmentsController(ApplicationDbContext context)
+        public AssignmentsController(ApplicationDbContext context, IWebHostEnvironment environment)
         {
             _context = context;
+            _environment = environment;
         }
 
         // GET: Assignment
@@ -151,6 +154,58 @@ namespace LMS.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+        public async Task<IActionResult> Details(int id)
+        {
+            var assignment = await _context.Assignments
+                .Include(a => a.Submissions) // Lấy danh sách nộp bài
+                .ThenInclude(s => s.User)
+                .FirstOrDefaultAsync(a => a.Id == id);
+
+            if (assignment == null)
+            {
+                return NotFound();
+            }
+
+            return View("Details", assignment);
+
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Submit(int AssignmentId, string AnswerText, IFormFile? File)
+        {
+            var assignment = await _context.Assignments.FindAsync(AssignmentId);
+            if (assignment == null)
+            {
+                return NotFound();
+            }
+
+            string filePath = null!;
+            if (File != null && File.Length > 0)
+            {
+                var uploadsFolder = Path.Combine(_environment.WebRootPath, "submissions");
+                Directory.CreateDirectory(uploadsFolder);
+                filePath = Path.Combine(uploadsFolder, File.FileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await File.CopyToAsync(fileStream);
+                }
+                filePath = "/submissions/" + File.FileName;
+            }
+
+            var submission = new Submission
+            {
+                AssignmentId = AssignmentId,
+                UserId = User.FindFirstValue(ClaimTypes.NameIdentifier),
+                AnswerText = AnswerText,
+                FileUrl = filePath,
+                SubmitDate = DateTime.UtcNow
+            };
+
+            _context.Submissions.Add(submission);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Details", new { id = AssignmentId });
         }
 
         private bool AssignmentExists(int id)

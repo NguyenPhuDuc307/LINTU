@@ -29,4 +29,5 @@ public class ClassRoom : IDateTracking
     public ClassRoomStatus Status { get; set; } = ClassRoomStatus.Pending;
     public ICollection<Post>? Posts { get; set; }
     public ICollection<ClassDetail>? ClassDetails { get; set; }
+    public ICollection<Assignment> Assignments { get; set; } = new List<Assignment>();
 }

@@ -3,58 +3,72 @@
 <div class="card shadow-sm">
     <div class="card-header bg-white">
         <h3 class="card-title">@Model.Name</h3>
+        <div class="card-header-actions">
+            @if (User.Identity!.IsAuthenticated)
+            {
+                @if (ViewBag.IsJoined)
+                {
+                    <a class="btn btn-success btn-sm" asp-controller="ClassRooms" asp-action="Details" asp-route-id="@Model.Id">
+                        Join class</a>
+                }
+                else if (Model.Price == 0)
+                {
+                    <form method="post" asp-controller="ClassRooms" asp-action="JoinFreeClass">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <button type="submit" class="btn btn-success btn-sm">Join Free</button>
+                    </form>
+                }
+                else
+                {
+                    <form method="post" asp-controller="ClassRooms" asp-action="ConfirmPayment">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <button type="submit" class="btn btn-danger btn-sm">Buy Course</button>
+                    </form>
+                }
+            }
+            else
+            {
+                <a class="btn btn-primary btn-sm" asp-area="Identity" asp-page="/Account/Login"
+                    asp-route-returnUrl="@Url.Action("Introduction", "ClassRooms", new { id = Model.Id })">
+                    Login to Join
+                </a>
+            }
+        </div>
     </div>
     <div class="card-body">
         <div class="row">
             <div class="col-md-4">
-                <img src="@Model.ImageUrl" style="width: 100%;" />
+                <img src="@Model.ImageUrl" style="width: 100%;" class="img-fluid rounded shadow-sm" />
             </div>
             <div class="col-md-8">
-                <h4>Introduction</h4>
-                <p class="card-text">@Model.Introduction</p>
-                <h4>Description</h4>
-                <p class="card-text">@Model.Description</p>
-                <h4>Price</h4>
-                <p class="card-text">@String.Format("{0:0,0}", Model.Price) VND</p>
-                <h4>Number of Students</h4>
+                <h4 class="font-weight-bold mt-3 border-bottom pb-2">INTRODUCTION</h4>
+                <p class="card-text lead text-dark">@Model.Introduction</p>
+
+                <h4 class="font-weight-bold mt-3 border-bottom pb-2">Description</h4>
+                <p class="card-text text-justify" style="text-indent: 1.27em;">@Model.Description</p>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-4">
+                <h4 class="font-weight-bold">Price</h4>
+                <p class="card-text">
+                    <span class="badge badge-danger p-2">
+                        @(Model.Price == 0 ? "Free" : String.Format("{0:0,0} VND", Model.Price))
+                    </span>
+                </p>
+                <h4 class="font-weight-bold mt-3">Number of Students</h4>
                 <p class="card-text">@ViewBag.MembersCount</p>
-                <h4>Creation Date</h4>
+            </div>
+            <div class="col-md-4">
+                <h4 class="font-weight-bold">Creation Date</h4>
                 <p class="card-text">@Model.CreateDate.ToString("dd/MM/yyyy HH:mm:ss")</p>
                 @if (Model.LastModifiedDate.HasValue)
                 {
-                    <h4>Last Modified Date</h4>
+                    <h4 class="font-weight-bold mt-3">Last Modified Date</h4>
                     <p class="card-text">@Model.LastModifiedDate.Value.ToString("dd/MM/yyyy HH:mm:ss")</p>
                 }
             </div>
         </div>
-        @if (User.Identity!.IsAuthenticated)
-        {
-            @if (ViewBag.IsJoined)
-            {
-                <a class="btn btn-success btn-sm" asp-controller="ClassRooms" asp-action="Details" asp-route-id="@Model.Id">
-                    Join class</a>
-            }
-            else if (Model.Price == 0)
-            {
-                <form method="post" asp-controller="ClassRooms" asp-action="JoinFreeClass">
-                    <input type="hidden" name="id" value="@Model.Id" />
-                    <button type="submit" class="btn btn-success btn-sm">Join Free</button>
-                </form>
-            }
-            else
-            {
-                <form method="post" asp-controller="ClassRooms" asp-action="ConfirmPayment">
-                    <input type="hidden" name="id" value="@Model.Id" />
-                    <button type="submit" class="btn btn-danger btn-sm">Buy Course</button>
-                </form>
-            }
-        }
-        else
-        {
-            <a class="btn btn-primary btn-sm" asp-area="Identity" asp-page="/Account/Login"
-                asp-route-returnUrl="@Url.Action("Introduction", "ClassRooms", new { id = Model.Id })">
-                Login to Join
-            </a>
-        }
     </div>
 </div>
+

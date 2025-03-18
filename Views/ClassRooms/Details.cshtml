@@ -46,10 +46,6 @@
         <a class="nav-link" id="assignment-tab" data-toggle="tab" href="#assignment" role="tab"
             aria-controls="assignment" aria-selected="false">Assignment</a>
     </li>
-    <li class="nav-item">
-        <a class="nav-link" id="participants-tab" data-toggle="tab" href="#participants" role="tab"
-            aria-controls="participants" aria-selected="false">Participants</a>
-    </li>
 </ul>
 <!-- Nội dung Tabs -->
 <div class="tab-content" id="classroomTabsContent">
@@ -81,6 +77,29 @@
                     <div class="card-block">
                         <h6>Members</h6>
                         <h2>@Model.MembersCount</h2>
+                        <div class="row">
+                            @foreach (var participant in Model.Participants!)
+                            {
+                                <div class="col-md-12">
+                                    <div class="card shadow-sm">
+                                        <div class="card-body row">
+                                            <div class="col-4">
+                                                <img src="@(!string.IsNullOrEmpty(participant.ImageUrl) ? participant.ImageUrl : Url.Content("~/files/assets/images/user.png"))"
+                                                    class="rounded-circle" style="width: 60px; height: 60px;"
+                                                    alt="Participant Image">
+                                            </div>
+                                            <div class="col-8">
+                                                <h5 class="text-muted">@participant.FullName</h5>
+                                                <p style="font-size: 10px;" class="text-muted">@participant.UserName</p>
+                                            </div>
+                                            <!-- Hiển thị ảnh đại diện nếu có, nếu không thì dùng ảnh mặc định -->
+                                            
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
                         <i class="card-icon feather icon-users"></i>
                     </div>
                 </div>
@@ -229,9 +248,10 @@
         <!-- Hiển thị các bài tập đã tạo -->
         @foreach (var assignment in Model.Assignments!)
         {
-            <div class="card shadow-sm mt-2">
+            <a href="@Url.Action("Details", "Assignments", new { id = assignment.Id })" class="text-decoration-none">
+            <div class="card shadow-sm mt-2 hover-card">
                 <div class="card-header bg-white">
-                    <span class="font-weight-bold">@assignment.Title</span>
+                    <span class="font-weight-bold text-primary">@assignment.Title</span>
                     <span class="float-right">Hạn: @assignment.DueDate.ToString("dd/MM/yyyy")</span>
                 </div>
                 <div class="card-body">
@@ -242,27 +262,8 @@
                     }
                 </div>
             </div>
+            </a>
         }
-    </div>
-    <!-- Tab: Participants -->
-    <div class="tab-pane fade" id="participants" role="tabpanel" aria-labelledby="participants-tab">
-        <h3>Participants</h3>
-        <div class="row">
-            @foreach (var participant in Model.Participants!)
-            {
-                <div class="col-md-4">
-                    <div class="card shadow-sm">
-                        <div class="card-body text-center">
-                            <!-- Hiển thị ảnh đại diện nếu có, nếu không thì dùng ảnh mặc định -->
-                            <img src="@(!string.IsNullOrEmpty(participant.ImageUrl) ? participant.ImageUrl : Url.Content("~/files/assets/images/user.png"))"
-                                class="rounded-circle" style="width: 60px; height: 60px;" alt="Participant Image">
-                            <h5 class="mt-2">@participant.FullName</h5>
-                            <p class="text-muted">@participant.UserName</p>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
     </div>
 </div>
 
@@ -476,3 +477,4 @@
         }
     </style>
 }
+

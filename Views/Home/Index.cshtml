@@ -31,61 +31,52 @@
 <style>
     .card-img-top {
         width: 100%;
-        height: 200px;
-        /* You can adjust the height as needed */
+        height: 280px;
         object-fit: cover;
-        /* Ensures the image covers the area without distortion */
+    }
+
+    .card {
+        transition: all 0.3s;
+    }
+
+    .card:hover {
+        transform: scale(1.05);
     }
 </style>
 <div class="row">
     @foreach (var item in Model)
-    {
-        var isNew = (DateTime.UtcNow - item.CreateDate).TotalDays <= 1;
-        <div class="col-md-6 col-lg-4">
-            <div class="card shadow-sm">
-                <!-- Header -->
-                <div class="card-header">
-                    <div class="media">
-                        <div class="media-body media-middle">
-                            <div class="company-name">
-                                <p class="font-weight-bold mb-1">@item.Name</p>
-                                <span class="text-muted f-14">@item.CreateDate.ToString("MMMM dd, yyyy")</span>
-                            </div>
-                        </div>
-                        @if (isNew)
-                        {
-                            <div class="job-badge">
-                                <label class="label bg-primary text-white">New</label>
-                            </div>
-                        }
-                    </div>
+{
+    var isNew = (DateTime.UtcNow - item.CreateDate).TotalDays <= 1;
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <img src="@item.ImageUrl" class="card-img-top" alt="@item.Name">
+            <div class="card-body flex-column pb-0">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <p class="font-weight-bold mb-0">@item.Name</p>
+                    @if (isNew)
+                    {
+                        <span class="badge bg-primary text-white">New</span>
+                    }
                 </div>
-                <img src="@item.ImageUrl" class="card-img-top" alt="@item.Name">
-
-                <div class="card-body">
-                    <p class="card-text">@item.Introduction</p>
-                    <p class="card-text">
-                        @($"{(ViewBag.MembersCount.ContainsKey(item.Id) ? ViewBag.MembersCount[item.Id] : 0):N0}") students
-                        have joined
-                    </p>
-                    <h5 class="card-text text-danger">
-                        @(item.Price == 0 ? "Free" : String.Format("{0:0,0} VND", item.Price))
-                    </h5>
-                </div>
-
-                <!-- Footer -->
-                <div class="card-footer">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="badge badge-info">@item.Topic!.Name</span>
-                        <a asp-controller="ClassRooms" asp-action="Introduction" asp-route-id="@item.Id"
-                            class="btn btn-success btn-sm">
-                            Show more
-                        </a>
-                    </div>
+                <span class="text-muted f-14 mb-2">@item.CreateDate.ToString("MMMM dd, yyyy")</span>
+                <p class="card-text">@item.Introduction</p>
+                <p class="card-text">
+                    @($"{(ViewBag.MembersCount.ContainsKey(item.Id) ? ViewBag.MembersCount[item.Id] : 0):N0}") students have joined
+                </p>
+                <h5 class="card-text text-danger">
+                    @(item.Price == 0 ? "Free" : String.Format("{0:0,0} VND", item.Price))
+                </h5>
+            </div>
+            <div class="card-footer">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="badge badge-info">@item.Topic!.Name</span>
+                    <a asp-controller="ClassRooms" asp-action="Introduction" asp-route-id="@item.Id"
+                        class="btn btn-success btn-sm">View Class</a>
                 </div>
             </div>
         </div>
-    }
+    </div>
+}
 </div>
 <!-- Pagination Controls -->
 <div class="d-flex justify-content-center">
@@ -109,3 +100,4 @@
         </ul>
     </nav>
 </div>
+

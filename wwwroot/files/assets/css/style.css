@@ -21686,10 +21686,22 @@ tr:first-child > td > .fc-day-grid-event {
   margin-bottom: 10px;
 }
 .company-name p {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
   font-weight: 600;
   font-size: 20px;
   margin-bottom: 5px;
+  max-width: 300px;
 }
+.hover-card {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+.hover-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
 .job-cards .media {
   padding-top: 20px;
   padding-bottom: 20px;

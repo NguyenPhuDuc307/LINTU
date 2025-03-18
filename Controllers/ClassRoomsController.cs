@@ -13,6 +13,7 @@ using LMS.Data.Entities.Enums;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using LMS.Models.ViewModels;
 
 namespace LMS.Controllers
 {
@@ -225,7 +226,7 @@ namespace LMS.Controllers
 
             if (classDetail != null)
             {
-                classDetail.IsPaid = true;  
+                classDetail.IsPaid = true;
                 _context.Update(classDetail);
                 await _context.SaveChangesAsync();
             }
@@ -428,12 +429,12 @@ namespace LMS.Controllers
             var userId = _userManager.GetUserId(User);
             if (string.IsNullOrEmpty(userId))
             {
-                return RedirectToAction("Login", "Account"); 
+                return RedirectToAction("Login", "Account");
             }
 
             var classes = await _context.ClassRooms
                 .Where(c => c.UserId == userId)
-                .Include(c => c.Topic) 
+                .Include(c => c.Topic)
                 .ToListAsync();
 
             return View(classes);
@@ -445,12 +446,52 @@ namespace LMS.Controllers
 
             // Lấy các lớp mà người dùng đã tham gia hoặc đã mua
             var registeredClasses = await _context.ClassDetails
-                .Where(cd => cd.UserId == userId && cd.ClassRoom!.UserId != userId)
+                .Where(cd => cd.UserId == userId && cd.ClassRoom != null)
                 .Include(cd => cd.ClassRoom)
                 .ThenInclude(c => c!.Topic)
+                .Select(cd => new RegisteredClassViewModel
+                {
+                    ClassRoom = cd.ClassRoom!,
+                    IsPaid = cd.IsPaid // Kiểm tra trạng thái đã thanh toán
+                })
                 .ToListAsync();
 
-            return View(registeredClasses.Select(cd => cd.ClassRoom).ToList());
+            return View(registeredClasses);
+        }
+        [Authorize]
+        public async Task<IActionResult> GetLatestAssignments()
+        {
+            var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Json(new { success = false, message = "User not found." });
+            }
+
+            var latestAssignments = await _context.Assignments
+                .Where(a => _context.ClassDetails.Any(cd => cd.UserId == userId && cd.ClassRoomId == a.ClassRoomId))
+                .Include(a => a.ClassRoom) // Load ClassRoom
+                .OrderByDescending(a => a.DueDate)
+                .Take(3)
+                .Select(a => new
+                {
+                    ClassName = a.ClassRoom != null ? a.ClassRoom.Name : "Unknown Class",
+                    ClassImage = a.ClassRoom != null && !string.IsNullOrEmpty(a.ClassRoom.ImageUrl)
+                                 ? a.ClassRoom.ImageUrl
+                                 : "/files/assets/images/default-class.png",
+                    AssignmentTitle = !string.IsNullOrEmpty(a.Title) ? a.Title : "No Title",
+                    DueDate = a.DueDate.ToString("dd/MM/yyyy")
+                })
+                .ToListAsync();
+
+            Console.WriteLine($"Total Assignments fetched: {latestAssignments.Count}");
+            latestAssignments.ForEach(a => Console.WriteLine($"Class: {a.ClassName}, Title: {a.AssignmentTitle}, Due: {a.DueDate}"));
+
+            if (!latestAssignments.Any())
+            {
+                return Json(new { success = false, message = "No assignments found." });
+            }
+
+            return Json(new { success = true, assignments = latestAssignments });
         }
 
         // Hàm chung để thêm user vào lớp học

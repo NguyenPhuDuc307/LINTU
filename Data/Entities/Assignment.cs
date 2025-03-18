@@ -13,4 +13,6 @@ public class Assignment : IDateTracking
     public User? User { get; set; }
     public DateTime CreateDate { get; set; }
     public DateTime? LastModifiedDate { get; set; }
+    // Danh sách bài nộp của học viên
+    public ICollection<Submission> Submissions { get; set; } = new List<Submission>();
 }

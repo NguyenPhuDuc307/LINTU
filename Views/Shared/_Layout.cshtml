@@ -30,6 +30,10 @@
     <link rel="stylesheet" type="text/css" href="~/files/bower_components/pnotify/dist/pnotify.mobile.css" />
     <link rel="stylesheet" type="text/css" href="~/files/assets/pages/pnotify/notify.css" />
     <!-- Style.css -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&family=Rubik+Bubbles&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="~/files/assets/css/style.css" />
 
     <link rel="stylesheet" type="text/css" href="~/files/assets/css/jquery.mCustomScrollbar.css" />
@@ -147,44 +151,6 @@
                             <!-- Main-body start -->
                             <div class="main-body">
                                 <div class="page-wrapper">
-                                    <!-- Page-header start -->
-                                    <div class="page-header">
-                                        <div class="row align-items-end">
-                                            <div class="col-lg-8">
-                                                <div class="page-header-title">
-                                                    <div class="d-inline">
-                                                        <h4>LMS</h4>
-                                                        <span
-                                                            style="font-family: 'Quicksand', sans-serif; font-size: 1.1em; line-height: 1.6; color: #333;">
-                                                            Hệ thống này không chỉ cung cấp tài liệu học phong phú mà
-                                                            còn
-                                                            tích hợp nhiều công cụ hỗ trợ giúp nâng cao trải nghiệm học
-                                                            tập,
-                                                            khuyến khích sự chủ động và sáng tạo.
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-4">
-                                                <div class="page-header-breadcrumb">
-                                                    <ul class="breadcrumb-title">
-                                                        <li class="breadcrumb-item" style="float: left">
-                                                            <a asp-controller="Home" asp-action="Index">
-                                                                <i class="feather icon-home"></i>
-                                                            </a>
-                                                        </li>
-                                                        <li class="breadcrumb-item" style="float: left">
-                                                            <a href="#!">Advance Components</a>
-                                                        </li>
-                                                        <li class="breadcrumb-item" style="float: left">
-                                                            <a href="#!">pnotify</a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- Page-header end -->
                                     <!-- Page body start -->
                                     <div class="page-body">
                                         @RenderBody()
@@ -234,11 +200,67 @@
     <!-- Custom js -->
     <script type="text/javascript" src="~/files/assets/js/script.js"></script>
 
+    <script>
+        $(document).ready(function () {
+            fetchLatestAssignments();
+        });
+
+        function fetchLatestAssignments() {
+            $.ajax({
+                url: "/ClassRooms/GetLatestAssignments",
+                type: "GET",
+                success: function (response) {
+                    console.log("✅ API Response:", response); // Debug toàn bộ response
+                    let notificationList = $("#notificationList");
+                    let notificationCount = $("#notificationCount");
+
+                    // Xóa thông báo cũ, giữ lại tiêu đề
+                    notificationList.find("li:not(:first)").remove();
+
+                    if (response.success && response.assignments.length > 0) {
+                        notificationCount.text(response.assignments.length);
+
+                        response.assignments.forEach(item => {
+                            console.log("🎯 Assignment Data:", item); // Debug từng bài tập
+
+                            let className = item.className && item.className !== "Unknown Class" ? item.className : "Không có lớp";
+                            let classImage = item.classImage && item.classImage !== "/files/assets/images/default-class.png" ? item.classImage : "/files/assets/images/default-class.png";
+                            let assignmentTitle = item.assignmentTitle && item.assignmentTitle !== "No Title" ? item.assignmentTitle : "Không có tiêu đề";
+                            let dueDate = item.dueDate && item.dueDate !== "No Due Date" ? item.dueDate : "Không có hạn nộp";
+
+                            let notificationItem = `
+                    <li>
+                        <div class="media">
+                            <img class="d-flex align-self-center img-radius"
+                                src="${classImage}" alt="Class Image" width="50" height="50"/>
+                            <div class="media-body">
+                                <h5 class="notification-user">${className}</h5>
+                                <p class="notification-msg">
+                                    <strong>${assignmentTitle}</strong> - Due: ${dueDate}
+                                </p>
+                            </div>
+                        </div>
+                    </li>
+                    `;
+                            notificationList.append(notificationItem);
+                        });
+                    } else {
+                        notificationList.append('<li><p class="text-center">Không có bài tập mới</p></li>');
+                        notificationCount.text("0");
+                    }
+                },
+                error: function () {
+                    console.error("❌ Lỗi khi lấy danh sách bài tập.");
+                }
+            });
+        }
+    </script>
+
     <!-- PAGE PLUGINS -->
     <!-- AdminLTE for demo purposes -->
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
-    
+
 
 </body>
 

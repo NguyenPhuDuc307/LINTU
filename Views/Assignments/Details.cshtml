@@ -1,0 +1,73 @@
+@model LMS.Data.Entities.Assignment
+@{
+    ViewData["Title"] = "Assignment Details";
+}
+
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h3>@Model.Title</h3>
+    </div>
+    <div class="card-body">
+        <p><strong>Description:</strong> @Model.Description</p>
+        <p><strong>Due Date:</strong> @Model.DueDate.ToString("dd/MM/yyyy")</p>
+
+        @if (!string.IsNullOrEmpty(Model.FileUrl))
+        {
+            <a href="@Model.FileUrl" class="btn btn-info">Download Assignment</a>
+        }
+    </div>
+</div>
+
+<hr>
+
+<!-- Form nộp bài -->
+<div class="card shadow-sm mt-4">
+    <div class="card-header bg-secondary text-white">
+        <h4>Submit Your Answer</h4>
+    </div>
+    <div class="card-body">
+        <form asp-action="Submit" asp-controller="Assignments" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="AssignmentId" value="@Model.Id" />
+
+            <div class="mb-3">
+                <label for="AnswerText" class="form-label">Your Answer</label>
+                <textarea name="AnswerText" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="File" class="form-label">Upload File (optional)</label>
+                <input type="file" name="File" class="form-control" />
+            </div>
+            <button type="submit" class="btn btn-success">Submit</button>
+        </form>
+    </div>
+</div>
+
+<hr>
+
+<!-- Danh sách các bài nộp -->
+<h3>Answers</h3>
+@if (Model.Submissions.Any())
+{
+    @foreach (var submission in Model.Submissions)
+    {
+        <div class="card shadow-sm mt-2">
+            <div class="card-body">
+                <p>
+                    <strong>
+                        <i class="fas fa-user-circle"></i> @submission.User?.FullName
+                    </strong> 
+                    submitted on @submission.SubmitDate.ToString("dd/MM/yyyy HH:mm")</p>
+                <p>@submission.AnswerText</p>
+                @if (!string.IsNullOrEmpty(submission.FileUrl))
+                {
+                    <a href="@submission.FileUrl" class="btn btn-primary btn-sm">Download Submission</a>
+                }
+            </div>
+        </div>
+    }
+}
+else
+{
+    <p>No submissions yet.</p>
+}
