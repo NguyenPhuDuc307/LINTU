@@ -48,3 +48,25 @@
         </div>
     }
 </div>
+<!-- PHÂN TRANG -->
+<nav class="mt-4">
+    <ul class="pagination justify-content-center">
+        @if (ViewBag.CurrentPage > 1)
+        {
+            <li class="page-item">
+                <a class="page-link" href="@Url.Action("Registered", new { page = ViewBag.CurrentPage - 1 })">« Trước</a>
+            </li>
+        }
+
+        <li class="page-item disabled">
+            <span class="page-link">Trang @ViewBag.CurrentPage / @ViewBag.TotalPages</span>
+        </li>
+
+        @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+        {
+            <li class="page-item">
+                <a class="page-link" href="@Url.Action("Registered", new { page = ViewBag.CurrentPage + 1 })">Sau »</a>
+            </li>
+        }
+    </ul>
+</nav>

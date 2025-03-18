@@ -5,7 +5,12 @@
 }
 
 <h2 class="mb-4">Danh sách phòng chat</h2>
-
+<div class="text-center mt-4">
+    <a asp-action="Create" class="btn btn-success">
+        <i class="feather icon-plus"></i> Tạo phòng mới
+    </a>
+</div>
+<hr>
 <div class="row">
     @foreach (var room in Model)
     {
@@ -20,8 +25,3 @@
     }
 </div>
 
-<div class="text-center mt-4">
-    <a asp-action="Create" class="btn btn-success">
-        <i class="feather icon-plus"></i> Tạo phòng mới
-    </a>
-</div>

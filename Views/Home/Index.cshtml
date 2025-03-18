@@ -43,41 +43,49 @@
         transform: scale(1.05);
     }
 </style>
+
 <div class="row">
     @foreach (var item in Model)
-{
-    var isNew = (DateTime.UtcNow - item.CreateDate).TotalDays <= 1;
-    <div class="col-md-6 col-lg-4 mb-4">
-        <div class="card h-100 shadow-sm">
-            <img src="@item.ImageUrl" class="card-img-top" alt="@item.Name">
-            <div class="card-body flex-column pb-0">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <p class="font-weight-bold mb-0">@item.Name</p>
-                    @if (isNew)
-                    {
-                        <span class="badge bg-primary text-white">New</span>
-                    }
+    {
+        var isNew = (DateTime.UtcNow - item.CreateDate).TotalDays <= 1;
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <img src="@item.ImageUrl" class="card-img-top" alt="@item.Name">
+                <div class="card-body flex-column pb-0">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <p class="font-weight-bold mb-0">@item.Name</p>
+                        @if (isNew)
+                        {
+                            <span class="badge bg-primary text-white">New</span>
+                        }
+                    </div>
+                    <span class="text-muted f-14 mb-2">@item.CreateDate.ToString("MMMM dd, yyyy")</span>
+                    <p class="card-text">@item.Introduction</p>
+                    <p class="card-text">
+                        @($"{(ViewBag.MembersCount.ContainsKey(item.Id) ? ViewBag.MembersCount[item.Id] : 0):N0}") students
+                        have joined
+                    </p>
+                    <h5 class="card-text text-danger">
+                        @(item.Price == 0 ? "Free" : String.Format("{0:0,0} VND", item.Price))
+                    </h5>
                 </div>
-                <span class="text-muted f-14 mb-2">@item.CreateDate.ToString("MMMM dd, yyyy")</span>
-                <p class="card-text">@item.Introduction</p>
-                <p class="card-text">
-                    @($"{(ViewBag.MembersCount.ContainsKey(item.Id) ? ViewBag.MembersCount[item.Id] : 0):N0}") students have joined
-                </p>
-                <h5 class="card-text text-danger">
-                    @(item.Price == 0 ? "Free" : String.Format("{0:0,0} VND", item.Price))
-                </h5>
-            </div>
-            <div class="card-footer">
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="badge badge-info">@item.Topic!.Name</span>
-                    <a asp-controller="ClassRooms" asp-action="Introduction" asp-route-id="@item.Id"
-                        class="btn btn-success btn-sm">View Class</a>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge badge-info">@item.Topic!.Name</span>
+                        <a asp-controller="ClassRooms" asp-action="Introduction" asp-route-id="@item.Id"
+                            class="btn btn-success btn-sm">View Class</a>
+                    </div>
                 </div>
             </div>
         </div>
+    }
+</div>
+@if (ViewBag.NoClassMessage != null)
+{
+    <div class="alert alert-warning text-center">
+        <strong>@ViewBag.NoClassMessage</strong>
     </div>
 }
-</div>
 <!-- Pagination Controls -->
 <div class="d-flex justify-content-center">
     <nav>
@@ -101,3 +109,41 @@
     </nav>
 </div>
 
+<!-- Floating Sidebar -->
+<div id="floatingSidebar" class="floating-sidebar">
+    <div class="sidebar-toggle">
+        <i class="feather icon-plus"></i>
+    </div>
+    <div id="sidebarContent" class="sidebar-content">
+        <a asp-action="Create" asp-controller="ClassRooms" class="btn btn-primary btn-block">
+            <i class="feather icon-plus"></i> Create Class
+        </a>
+        <button class="btn btn-success btn-block" data-toggle="modal" data-target="#joinClassModal">
+            <i class="feather icon-log-in"></i> Join Class
+        </button>
+    </div>
+</div>
+<!-- Modal Tham gia lớp -->
+<div class="modal fade" id="joinClassModal" tabindex="-1" role="dialog" aria-labelledby="joinClassLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="joinClassLabel">Nhập mã lớp để tham gia</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="Home/JoinClass" method="post">
+                    <div class="form-group">
+                        <input type="text" name="code" class="form-control" placeholder="Nhập mã lớp (Code)" required>
+                    </div>
+                    <button type="submit" class="btn btn-success btn-block">
+                        Tham gia ngay
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

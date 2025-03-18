@@ -57,42 +57,4 @@
         </ul>
     </div>
 </nav>
-<!-- Floating Sidebar -->
-<div id="floatingSidebar" class="floating-sidebar">
-    <div class="sidebar-toggle">
-        <i class="feather icon-plus"></i>
-    </div>
-    <div id="sidebarContent" class="sidebar-content">
-        <a asp-action="Create" asp-controller="ClassRooms" class="btn btn-primary btn-block">
-            <i class="feather icon-plus"></i> Create Class
-        </a>
-        <button class="btn btn-success btn-block" data-toggle="modal" data-target="#joinClassModal">
-            <i class="feather icon-log-in"></i> Join Class
-        </button>
-    </div>
-</div>
 
-<!-- Modal Tham gia lớp -->
-<div class="modal fade" id="joinClassModal" tabindex="-1" role="dialog" aria-labelledby="joinClassLabel"
-    aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="joinClassLabel">Nhập mã lớp để tham gia</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form action="Home/JoinClass" method="post">
-                    <div class="form-group">
-                        <input type="text" name="code" class="form-control" placeholder="Nhập mã lớp (Code)" required>
-                    </div>
-                    <button type="submit" class="btn btn-success btn-block">
-                        Tham gia ngay
-                    </button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>

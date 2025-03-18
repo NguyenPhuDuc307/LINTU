@@ -56,19 +56,22 @@
                         @(Model.Price == 0 ? "Free" : String.Format("{0:0,0} VND", Model.Price))
                     </span>
                 </p>
-                <h4 class="font-weight-bold mt-3">Number of Students</h4>
-                <p class="card-text">@ViewBag.MembersCount</p>
+                <h4 class="font-weight-bold text-dark"><i class="feather icon-users"></i> Students</h4>
+                <span class="badge badge-info p-2 font-weight-bold shadow-sm">
+                    <i class="feather icon-users"></i> @ViewBag.MembersCount Students
+                </span>
             </div>
             <div class="col-md-4">
-                <h4 class="font-weight-bold">Creation Date</h4>
-                <p class="card-text">@Model.CreateDate.ToString("dd/MM/yyyy HH:mm:ss")</p>
-                @if (Model.LastModifiedDate.HasValue)
-                {
-                    <h4 class="font-weight-bold mt-3">Last Modified Date</h4>
-                    <p class="card-text">@Model.LastModifiedDate.Value.ToString("dd/MM/yyyy HH:mm:ss")</p>
-                }
+                <h4 class="font-weight-bold"><i class="feather icon-calendar"></i> Creation Date</h4>
+                @* <p class="card-text">@Model.CreateDate.ToString("dd/MM/yyyy HH:mm:ss")</p> *@
+                <div class="d-flex align-items-center p-3 rounded shadow-sm"
+                    style="background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); color: white; border-radius: 10px;">
+                    <i class="feather icon-calendar animated-icon mr-3" style="font-size: 2rem;"></i>
+                    <span class="font-weight-bold" style="font-size: 1.2rem;">
+                        @Model.CreateDate.ToString("dd MMMM yyyy • HH:mm")
+                    </span>
+                </div>
             </div>
         </div>
     </div>
 </div>
-

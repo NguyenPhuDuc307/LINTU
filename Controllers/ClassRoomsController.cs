@@ -31,24 +31,35 @@ namespace LMS.Controllers
         }
         [Authorize(Roles = "Administrator,Manager")]
         // GET: ClassRooms
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
-
+            int pageSize = 6;
+            var totalItems = await _context.ClassRooms.CountAsync();
+            if (totalItems == 0)
+            {
+                ViewBag.NoClassMessage = "Không có lớp học nào.";
+                return View(new List<ClassRoom>());
+            }
             var classRooms = await _context.ClassRooms
                 .Include(c => c.Topic)
-                .Select(c => new ClassRoom
-                {
-                    Id = c.Id,
-                    Name = c.Name,
-                    Topic = c.Topic,
-                    Description = c.Description,
-                    ImageUrl = c.ImageUrl,
-                    Code = c.Code,
-                    Price = c.Price,
-                    Students = _context.ClassDetails.Count(cd => cd.ClassRoomId == c.Id),
-                    Status = c.Status
-                })
+                .OrderBy(c => c.Status)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
+
+            // Get the number of students in each class through a separate query
+            var studentCounts = await _context.ClassDetails
+                .GroupBy(cd => cd.ClassRoomId)
+                .Select(g => new { ClassRoomId = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(x => x.ClassRoomId, x => x.Count);
+
+            // Assign student count to each class room in the list
+            foreach (var classRoom in classRooms)
+            {
+                classRoom.Students = studentCounts.ContainsKey(classRoom.Id) ? studentCounts[classRoom.Id] : 0;
+            }
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalItems / pageSize);
             return View(classRooms);
         }
         [Authorize(Roles = "Administrator,Manager")]
@@ -418,32 +429,53 @@ namespace LMS.Controllers
             return Guid.TryParse(id, out Guid classRoomGuid) && _context.ClassRooms.Any(e => e.Id == classRoomGuid);
         }
         [Authorize]
-        public async Task<IActionResult> Teach()
+        public async Task<IActionResult> Teach(int page = 1)
         {
-            // var userId = _userManager.GetUserId(User);
-            // var teachClasses = await _context.ClassRooms
-            //     .Where(c => c.UserId == userId) // Chỉ lấy lớp mà người dùng đã tạo
-            //     .ToListAsync();
 
-            // return View(teachClasses);
             var userId = _userManager.GetUserId(User);
+
             if (string.IsNullOrEmpty(userId))
             {
                 return RedirectToAction("Login", "Account");
             }
+            int pageSize = 6;
+            var totalItems = await _context.ClassRooms
+                .Where(cd => cd.UserId == userId)
+                .CountAsync();
 
+            if (totalItems == 0)
+            {
+                ViewBag.NoClassMessage = "Bạn chưa tạo lớp học nào.";
+                return View(new List<ClassRoom>());
+            }
             var classes = await _context.ClassRooms
                 .Where(c => c.UserId == userId)
                 .Include(c => c.Topic)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
 
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalItems / pageSize);
             return View(classes);
         }
         [Authorize]
-        public async Task<IActionResult> Registered()
+        public async Task<IActionResult> Registered(int page = 1)
         {
-            var userId = _userManager.GetUserId(User);
 
+            var userId = _userManager.GetUserId(User);
+            int pageSize = 6;
+            // Lấy tổng số lớp học người dùng đã đăng ký
+            var totalItems = await _context.ClassDetails
+                .Where(cd => cd.UserId == userId)
+                .CountAsync();
+
+
+            if (totalItems == 0)
+            {
+                ViewBag.NoClassMessage = "Bạn chưa đăng ký lớp học nào.";
+                return View(new List<RegisteredClassViewModel>());
+            }
             // Lấy các lớp mà người dùng đã tham gia hoặc đã mua
             var registeredClasses = await _context.ClassDetails
                 .Where(cd => cd.UserId == userId && cd.ClassRoom != null)
@@ -454,8 +486,12 @@ namespace LMS.Controllers
                     ClassRoom = cd.ClassRoom!,
                     IsPaid = cd.IsPaid // Kiểm tra trạng thái đã thanh toán
                 })
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
-
+            // Truyền dữ liệu phân trang đến View
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalItems / pageSize);
             return View(registeredClasses);
         }
         [Authorize]

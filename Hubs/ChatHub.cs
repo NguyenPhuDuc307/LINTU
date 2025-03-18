@@ -14,20 +14,6 @@ namespace LMS.Hubs
         {
             _context = context;
         }
-        // public async Task SendMessage(string room, string user, string message)
-        // {
-        //     await Clients.Group(room).SendAsync("ReceiveMessage", user, message, DateTime.Now.ToString("HH:mm"));
-        // }
-
-        // public async Task JoinRoom(string room)
-        // {
-        //     await Groups.AddToGroupAsync(Context.ConnectionId, room);
-        // }
-
-        // public async Task LeaveRoom(string room)
-        // {
-        //     await Groups.RemoveFromGroupAsync(Context.ConnectionId, room);
-        // }
         public async Task SendMessage(int roomId, string user, string message)
         {
             if (string.IsNullOrEmpty(message)) return; // Không gửi tin rỗng

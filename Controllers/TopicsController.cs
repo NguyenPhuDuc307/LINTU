@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace LMS.Controllers
 {
     [Authorize(Roles = "Administrator,Manager")]
-    [Route("topic")]
+    [Route("Topics")]
     public class TopicsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -23,10 +23,26 @@ namespace LMS.Controllers
         }
 
         // GET: Topics
-        [Route("list")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int page = 1)
         {
-            return View(await _context.Topics.ToListAsync());
+            int pageSize = 6;
+            var totalItems = await _context.Topics.CountAsync();
+            if (totalItems == 0)
+            {
+                ViewBag.NoClassMessage = "Không có topic nào.";
+                return View(new List<Topic>());
+            }
+            var topics = await _context.Topics
+                .OrderBy(t => t.Name)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            // Truyền thông tin phân trang vào ViewBag
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+
+            return View(topics);
         }
 
         // GET: Topics/Details/5

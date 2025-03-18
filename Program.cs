@@ -25,6 +25,9 @@ builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfi
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 // builder.Services.AddScoped<DbInitializer>();
+#region Chatbot
+
+#endregion
 builder.Services.AddTransient<IStorageService, FileStorageService>();
 builder.Services.AddSingleton<IVnPayService, VnPayService>();
 builder.Services.Configure<VnPayConfigOptions>(

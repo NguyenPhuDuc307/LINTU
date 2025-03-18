@@ -59,6 +59,12 @@ namespace LMS.Areas.Identity.Pages.Account.Manage
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
+            [Display(Name = "Full Name")]
+            public string FullName { get; set; }
+
+            [DataType(DataType.Date)]
+            [Display(Name = "Date of Birth")]
+            public DateTime? DateOfBirth { get; set; }
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
@@ -77,6 +83,8 @@ namespace LMS.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
+                FullName = user.FullName,
+                DateOfBirth = user.DateOfBirth,
                 PhoneNumber = phoneNumber,
                 ImageUrl = user.ImageUrl
             };
@@ -107,7 +115,15 @@ namespace LMS.Areas.Identity.Pages.Account.Manage
                 await LoadAsync(user);
                 return Page();
             }
+            if (Input.FullName != user.FullName)
+            {
+                user.FullName = Input.FullName;
+            }
 
+            if (Input.DateOfBirth != user.DateOfBirth)
+            {
+                user.DateOfBirth = Input.DateOfBirth;
+            }
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             if (Input.PhoneNumber != phoneNumber)
             {

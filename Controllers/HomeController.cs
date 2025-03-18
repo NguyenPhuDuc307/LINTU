@@ -29,8 +29,19 @@ public class HomeController : Controller
             .Include(c => c.Topic)
             .Where(c => c.Status == ClassRoomStatus.Approved)
             .AsQueryable();
+
+        if (!string.IsNullOrEmpty(searchString))
+        {
+            string searchLower = searchString.ToLower();
+            classRoomsQuery = classRoomsQuery.Where(c => c.Name!.ToLower().Contains(searchLower));
+        }
         // Apply pagination
         var totalItems = await classRoomsQuery.CountAsync();
+        if (totalItems == 0)
+        {
+            ViewBag.NoClassMessage = "Không tìm thấy lớp học nào phù hợp.";
+            return View(new List<ClassRoom>());
+        }
         var classRooms = await classRoomsQuery
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
@@ -46,11 +57,6 @@ public class HomeController : Controller
         foreach (var classRoom in classRooms)
         {
             classRoom.Students = studentCounts.ContainsKey(classRoom.Id!) ? studentCounts[classRoom.Id!] : 0;
-        }
-
-        if (!string.IsNullOrEmpty(searchString))
-        {
-            classRooms = classRooms.Where(c => c.Name!.Contains(searchString, StringComparison.OrdinalIgnoreCase)).ToList();
         }
 
         classRooms = sortBy switch
