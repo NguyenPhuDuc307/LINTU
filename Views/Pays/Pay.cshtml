@@ -1,121 +1,250 @@
 @model CheckoutViewModel
 
 @{
-    ViewData["Title"] = "Checkout";
+    ViewData["Title"] = "Payment";
 }
 
-<hr />
-<form asp-action="Pay">
-    <div class="row">
-        <div class="col-md-4">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <label class="control-label">Payment method</label>
-            <select asp-for="PaymentMethod" class="form-select" aria-label="Payment method">
-                <option selected>VNPay</option>
-            </select>
-            <div class="form-group">
-                <label asp-for="FullName" class="control-label"></label>
-                <input asp-for="FullName" class="form-control" />
-                <span asp-validation-for="FullName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Address" class="control-label"></label>
-                <input asp-for="Address" class="form-control" />
-                <span asp-validation-for="Address" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PhoneNumber" class="control-label"></label>
-                <input asp-for="PhoneNumber" class="form-control" />
-                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Note" class="control-label"></label>
-                <textarea asp-for="Note" class="form-control"></textarea>
-                <span asp-validation-for="Note" class="text-danger"></span>
-            </div>
-            <div class="form-group mt-2">
-                <input type="submit" value="Submit" class="btn btn-primary" />
-            </div>
-        </div>
-
+<div class="container py-5">
+    <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="form-group">
-                <label asp-for="Amount" class="control-label"></label>
-                <div class="input-group">
-                    <span class="input-group-text">VND</span>
-                    <input  onkeyup="formatCurrencyAndConvertToWords(this);" type="text" asp-for="Amount" class="form-control vnd-input" />
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h4 class="card-title mb-0">Payment Information</h4>
                 </div>
-                <i id="text_amount"></i>
-                <span asp-validation-for="Amount" class="text-danger"></span>
+                <div class="card-body">
+                    <form asp-action="Pay" class="needs-validation" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Payment Method</label>
+                            <div class="payment-method-selector">
+                                <div class="payment-method active" data-method="VNPay">
+                                    <div class="payment-icon">
+                                        <i class="icofont icofont-bank-alt"></i>
+                                    </div>
+                                    <div class="payment-info">
+                                        <h6>VNPay</h6>
+                                        <p>Secure payment through VNPay</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" asp-for="PaymentMethod" value="VNPay" />
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="FullName" class="form-label"></label>
+                                <input asp-for="FullName" class="form-control" required />
+                                <span asp-validation-for="FullName" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="PhoneNumber" class="form-label"></label>
+                                <input asp-for="PhoneNumber" class="form-control" required />
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label"></label>
+                            <input asp-for="Address" class="form-control" required />
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Note" class="form-label"></label>
+                            <textarea asp-for="Note" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Note" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="Amount" class="form-label"></label>
+                            <div class="input-group">
+                                <span class="input-group-text">VND</span>
+                                <input type="text" asp-for="Amount" class="form-control vnd-input"
+                                    onkeyup="formatCurrencyAndConvertToWords(this);" required />
+                            </div>
+                            <small class="form-text text-muted mt-2">
+                                <i id="text_amount"></i>
+                            </small>
+                            <span asp-validation-for="Amount" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="icofont icofont-check-circled"></i> Proceed to Payment
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</form>
+</div>
+
+@section Styles {
+    <style>
+        .payment-method-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .payment-method {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #eaeaea;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .payment-method:hover {
+            border-color: #3f51b5;
+        }
+
+        .payment-method.active {
+            border-color: #3f51b5;
+            background-color: #f0f2ff;
+        }
+
+        .payment-icon {
+            width: 50px;
+            height: 50px;
+            background-color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+        }
+
+        .payment-icon i {
+            font-size: 24px;
+            color: #3f51b5;
+        }
+
+        .payment-info h6 {
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .payment-info p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .form-control:focus {
+            border-color: #3f51b5;
+            box-shadow: 0 0 0 0.2rem rgba(63, 81, 181, 0.25);
+        }
+
+        .btn-primary {
+            background-color: #3f51b5;
+            border-color: #3f51b5;
+        }
+
+        .btn-primary:hover {
+            background-color: #303f9f;
+            border-color: #303f9f;
+        }
+
+        .card {
+            border: none;
+            border-radius: 8px;
+        }
+
+        .card-header {
+            border-bottom: 1px solid #eaeaea;
+            padding: 20px;
+        }
+
+        .card-body {
+            padding: 30px;
+        }
+    </style>
+}
 
 @section Scripts {
     <script>
-    function formatCurrencyAndConvertToWords(input) {
-        // Remove all non-digit characters
-        let value = input.value.replace(/\D/g, '');
+        function formatCurrencyAndConvertToWords(input) {
+            // Remove all non-digit characters
+            let value = input.value.replace(/\D/g, '');
 
-        // Kiểm tra số ký tự không vượt quá 9
-        if (value.length > 9) {
-            value = value.slice(0, 9);
-        }
-
-        // Format number with thousand separators
-        input.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-
-        // Convert number to words and display
-        document.getElementById('text_amount').innerText = capitalizeFirstLetter(numberToWords(value)) + ' đồng';
-    }
-
-    function numberToWords(num) {
-        const units = ["", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"];
-        const teens = ["mười", "mười một", "mười hai", "mười ba", "mười bốn", "mười lăm", "mười sáu", "mười bảy", "mười tám", "mười chín"];
-        const tens = ["", "", "hai mươi", "ba mươi", "bốn mươi", "năm mươi", "sáu mươi", "bảy mươi", "tám mươi", "chín mươi"];
-        const thousands = ["", "nghìn", "triệu", "tỷ"];
-
-        if (num === "0") return "không";
-
-        let words = '';
-        let k = 0;
-
-        while (num.length > 0) {
-            let chunk = parseInt(num.slice(-3), 10);
-            num = num.slice(0, -3);
-
-            if (chunk) {
-                let chunkWords = '';
-                if (chunk > 99) {
-                    chunkWords += units[Math.floor(chunk / 100)] + " trăm ";
-                    chunk %= 100;
-                }
-                if (chunk > 19) {
-                    chunkWords += tens[Math.floor(chunk / 10)] + " ";
-                    chunk %= 10;
-                } else if (chunk > 9) {
-                    chunkWords += teens[chunk - 10] + " ";
-                    chunk = 0;
-                }
-                if (chunk > 0) {
-                    chunkWords += units[chunk] + " ";
-                }
-                words = chunkWords + thousands[k] + " " + words;
+            // Kiểm tra số ký tự không vượt quá 9
+            if (value.length > 9) {
+                value = value.slice(0, 9);
             }
-            k++;
+
+            // Format number with thousand separators
+            input.value = value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+
+            // Convert number to words and display
+            document.getElementById('text_amount').innerText = capitalizeFirstLetter(numberToWords(value)) + ' đồng';
         }
 
-        return words.trim();
-    }
+        function numberToWords(num) {
+            const units = ["", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín"];
+            const teens = ["mười", "mười một", "mười hai", "mười ba", "mười bốn", "mười lăm", "mười sáu", "mười bảy", "mười tám", "mười chín"];
+            const tens = ["", "", "hai mươi", "ba mươi", "bốn mươi", "năm mươi", "sáu mươi", "bảy mươi", "tám mươi", "chín mươi"];
+            const thousands = ["", "nghìn", "triệu", "tỷ"];
 
-    function capitalizeFirstLetter(text) {
-        // Chuyển đổi chữ cái đầu tiên của câu thành chữ hoa
-        return text.charAt(0).toUpperCase() + text.slice(1);
-    }
+            if (num === "0") return "không";
+
+            let words = '';
+            let k = 0;
+
+            while (num.length > 0) {
+                let chunk = parseInt(num.slice(-3), 10);
+                num = num.slice(0, -3);
+
+                if (chunk) {
+                    let chunkWords = '';
+                    if (chunk > 99) {
+                        chunkWords += units[Math.floor(chunk / 100)] + " trăm ";
+                        chunk %= 100;
+                    }
+                    if (chunk > 19) {
+                        chunkWords += tens[Math.floor(chunk / 10)] + " ";
+                        chunk %= 10;
+                    } else if (chunk > 9) {
+                        chunkWords += teens[chunk - 10] + " ";
+                        chunk = 0;
+                    }
+                    if (chunk > 0) {
+                        chunkWords += units[chunk] + " ";
+                    }
+                    words = chunkWords + thousands[k] + " " + words;
+                }
+                k++;
+            }
+
+            return words.trim();
+        }
+
+        function capitalizeFirstLetter(text) {
+            return text.charAt(0).toUpperCase() + text.slice(1);
+        }
+
+        // Form validation
+        (function () {
+            'use strict'
+            var forms = document.querySelectorAll('.needs-validation')
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
     </script>
-
-
 
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");

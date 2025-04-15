@@ -41,8 +41,21 @@ namespace LMS.Controllers
             {"09","GD Hoàn trả bị từ chối" }
         };
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var transactions = await _context.Transactions
+                .Where(t => t.UserId == user.Id)
+                .OrderByDescending(t => t.CreateDate)
+                .Take(10)
+                .ToListAsync();
+
+            ViewBag.Transactions = transactions;
             return View();
         }
 
@@ -89,9 +102,11 @@ namespace LMS.Controllers
         public async Task<IActionResult> PaymentCallBack()
         {
             var response = _vnPayService.PaymentExecute(Request.Query);
-
+            // Log kết quả trả về từ VNPay để kiểm tra
+            Console.WriteLine($"Response Code: {response.VnPayResponseCode}");
             if (response.VnPayResponseCode == "00") // Thanh toán thành công
             {
+                Console.WriteLine($"Response Code: {response.VnPayResponseCode}");
                 var user = await _userManager.GetUserAsync(User);
                 if (user == null)
                 {
@@ -101,9 +116,11 @@ namespace LMS.Controllers
 
                 decimal amount = response.Amount / 100m; // Chia 100 vì VNPay trả về đơn vị VNĐ nhỏ hơn thực tế
 
-                // Kiểm tra xem giao dịch này đã được xử lý chưa (tránh double spending)
                 bool transactionExists = await _context.Transactions.AnyAsync(t =>
-                    t.UserId == user.Id && t.Amount == amount && t.TransactionType == TransactionType.Deposit);
+                t.UserId == user.Id &&
+                t.Amount == amount &&
+                t.TransactionType == TransactionType.Deposit &&
+                t.CreateDate > DateTime.Now.AddMinutes(-1)); // chỉ chặn nếu đã có giao dịch y hệt trong 2 phút gần nhất
 
                 if (!transactionExists)
                 {
@@ -127,7 +144,6 @@ namespace LMS.Controllers
                     return RedirectToAction(nameof(PaymentFail));
                 }
             }
-
             // Nếu thất bại, lấy thông tin lỗi từ dictionary
             if (vnp_TransactionStatus.TryGetValue(response.VnPayResponseCode!, out var message))
             {
@@ -137,7 +153,8 @@ namespace LMS.Controllers
             {
                 TempData["Message"] = $"Unknown payment error: {response.VnPayResponseCode}";
             }
-
+            // Log thông tin lỗi
+            Console.WriteLine($"Payment failure: {TempData["Message"]}");
             return RedirectToAction(nameof(PaymentFail));
         }
     }

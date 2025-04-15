@@ -64,6 +64,25 @@ public class ApplicationDbContext : IdentityDbContext<User>
             .Property(p => p.ClassRoomId)
             .HasColumnType("uniqueidentifier");
 
+        // Cấu hình mối quan hệ giữa `Comment` và `ClassRoom`
+        builder.Entity<Comment>()
+            .Property(c => c.ClassRoomId)
+            .HasColumnType("uniqueidentifier");
+
+        // Cấu hình mối quan hệ giữa `Comment` và `Post`
+        builder.Entity<Comment>()
+            .HasOne(c => c.Post)
+            .WithMany()
+            .HasForeignKey(c => c.PostId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+        // Cấu hình mối quan hệ giữa `Comment` và `User`
+        builder.Entity<Comment>()
+            .HasOne(c => c.User)
+            .WithMany()
+            .HasForeignKey(c => c.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
     }
     public DbSet<Topic> Topics { get; set; }
     public DbSet<ClassRoom> ClassRooms { get; set; }
@@ -75,4 +94,5 @@ public class ApplicationDbContext : IdentityDbContext<User>
     public DbSet<ChatRoom> ChatRooms { get; set; }
     public DbSet<Message> Messages { get; set; }
     public DbSet<Submission> Submissions { get; set; }
+    public DbSet<Comment> Comments { get; set; }
 }

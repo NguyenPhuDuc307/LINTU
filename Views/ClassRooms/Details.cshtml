@@ -4,6 +4,9 @@
     ViewData["Title"] = "Details";
 }
 
+<!-- Add Font Awesome CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
 <style>
     .media-container iframe,
     .media-container video {
@@ -19,6 +22,25 @@
     textarea.form-control {
         margin-top: 15px;
         /* Khoảng cách từ trên */
+    }
+
+    .hover-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    /* Make sure icons are visible */
+    .fa,
+    .fas,
+    .far,
+    .fab,
+    .fal {
+        display: inline-block !important;
+        font-style: normal !important;
+        font-variant: normal !important;
+        text-rendering: auto !important;
+        line-height: 1 !important;
     }
 </style>
 
@@ -40,73 +62,105 @@
 <ul class="nav nav-tabs">
     <li class="nav-item">
         <a class="nav-link active" id="post-tab" data-toggle="tab" href="#post" role="tab" aria-controls="post"
-            aria-selected="true">Active</a>
+            aria-selected="true"><i class="fas fa-stream mr-2"></i>News Feed</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="lecture-tab" data-toggle="tab" href="#lecture" role="tab" aria-controls="lecture"
+            aria-selected="false"><i class="fas fa-book-open mr-2"></i>Lecture</a>
     </li>
     <li class="nav-item">
         <a class="nav-link" id="assignment-tab" data-toggle="tab" href="#assignment" role="tab"
-            aria-controls="assignment" aria-selected="false">Assignment</a>
+            aria-controls="assignment" aria-selected="false"><i class="fas fa-tasks mr-2"></i>Assignment</a>
     </li>
 </ul>
 <!-- Nội dung Tabs -->
 <div class="tab-content" id="classroomTabsContent">
     <!-- Tab: Post -->
     <div class="tab-pane fade show active" id="post" role="tabpanel" aria-labelledby="post-tab">
-        <div class="row">
+        <div class="row mt-3">
             <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-white">
-                        <span class="font-weight-bold">Class code</span>
-                        <div class="dropdown float-right">
-                            <button class="btn btn-tool btn-sm dropdown-toggle mr-2" type="button"
-                                id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
-                                aria-expanded="false">
-                            </button>
-                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" href="#"
-                                    onclick="copyCodeToClipboard('@Model.ClassRoom.Code')"><i
-                                        class="fas fa-copy mr-2"></i>Copy code</a>
-                                <a class="dropdown-item" href="#" onclick="changeCode('@Model.ClassRoom.Id')">
-                                    <i class="fas fa-edit mr-2"></i>Change code
-                                </a>
+                <!-- Class Code Card -->
+                <div class="card shadow-sm mb-3 border-0 rounded-lg">
+                    <div class="card-header bg-white border-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="font-weight-bold"><i class="fas fa-key text-primary mr-2"></i>Class code</span>
+                            <div class="dropdown">
+                                <button class="btn btn-light btn-sm rounded-circle" type="button"
+                                    id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
+                                    aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                                    <a class="dropdown-item" href="#"
+                                        onclick="copyCodeToClipboard('@Model.ClassRoom.Code')"><i
+                                            class="fas fa-copy mr-2 text-primary"></i>Copy code</a>
+                                    <a class="dropdown-item" href="#" onclick="changeCode('@Model.ClassRoom.Id')">
+                                        <i class="fas fa-edit mr-2 text-primary"></i>Change code
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <h4 class="card-text m-auto pt-3 pb-3" id="classCodeDisplay">@Model.ClassRoom.Code</h4>
+                    <div class="card-body text-center py-4">
+                        <div class="bg-light py-3 px-4 rounded mb-2">
+                            <h4 class="card-text m-0 font-weight-bold text-primary" id="classCodeDisplay">
+                                @Model.ClassRoom.Code</h4>
+                        </div>
+                        <small class="text-muted">Share this code with students to join your class</small>
+                    </div>
                 </div>
-                <div class="card bg-c-blue order-card">
-                    <div class="card-block">
-                        <h6>Members</h6>
-                        <h2>@Model.MembersCount</h2>
-                        <div class="row">
+
+                <!-- Members Card -->
+                <div class="card shadow-sm border-0 rounded-lg mb-3">
+                    <div class="card-header bg-primary text-white border-0">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-users mr-2"></i>Members</h5>
+                            <span class="badge badge-light">@Model.MembersCount</span>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="input-group p-3 border-bottom">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text bg-light border-0"><i
+                                        class="fas fa-search text-muted"></i></span>
+                            </div>
+                            <input type="text" class="form-control border-0 bg-light" id="member-search"
+                                placeholder="Search members..." oninput="searchMembers(this.value)">
+                        </div>
+                        <div class="members-list" style="max-height: 400px; overflow-y: auto;" id="members-container">
                             @foreach (var participant in Model.Participants!)
                             {
-                                <div class="col-md-12">
-                                    <div class="card shadow-sm">
-                                        <div class="card-body row">
-                                            <div class="col-4">
-                                                <img src="@(!string.IsNullOrEmpty(participant.ImageUrl) ? participant.ImageUrl : Url.Content("~/files/assets/images/user.png"))"
-                                                    class="rounded-circle" style="width: 60px; height: 60px;"
-                                                    alt="Participant Image">
-                                            </div>
-                                            <div class="col-8">
-                                                <h5 class="text-muted">@participant.FullName</h5>
-                                                <p style="font-size: 10px;" class="text-muted">@participant.UserName</p>
-                                            </div>
-                                            <!-- Hiển thị ảnh đại diện nếu có, nếu không thì dùng ảnh mặc định -->
-                                            
-                                            
-                                        </div>
+                                <div class="d-flex align-items-center p-3 border-bottom hover-card member-item"
+                                    data-username="@participant.UserName.ToLower()"
+                                    data-fullname="@participant.FullName.ToLower()">
+                                    <div class="mr-3">
+                                        <img src="@(!string.IsNullOrEmpty(participant.ImageUrl) ? participant.ImageUrl : Url.Content("~/files/assets/images/user.png"))"
+                                            class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;"
+                                            alt="@participant.FullName">
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-0 font-weight-bold">@participant.FullName</h6>
+                                        <small class="text-muted">@participant.UserName</small>
+                                    </div>
+                                    <div>
+                                        <button class="btn btn-light btn-sm rounded-circle">
+                                            <i class="fas fa-ellipsis-v text-muted"></i>
+                                        </button>
                                     </div>
                                 </div>
                             }
                         </div>
-                        <i class="card-icon feather icon-users"></i>
+                        <div id="no-members-found" class="text-center py-4 d-none">
+                            <i class="fas fa-user-slash fa-2x text-muted mb-2"></i>
+                            <p class="text-muted">No members found</p>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="col-md-8">
-                <input data-toggle="modal" data-target="#postModal" type="text" class="form-control"
-                    placeholder="Create a new post now">
+                <input data-toggle="modal" data-target="#postModal" type="text"
+                    class="form-control form-control-lg shadow-sm" placeholder="What's on your mind?"
+                    style="border-radius: 20px; padding-left: 20px;">
 
                 <!-- Modal -->
                 <div class="modal fade" id="postModal" tabindex="-1" role="dialog" aria-labelledby="postModalLabel"
@@ -168,19 +222,22 @@
                         timeString = post.CreateDate.ToString("dd/MM/yyyy");
                     }
 
-                    <div class="card shadow-sm mt-2">
-                        <div class="card-header bg-white">
-                            <span class="font-weight-bold">@post.Title</span>
-                            <span class="float-right">@timeString</span>
-                            <div class="dropdown float-right">
-                                <button class="btn btn-tool btn-sm dropdown-toggle mr-2" type="button"
-                                    id="dropdownMenuButton_@post.Id" data-toggle="dropdown" aria-haspopup="true"
-                                    aria-expanded="false">
-                                </button>
-                                <div class="dropdown-menu dropdown-menu-right"
-                                    aria-labelledby="dropdownMenuButton_@post.Id">
-                                    <a class="dropdown-item" href="#" onclick="deletePost(@post.Id)"><i
-                                            class="fas fa-trash mr-2"></i>Delete</a>
+                    <div class="card shadow-sm mt-3 hover-card">
+                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 font-weight-bold">@post.Title</h5>
+                            <div class="d-flex align-items-center">
+                                <span class="text-muted mr-3"><i class="far fa-clock mr-1"></i>@timeString</span>
+                                <div class="dropdown">
+                                    <button class="btn btn-light btn-sm rounded-circle" type="button"
+                                        id="dropdownMenuButton_@post.Id" data-toggle="dropdown" aria-haspopup="true"
+                                        aria-expanded="false">
+                                        <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-right"
+                                        aria-labelledby="dropdownMenuButton_@post.Id">
+                                        <a class="dropdown-item" href="#" onclick="deletePost(@post.Id)"><i
+                                                class="fas fa-trash mr-2"></i>Delete</a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -189,11 +246,136 @@
                                 @Html.Raw(post.Message)
                             </div>
                         </div>
+                        <div class="card-footer bg-white">
+                            <div class="d-flex justify-content-between">
+                                <button class="btn btn-light btn-sm like-button" data-post-id="@post.Id"
+                                    onclick="likePost(@post.Id)">
+                                    <i class="far fa-thumbs-up mr-1" aria-hidden="true"></i> <span
+                                        class="like-count">0</span> Like
+                                </button>
+                                <button class="btn btn-light btn-sm" onclick="toggleComments(@post.Id)">
+                                    <i class="far fa-comment mr-1" aria-hidden="true"></i> Comment
+                                </button>
+                                <button class="btn btn-light btn-sm">
+                                    <i class="fas fa-share mr-1" aria-hidden="true"></i> Share
+                                </button>
+                            </div>
+
+                            <!-- Comment section (initially hidden) -->
+                            <div id="comments-section-@post.Id" class="comments-section mt-3" style="display: none;">
+                                <hr>
+                                <div class="comments-container" id="comments-container-@post.Id">
+                                    <!-- Comments will be loaded here -->
+                                    <div class="text-center text-muted py-3">
+                                        <p><i class="far fa-comment-dots fa-2x mb-2"></i><br>No comments yet</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex mt-2">
+                                    <div class="mr-2">
+                                        <img src="@Url.Content("~/files/assets/images/user.png")" class="rounded-circle"
+                                            style="width: 40px; height: 40px; object-fit: cover;">
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="comment-text-@post.Id"
+                                                placeholder="Write a comment...">
+                                            <div class="input-group-append">
+                                                <button class="btn btn-primary" type="button"
+                                                    onclick="addComment(@post.Id)">
+                                                    <i class="fas fa-paper-plane"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 }
             </div>
         </div>
     </div>
+
+    <!-- Tab: Lecture -->
+    <div class="tab-pane fade" id="lecture" role="tabpanel" aria-labelledby="lecture-tab">
+        <h3>Lectures</h3>
+        <!-- Button to open Create Lecture Modal -->
+        <input data-toggle="modal" data-target="#lectureModal" type="text" class="form-control"
+            placeholder="Create a new lecture now">
+
+        <!-- Modal: Create Lecture -->
+        <div class="modal fade" id="lectureModal" tabindex="-1" role="dialog" aria-labelledby="lectureModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="lectureModalLabel">Create a new lecture</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="lectureForm" enctype="multipart/form-data">
+                            @Html.AntiForgeryToken()
+                            <div class="mb-3">
+                                <label for="ClassRoomId" class="form-label">Lớp học</label>
+                                @Model.ClassRoom.Name
+                                <input type="hidden" name="ClassRoomId" value="@Model.ClassRoom.Id" />
+                            </div>
+                            <div class="mb-3">
+                                <label for="Title" class="form-label">Title</label>
+                                <input type="text" id="lectureTitle" name="Title" class="form-control" required />
+                            </div>
+                            <div class="mb-3">
+                                <label for="Description" class="form-label">Description</label>
+                                <textarea id="lectureDescription" name="Description" class="form-control" rows="3"
+                                    required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="Content" class="form-label">Content</label>
+                                <textarea id="lectureContent" name="Content" style="height: 300px;"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="FileUrl" class="form-label">Upload File</label>
+                                <input type="file" id="lectureFileUrl" name="FileUrl" class="form-control" />
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="createLecture()">Create
+                                Lecture</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Display lectures (sample) -->
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <div class="card shadow-sm mt-2 hover-card">
+                    <div class="card-header bg-white">
+                        <span class="font-weight-bold text-primary">Introduction to the Course</span>
+                        <span class="float-right">Created: @DateTime.Now.ToString("dd/MM/yyyy")</span>
+                    </div>
+                    <div class="card-body">
+                        <p>This is a sample lecture. Please implement the lecture functionality.</p>
+                        <a href="#" class="btn btn-info btn-sm">View Lecture</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card shadow-sm mt-2 hover-card">
+                    <div class="card-header bg-white">
+                        <span class="font-weight-bold text-primary">Getting Started</span>
+                        <span class="float-right">Created: @DateTime.Now.ToString("dd/MM/yyyy")</span>
+                    </div>
+                    <div class="card-body">
+                        <p>This is another sample lecture. Please implement the lecture functionality.</p>
+                        <a href="#" class="btn btn-info btn-sm">View Lecture</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Tab: Assignment -->
     <div class="tab-pane fade" id="assignment" role="tabpanel" aria-labelledby="assignment-tab">
         <h3>Assignments</h3>
@@ -249,19 +431,19 @@
         @foreach (var assignment in Model.Assignments!)
         {
             <a href="@Url.Action("Details", "Assignments", new { id = assignment.Id })" class="text-decoration-none">
-            <div class="card shadow-sm mt-2 hover-card">
-                <div class="card-header bg-white">
-                    <span class="font-weight-bold text-primary">@assignment.Title</span>
-                    <span class="float-right">Hạn: @assignment.DueDate.ToString("dd/MM/yyyy")</span>
+                <div class="card shadow-sm mt-2 hover-card">
+                    <div class="card-header bg-white">
+                        <span class="font-weight-bold text-primary">@assignment.Title</span>
+                        <span class="float-right">Hạn: @assignment.DueDate.ToString("dd/MM/yyyy")</span>
+                    </div>
+                    <div class="card-body">
+                        <p>@assignment.Description</p>
+                        @if (!string.IsNullOrEmpty(assignment.FileUrl))
+                        {
+                            <a href="@assignment.FileUrl" class="btn btn-info btn-sm">Download File</a>
+                        }
+                    </div>
                 </div>
-                <div class="card-body">
-                    <p>@assignment.Description</p>
-                    @if (!string.IsNullOrEmpty(assignment.FileUrl))
-                    {
-                        <a href="@assignment.FileUrl" class="btn btn-info btn-sm">Download File</a>
-                    }
-                </div>
-            </div>
             </a>
         }
     </div>
@@ -330,6 +512,12 @@
                 }
             });
         }
+
+        function createLecture() {
+            // This is a placeholder function - implement when backend is ready
+            alert('This feature is coming soon!');
+        }
+
         function createAssignment() {
             var title = $('#assignmentTitle').val();
             var description = $('#assignmentDescription').val();
@@ -449,24 +637,257 @@
             pastePlain: true,
             placeholderText: 'Input your message...',
         });
+
+        // Initialize Froala Editor for lecture content
+        if (document.getElementById('lectureContent')) {
+            var lectureEditor = new FroalaEditor('#lectureContent', {
+                imageUploadURL: '/File/UploadImage',
+                videoUploadURL: '/File/UploadVideo',
+                imageAllowedTypes: ['jpeg', 'jpg', 'png', 'gif'],
+                videoAllowedTypes: ['mp4', 'webm', 'ogg'],
+                toolbarButtons: ['bold', 'italic', 'underline', 'strikeThrough', 'align', 'undo', 'redo'],
+                pastePlain: true,
+                placeholderText: 'Input lecture content...',
+            });
+        }
+
+        // Like post functionality
+        function likePost(postId) {
+            const likeButton = document.querySelector(`.like-button[data-post-id="${postId}"]`);
+            const likeCountEl = likeButton.querySelector('.like-count');
+
+            // Toggle the like button style
+            if (likeButton.classList.contains('text-primary')) {
+                likeButton.classList.remove('text-primary');
+                likeButton.querySelector('i').classList.remove('fas');
+                likeButton.querySelector('i').classList.add('far');
+                likeCountEl.textContent = Math.max(0, parseInt(likeCountEl.textContent) - 1);
+            } else {
+                likeButton.classList.add('text-primary');
+                likeButton.querySelector('i').classList.remove('far');
+                likeButton.querySelector('i').classList.add('fas');
+                likeCountEl.textContent = parseInt(likeCountEl.textContent) + 1;
+            }
+
+            // In a real implementation, you would send this to the server
+            // $.ajax({
+            //     url: '@Url.Action("LikePost", "Posts")',
+            //     type: 'POST',
+            //     data: { 
+            //         postId: postId,
+            //         __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val() 
+            //     },
+            //     success: function(result) {
+            //         // Handle the success response
+            //     }
+            // });
+        }
+
+        // Toggle comments section
+        function toggleComments(postId) {
+            const commentsSection = document.getElementById(`comments-section-${postId}`);
+            if (commentsSection.style.display === 'none') {
+                commentsSection.style.display = 'block';
+                // Load comments from server
+                loadComments(postId);
+            } else {
+                commentsSection.style.display = 'none';
+            }
+        }
+
+        // Add comment - updated to save to database
+        function addComment(postId) {
+            const commentText = document.getElementById(`comment-text-${postId}`).value.trim();
+            if (!commentText) return;
+
+            // Show loading indicator
+            const sendButton = document.querySelector(`#comment-text-${postId}`).nextElementSibling.querySelector('button');
+            const originalButtonContent = sendButton.innerHTML;
+            sendButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            sendButton.disabled = true;
+
+            // Send to server
+            $.ajax({
+                url: '@Url.Action("AddComment", "Comments")',
+                type: 'POST',
+                data: {
+                    postId: postId,
+                    classRoomId: '@Model.ClassRoom.Id',
+                    content: commentText,
+                    __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function (result) {
+                    if (result.success) {
+                        // Clear the "no comments" message if present
+                        const commentsContainer = document.getElementById(`comments-container-${postId}`);
+                        if (commentsContainer.querySelector('.text-center.text-muted')) {
+                            commentsContainer.innerHTML = '';
+                        }
+
+                        // Add the new comment with data from the server
+                        const commentDiv = document.createElement('div');
+                        commentDiv.className = 'media mb-3';
+                        commentDiv.innerHTML = `
+                                    <img src="${result.userImage || '@Url.Content("~/files/assets/images/user.png")'}" 
+                                         class="mr-3 rounded-circle" 
+                                         style="width: 40px; height: 40px; object-fit: cover;">
+                                    <div class="media-body">
+                                        <div class="bg-light rounded p-2">
+                                            <h6 class="mt-0 mb-1 font-weight-bold">${result.userName}</h6>
+                                            <p class="mb-0">${result.content}</p>
+                                        </div>
+                                        <small class="text-muted">${result.createdAt}</small>
+                                    </div>
+                                `;
+
+                        commentsContainer.appendChild(commentDiv);
+                        document.getElementById(`comment-text-${postId}`).value = '';
+
+                        // Show success toast
+                        showToast('Comment added successfully', 'success');
+                    } else {
+                        showToast('Error: ' + result.message, 'error');
+                    }
+                },
+                error: function () {
+                    showToast('Failed to add comment', 'error');
+                },
+                complete: function () {
+                    // Restore button
+                    sendButton.innerHTML = originalButtonContent;
+                    sendButton.disabled = false;
+                }
+            });
+        }
+
+        // Load comments from database
+        function loadComments(postId) {
+            const commentsContainer = document.getElementById(`comments-container-${postId}`);
+            commentsContainer.innerHTML = '<div class="text-center py-3"><i class="fas fa-spinner fa-spin"></i><br>Loading comments...</div>';
+
+            $.ajax({
+                url: '@Url.Action("GetComments", "Comments")',
+                type: 'GET',
+                data: {
+                    postId: postId,
+                    classRoomId: '@Model.ClassRoom.Id'
+                },
+                success: function (result) {
+                    if (result.success) {
+                        if (result.comments.length === 0) {
+                            commentsContainer.innerHTML = `
+                                        <div class="text-center text-muted py-3">
+                                            <p><i class="far fa-comment-dots fa-2x mb-2"></i><br>No comments yet</p>
+                                        </div>
+                                    `;
+                            return;
+                        }
+
+                        commentsContainer.innerHTML = '';
+
+                        // Add each comment from the server
+                        result.comments.forEach(comment => {
+                            const commentDiv = document.createElement('div');
+                            commentDiv.className = 'media mb-3';
+                            commentDiv.innerHTML = `
+                                        <img src="${comment.userImage || '@Url.Content("~/files/assets/images/user.png")'}" 
+                                             class="mr-3 rounded-circle" 
+                                             style="width: 40px; height: 40px; object-fit: cover;">
+                                        <div class="media-body">
+                                            <div class="bg-light rounded p-2">
+                                                <h6 class="mt-0 mb-1 font-weight-bold">${comment.userName}</h6>
+                                                <p class="mb-0">${comment.content}</p>
+                                            </div>
+                                            <small class="text-muted">${comment.createdAt}</small>
+                                        </div>
+                                    `;
+
+                            commentsContainer.appendChild(commentDiv);
+                        });
+                    } else {
+                        commentsContainer.innerHTML = `
+                                    <div class="alert alert-danger">
+                                        Failed to load comments: ${result.message}
+                                    </div>
+                                `;
+                    }
+                },
+                error: function () {
+                    commentsContainer.innerHTML = `
+                                <div class="alert alert-danger">
+                                    Failed to load comments. Please try again.
+                                </div>
+                            `;
+                }
+            });
+        }
+
+        // Search members functionality
+        function searchMembers(query) {
+            query = query.toLowerCase().trim();
+            const memberItems = document.querySelectorAll('.member-item');
+            const noMembersFound = document.getElementById('no-members-found');
+            let foundCount = 0;
+
+            memberItems.forEach(item => {
+                const username = item.getAttribute('data-username');
+                const fullname = item.getAttribute('data-fullname');
+
+                if (username.includes(query) || fullname.includes(query) || query === '') {
+                    item.style.display = 'flex';
+                    foundCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Show or hide "No members found" message
+            if (foundCount === 0 && query !== '') {
+                noMembersFound.classList.remove('d-none');
+            } else {
+                noMembersFound.classList.add('d-none');
+            }
+        }
+
+        // Initialize like counts from server data (this would normally come from your backend)
+        document.addEventListener('DOMContentLoaded', function () {
+            // This is a simulation for demonstration purposes
+            const likeCounts = document.querySelectorAll('.like-count');
+            likeCounts.forEach(count => {
+                // Random initial like count for demo purposes
+                count.textContent = Math.floor(Math.random() * 10);
+            });
+        });
     </script>
     <script>
         $(document).ready(function () {
             $('#post-tab').on('click', function () {
                 $('#assignment').removeClass('show active');
+                $('#lecture').removeClass('show active');
                 $('#participants').removeClass('show active');
                 $('#post').addClass('show active');
             });
 
             $('#assignment-tab').on('click', function () {
                 $('#post').removeClass('show active');
+                $('#lecture').removeClass('show active');
                 $('#participants').removeClass('show active');
                 $('#assignment').addClass('show active');
             });
+
+            $('#lecture-tab').on('click', function () {
+                $('#post').removeClass('show active');
+                $('#assignment').removeClass('show active');
+                $('#participants').removeClass('show active');
+                $('#lecture').addClass('show active');
+            });
+
             $('#participants-tab').on('click', function () {
                 $('#post').removeClass('show active');
                 $('#assignment').removeClass('show active');
+                $('#lecture').removeClass('show active');
                 $('#participants').addClass('show active');
+            });
         });
     </script>
     <style>
@@ -477,4 +898,3 @@
         }
     </style>
 }
-

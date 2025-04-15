@@ -118,6 +118,19 @@
             color: #ccc;
             margin-bottom: 15px;
         }
+
+        @media
+        (max-width: 768px) {
+            .page-header {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+
+            .chat-page-container {
+                padding: 15px;
+            }
+        }
     </style>
 }
 

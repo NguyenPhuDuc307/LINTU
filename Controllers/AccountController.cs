@@ -74,8 +74,7 @@ public class AccountController : Controller
         {
             UserId = user.Id,
             Amount = -amount, // Trừ số tiền rút đi
-            TransactionType = TransactionType.Withdraw,
-            CreateDate = DateTime.Now
+            TransactionType = TransactionType.Withdraw
         };
 
         _context.Transactions.Add(transaction);

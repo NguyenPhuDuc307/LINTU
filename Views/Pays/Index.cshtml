@@ -1,7 +1,222 @@
+@using LMS.Data.Entities.Enums
 @{
     ViewData["Title"] = "Payment";
 }
 
-<hr />
+<div class="container-fluid">
+    <div class="row">
+        <!-- Payment Options Card -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Payment Options</h5>
+                </div>
+                <div class="card-body">
+                    <div class="payment-options">
+                        <div class="payment-option-card">
+                            <div class="payment-icon">
+                                <i class="icofont icofont-bank-alt"></i>
+                            </div>
+                            <div class="payment-info">
+                                <h6>VNPay</h6>
+                                <p>Secure payment through VNPay</p>
+                            </div>
+                            <div class="payment-action">
+                                <a asp-action="Pay" class="btn btn-primary btn-sm">Pay Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<a class="btn btn-primary" asp-action="Pay">Payment</a>
+        <!-- Transaction History Card -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Recent Transactions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="transaction-list">
+                        @if (ViewBag.Transactions != null && ViewBag.Transactions.Count > 0)
+                        {
+                            foreach (var transaction in ViewBag.Transactions)
+                            {
+                                <div class="transaction-item">
+                                    <div
+                                        class="transaction-icon @(transaction.TransactionType == TransactionType.Deposit ? "success" : "warning")">
+                                        <i
+                                            class="icofont @(transaction.TransactionType == TransactionType.Deposit ? "icofont-check-circled" : "icofont-warning")"></i>
+                                    </div>
+                                    <div class="transaction-details">
+                                        <h6>@transaction.TransactionType</h6>
+                                        <p>@transaction.CreateDate.ToString("dd/MM/yyyy HH:mm")</p>
+                                    </div>
+                                    <div
+                                        class="transaction-amount @(transaction.TransactionType == TransactionType.Deposit ? "text-success" : "text-warning")">
+                                        @transaction.Amount.ToString("C")
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="text-center py-3">
+                                <p class="text-muted">No recent transactions</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .payment-option-card {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        border: 1px solid #eaeaea;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+    }
+
+    .payment-option-card:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .payment-icon {
+        width: 50px;
+        height: 50px;
+        background-color: #f0f2ff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+    }
+
+    .payment-icon i {
+        font-size: 24px;
+        color: #3f51b5;
+    }
+
+    .payment-info {
+        flex-grow: 1;
+    }
+
+    .payment-info h6 {
+        margin-bottom: 5px;
+        color: #333;
+    }
+
+    .payment-info p {
+        margin: 0;
+        color: #666;
+        font-size: 0.9em;
+    }
+
+    .transaction-list {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .transaction-item {
+        display: flex;
+        align-items: center;
+        padding: 12px;
+        border-bottom: 1px solid #eaeaea;
+    }
+
+    .transaction-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+    }
+
+    .transaction-icon.success {
+        background-color: #e8f5e9;
+    }
+
+    .transaction-icon.warning {
+        background-color: #fff3e0;
+    }
+
+    .transaction-icon i {
+        font-size: 20px;
+    }
+
+    .transaction-icon.success i {
+        color: #2e7d32;
+    }
+
+    .transaction-icon.warning i {
+        color: #f57c00;
+    }
+
+    .transaction-details {
+        flex-grow: 1;
+    }
+
+    .transaction-details h6 {
+        margin-bottom: 5px;
+        color: #333;
+    }
+
+    .transaction-details p {
+        margin: 0;
+        color: #666;
+        font-size: 0.9em;
+    }
+
+    .transaction-amount {
+        font-weight: 600;
+    }
+
+    .text-success {
+        color: #2e7d32;
+    }
+
+    .text-warning {
+        color: #f57c00;
+    }
+
+    .card {
+        border: none;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .card-header {
+        background-color: #fff;
+        border-bottom: 1px solid #eaeaea;
+        padding: 15px 20px;
+    }
+
+    .card-title {
+        color: #3f51b5;
+        font-weight: 600;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .btn-primary {
+        background-color: #3f51b5;
+        border-color: #3f51b5;
+    }
+
+    .btn-primary:hover {
+        background-color: #303f9f;
+        border-color: #303f9f;
+    }
+</style>
