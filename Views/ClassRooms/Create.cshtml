@@ -1,14 +1,15 @@
 @model LMS.Data.Entities.ClassRoom
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Class";
 }
+
 <!-- Floating Sidebar Button -->
 <div class="floating-sidebar">
-    <div class="sidebar-toggle">
-        <i class="feather icon-plus"></i>
+    <div class="sidebar-toggle bg-primary rounded-circle shadow">
+        <i class="feather icon-plus text-white"></i>
     </div>
-    <div class="sidebar-content">
+    <div class="sidebar-content shadow-sm rounded p-3 bg-white">
         @if (User.Identity!.IsAuthenticated)
         {
             <a asp-action="Create" class="btn btn-primary btn-block">
@@ -17,93 +18,211 @@
         }
         else
         {
-            <p class="text-danger">You must be logged in to create a class.</p>
+            <p class="text-danger mb-0">You must be logged in to create a class.</p>
         }
     </div>
 </div>
-<h1>Create a New Class</h1>
 
-<hr />
-<div class="row">
-    <div class="col-md-8 mx-auto">
-        <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white">
-                <h4 class="card-title">Classroom Details</h4>
-            </div>
-            <div class="card-body">
-                @if (User.Identity.IsAuthenticated)
-                {
-                <form asp-action="Create">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <div class="form-group">
-                        <label asp-for="Name" class="control-label">Class Name</label>
-                        <input asp-for="Name" class="form-control" placeholder="Enter class name" />
-                        <span asp-validation-for="Name" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="TopicId" class="control-label">Select Topic</label>
-                        <select asp-for="TopicId" class="form-control" asp-items="ViewBag.TopicId">
-                            <option value="">-- Select Topic --</option>
-                        </select>
-                        <span asp-validation-for="TopicId" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="Introduction" class="control-label">Introduction</label>
-                        <textarea asp-for="Introduction" class="form-control" rows="4"
-                            placeholder="Enter introduction..."></textarea>
-                        <span asp-validation-for="Introduction" class="text-danger"></span>
-                    </div>
-                    <!-- Description -->
-                    <div class="form-group">
-                        <label asp-for="Description" class="control-label">Description</label>
-                        <textarea asp-for="Description" class="form-control" rows="4"
-                            placeholder="Enter description..."></textarea>
-                        <span asp-validation-for="Description" class="text-danger"></span>
-                    </div>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-4 fw-bold text-primary">Create a New Class</h1>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="feather icon-list"></i> Back to List
+        </a>
+    </div>
 
-                    <!-- Image URL -->
-                    <div class="form-group">
-                        <label asp-for="ImageUrl" class="control-label">Class Image URL</label>
-                        <input asp-for="ImageUrl" class="form-control" placeholder="Enter image URL" />
-                        <span asp-validation-for="ImageUrl" class="text-danger"></span>
-                    </div>
+    <hr class="my-4" />
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow border-0 rounded-lg">
+                <div class="card-header bg-gradient-primary text-white">
+                    <h4 class="card-title mb-0"><i class="feather icon-book-open me-2"></i>Classroom Details</h4>
+                </div>
+                <div class="card-body p-4">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <form asp-action="Create" class="needs-validation">
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
 
-                    <!-- Price -->
-                    <div class="form-group">
-                        <label asp-for="Price" class="control-label">Price (VND)</label>
-                        <input asp-for="Price" class="form-control" type="number" placeholder="Enter price" />
-                        <span asp-validation-for="Price" class="text-danger"></span>
-                    </div>
+                            <div class="row">
+                                <div class="col-md-8 mb-3">
+                                    <label asp-for="Name" class="form-label fw-bold">Class Name</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="feather icon-tag"></i></span>
+                                        <input asp-for="Name" class="form-control form-control-lg"
+                                            placeholder="Enter class name" />
+                                    </div>
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
 
-                    <!-- Students -->
-                    <div class="form-group">
-                        <label asp-for="Students" class="control-label">Number of Students</label>
-                        <input asp-for="Students" class="form-control" type="number" value="0" readonly />
-                        <span asp-validation-for="Students" class="text-danger"></span>
-                    </div>
+                                <div class="col-md-4 mb-3">
+                                    <label asp-for="TopicId" class="form-label fw-bold">Select Topic</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="feather icon-bookmark"></i></span>
+                                        <select asp-for="TopicId" class="form-select form-select-lg"
+                                            asp-items="ViewBag.TopicId">
+                                            <option value="">-- Select Topic --</option>
+                                        </select>
+                                    </div>
+                                    <span asp-validation-for="TopicId" class="text-danger"></span>
+                                </div>
+                            </div>
 
-                    <!-- Submit Button -->
-                    <div class="form-group text-center">
-                        <input type="submit" value="Create Class" class="btn btn-success btn-lg" />
-                    </div>
-                </form> 
-                }
-                else
-                {
-                    <p class="text-danger">You must be logged in to create a class. <a asp-area="Identity"
-                            asp-page="/Account/Login" asp-route-returnUrl="@Url.Action("Create", "ClassRooms")">Login
-                            here</a>
-                    </p>
-                }
+                            <div class="mb-3">
+                                <label asp-for="Introduction" class="form-label fw-bold">Introduction</label>
+                                <textarea asp-for="Introduction" class="form-control" rows="3"
+                                    placeholder="A brief introduction to your class..."></textarea>
+                                <span asp-validation-for="Introduction" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label asp-for="Description" class="form-label fw-bold">Description</label>
+                                <textarea asp-for="Description" id="summernote-editor" class="form-control" rows="4"
+                                    placeholder="Detailed description of what students will learn..."></textarea>
+                                <small class="text-muted">Include information about what students will learn, prerequisites,
+                                    and learning outcomes.</small>
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="ImageUrl" class="form-label fw-bold">Class Image URL</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="feather icon-image"></i></span>
+                                        <input asp-for="ImageUrl" class="form-control"
+                                            placeholder="https://example.com/image.jpg" />
+                                    </div>
+                                    <small class="text-muted">Add an attractive image for your class</small>
+                                    <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label asp-for="Price" class="form-label fw-bold">Price (VND)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="feather icon-dollar-sign"></i></span>
+                                        <input asp-for="Price" class="form-control" type="number" placeholder="Enter price"
+                                            min="0" />
+                                        <span class="input-group-text">VND</span>
+                                    </div>
+                                    <span asp-validation-for="Price" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Students" class="form-label fw-bold">Number of Students</label>
+                                <input asp-for="Students" class="form-control bg-light" type="number" value="0" readonly />
+                                <small class="text-muted">This will be updated automatically as students join</small>
+                                <span asp-validation-for="Students" class="text-danger"></span>
+                            </div>
+
+                            <div class="d-grid gap-2 col-lg-6 mx-auto mt-4">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="feather icon-check-circle me-2"></i>Create Class
+                                </button>
+                            </div>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning" role="alert">
+                            <i class="feather icon-alert-circle me-2"></i>
+                            <strong>You must be logged in to create a class.</strong>
+                            <hr>
+                            <a asp-area="Identity" asp-page="/Account/Login"
+                                asp-route-returnUrl="@Url.Action("Create", "ClassRooms")" class="btn btn-primary mt-2">
+                                <i class="feather icon-log-in me-2"></i>Login here
+                            </a>
+                        </div>
+                    }
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <style>
+        .form-select {
+            padding-left: 12px;
+            background-position: right 10px center;
+        }
+
+        .form-select:not([multiple]) {
+            background-size: 16px 12px;
+        }
+
+        .form-select option {
+            padding: 8px;
+            font-weight: 400;
+        }
+
+        .form-select option:first-child {
+            color: #6c757d;
+        }
+
+        .form-select:hover {
+            border-color: #a8c0ed;
+        }
+
+        /* Summernote customization */
+        .note-editor.note-frame,
+        .note-editor.note-airframe {
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+        }
+
+        .note-editor.note-frame .note-editing-area .note-editable,
+        .note-editor.note-airframe .note-editing-area .note-editable {
+            background-color: white;
+            color: #212529;
+        }
+
+        .note-toolbar {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #ced4da;
+        }
+
+        .note-btn {
+            border-color: #dee2e6;
+        }
+
+        .note-btn:hover {
+            background-color: #e9ecef;
+        }
+    </style>
+
+    <!-- Summernote JS & CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-bs4.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#summernote-editor').summernote({
+                height: 300,
+                minHeight: 200,
+                maxHeight: 500,
+                toolbar: [
+                    ['style', ['bold', 'italic', 'underline', 'clear']],
+                    ['font', ['strikethrough']],
+                    ['color', ['color']],
+                    ['para', ['ul', 'ol', 'paragraph']],
+                    ['table', ['table']],
+                    ['insert', ['link']],
+                    ['view', ['fullscreen', 'codeview']]
+                ],
+                placeholder: 'Detailed description of what students will learn, prerequisites, and learning outcomes...',
+                tabsize: 2,
+                callbacks: {
+                    onImageUpload: function (files) {
+                        // For demo purposes, we're just showing an alert
+                        // In a real app, you would upload to server 
+                        alert('Image upload would be implemented here');
+                    }
+                }
+            });
+        });
+    </script>
 }

@@ -1,77 +1,244 @@
 @model ClassRoom
 
-<div class="card shadow-sm">
-    <div class="card-header bg-white">
-        <h3 class="card-title">@Model.Name</h3>
-        <div class="card-header-actions">
-            @if (User.Identity!.IsAuthenticated)
-            {
-                @if (ViewBag.IsJoined)
-                {
-                    <a class="btn btn-success btn-sm" asp-controller="ClassRooms" asp-action="Details" asp-route-id="@Model.Id">
-                        Join class</a>
-                }
-                else if (Model.Price == 0)
-                {
-                    <form method="post" asp-controller="ClassRooms" asp-action="JoinFreeClass">
-                        <input type="hidden" name="id" value="@Model.Id" />
-                        <button type="submit" class="btn btn-success btn-sm">Join Free</button>
-                    </form>
-                }
-                else
-                {
-                    <form method="post" asp-controller="ClassRooms" asp-action="ConfirmPayment">
-                        <input type="hidden" name="id" value="@Model.Id" />
-                        <button type="submit" class="btn btn-danger btn-sm">Buy Course</button>
-                    </form>
-                }
-            }
-            else
-            {
-                <a class="btn btn-primary btn-sm" asp-area="Identity" asp-page="/Account/Login"
-                    asp-route-returnUrl="@Url.Action("Introduction", "ClassRooms", new { id = Model.Id })">
-                    Login to Join
-                </a>
-            }
-        </div>
-    </div>
-    <div class="card-body">
-        <div class="row">
-            <div class="col-md-4">
-                <img src="@Model.ImageUrl" style="width: 100%;" class="img-fluid rounded shadow-sm" />
+<div class="container py-4">
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-header bg-white p-3">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                <h3 class="card-title fw-bold text-primary mb-0">@Model.Name</h3>
+                <div class="card-header-actions">
+                    @if (User.Identity!.IsAuthenticated)
+                    {
+                        @if (ViewBag.IsJoined)
+                        {
+                            <a class="btn btn-success" asp-controller="ClassRooms" asp-action="Details"
+                                asp-route-id="@Model.Id">
+                                <i class="feather icon-log-in me-2"></i>Join class</a>
+                        }
+                        else if (Model.Price == 0)
+                        {
+                            <form method="post" asp-controller="ClassRooms" asp-action="JoinFreeClass">
+                                <input type="hidden" name="id" value="@Model.Id" />
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="feather icon-unlock me-2"></i>Join Free
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form method="post" asp-controller="ClassRooms" asp-action="ConfirmPayment">
+                                <input type="hidden" name="id" value="@Model.Id" />
+                                <button type="submit" class="btn btn-danger w-100">
+                                    <i class="feather icon-shopping-cart me-2"></i>Buy Course
+                                </button>
+                            </form>
+                        }
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary w-100" asp-area="Identity" asp-page="/Account/Login"
+                            asp-route-returnUrl="@Url.Action("Introduction", "ClassRooms", new { id = Model.Id })">
+                            <i class="feather icon-log-in me-2"></i>Login to Join
+                        </a>
+                    }
+                </div>
             </div>
-            <div class="col-md-8">
-                <h4 class="font-weight-bold mt-3 border-bottom pb-2">INTRODUCTION</h4>
-                <p class="card-text lead text-dark">@Model.Introduction</p>
+        </div>
 
-                <h4 class="font-weight-bold mt-3 border-bottom pb-2">Description</h4>
-                <p class="card-text text-justify" style="text-indent: 1.27em;">@Model.Description</p>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-md-4">
-                <h4 class="font-weight-bold">Price</h4>
-                <p class="card-text">
-                    <span class="badge badge-danger p-2">
-                        @(Model.Price == 0 ? "Free" : String.Format("{0:0,0} VND", Model.Price))
-                    </span>
-                </p>
-                <h4 class="font-weight-bold text-dark"><i class="feather icon-users"></i> Students</h4>
-                <span class="badge badge-info p-2 font-weight-bold shadow-sm">
-                    <i class="feather icon-users"></i> @ViewBag.MembersCount Students
-                </span>
-            </div>
-            <div class="col-md-4">
-                <h4 class="font-weight-bold"><i class="feather icon-calendar"></i> Creation Date</h4>
-                @* <p class="card-text">@Model.CreateDate.ToString("dd/MM/yyyy HH:mm:ss")</p> *@
-                <div class="d-flex align-items-center p-3 rounded shadow-sm"
-                    style="background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); color: white; border-radius: 10px;">
-                    <i class="feather icon-calendar animated-icon mr-3" style="font-size: 2rem;"></i>
-                    <span class="font-weight-bold" style="font-size: 1.2rem;">
-                        @Model.CreateDate.ToString("dd MMMM yyyy • HH:mm")
-                    </span>
+        <div class="card-body p-4">
+            <div class="row g-4">
+                <!-- Left Column - Image and Info Cards -->
+                <div class="col-lg-4">
+                    <!-- Class Image with Price Overlay -->
+                    <div class="position-relative mb-4 class-image-container">
+                        <img src="@Model.ImageUrl" class="img-fluid rounded-3 shadow-sm w-100" alt="@Model.Name" />
+                        <div class="position-absolute price-badge">
+                            <div class="badge bg-primary rounded-pill fs-6 px-3 py-2 shadow">
+                                <i class="feather icon-dollar-sign me-1"></i>
+                                @(Model.Price == 0 ? "Free" : String.Format("{0:0,0} VND", Model.Price))
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Info Cards -->
+                    <div class="info-cards">
+                        <!-- Students Card -->
+                        <div class="card border-0 bg-light rounded-3 p-3 mb-3 info-card">
+                            <div class="d-flex align-items-center">
+                                <span class="icon-circle bg-info text-white me-3">
+                                    <i class="feather icon-users"></i>
+                                </span>
+                                <div>
+                                    <h6 class="text-muted mb-0 small">Students Enrolled</h6>
+                                    <h4 class="mb-0">@ViewBag.MembersCount</h4>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Creation Date Card -->
+                        <div class="card border-0 bg-light rounded-3 p-3 info-card">
+                            <div class="d-flex align-items-center">
+                                <span class="icon-circle bg-primary text-white me-3">
+                                    <i class="feather icon-calendar"></i>
+                                </span>
+                                <div>
+                                    <h6 class="text-muted mb-0 small">Creation Date</h6>
+                                    <h5 class="mb-0">@Model.CreateDate.ToString("dd MMM yyyy")</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column - Content -->
+                <div class="col-lg-8">
+                    <!-- Introduction section -->
+                    <div class="description-card mb-4">
+                        <div class="description-header p-3 bg-light rounded-top border border-bottom-0">
+                            <div class="d-flex align-items-center">
+                                <i class="feather icon-info text-primary me-2 fs-5"></i>
+                                <h5 class="mb-0">Introduction</h5>
+                            </div>
+                        </div>
+                        <div class="description-body p-4 border rounded-bottom">
+                            <p class="lead mb-0">@Model.Introduction</p>
+                        </div>
+                    </div>
+
+                    <!-- Description section - properly formatted for HTML content -->
+                    <div class="description-card">
+                        <div class="description-header p-3 bg-light rounded-top border border-bottom-0">
+                            <div class="d-flex align-items-center">
+                                <i class="feather icon-file-text text-primary me-2 fs-5"></i>
+                                <h5 class="mb-0">Description</h5>
+                            </div>
+                        </div>
+                        <div class="description-body p-4 border rounded-bottom">
+                            <div class="summernote-content">
+                                @Html.Raw(Model.Description)
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    /* Image and price badge */
+    .class-image-container {
+        overflow: hidden;
+        border-radius: 0.5rem;
+    }
+
+    .price-badge {
+        bottom: 1rem;
+        right: 1rem;
+    }
+
+    /* Info cards */
+    .info-card {
+        transition: all 0.3s ease;
+    }
+
+    .info-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .icon-circle {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    /* Fix for unwanted square character */
+    .icon-circle::before {
+        content: none !important;
+        display: none !important;
+    }
+
+    /* Description sections */
+    .description-card {
+        transition: all 0.3s ease;
+    }
+
+    .description-card:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .description-header i {
+        width: 24px;
+        text-align: center;
+    }
+
+    /* Description content */
+    .summernote-content {
+        max-height: 600px;
+        overflow-y: auto;
+    }
+
+    .summernote-content img {
+        max-width: 100%;
+        height: auto;
+        margin: 1rem 0;
+        border-radius: 0.25rem;
+    }
+
+    .summernote-content ul,
+    .summernote-content ol {
+        padding-left: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .summernote-content table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1rem;
+        overflow-x: auto;
+        display: block;
+    }
+
+    .summernote-content table td,
+    .summernote-content table th {
+        border: 1px solid #dee2e6;
+        padding: 0.5rem;
+    }
+
+    .summernote-content table th {
+        background-color: #f8f9fa;
+    }
+
+    .summernote-content blockquote {
+        border-left: 3px solid #6c757d;
+        padding: 0.5rem 1rem;
+        color: #6c757d;
+        margin: 1rem 0;
+        background-color: #f8f9fa;
+        border-radius: 0 0.25rem 0.25rem 0;
+    }
+
+    .summernote-content pre {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.25rem;
+        overflow-x: auto;
+        border: 1px solid #dee2e6;
+    }
+
+    .summernote-content h1,
+    .summernote-content h2,
+    .summernote-content h3,
+    .summernote-content h4,
+    .summernote-content h5,
+    .summernote-content h6 {
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+        font-weight: 600;
+        color: #212529;
+    }
+</style>

@@ -64,10 +64,32 @@ namespace LMS.Controllers
             return View(topic);
         }
 
+        // GET: Topics/Details/5 (by ID)
+        [Route("Details/{id}")]
+        public async Task<IActionResult> DetailsById(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var topic = await _context.Topics
+                .Include(t => t.ClassRooms)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (topic == null)
+            {
+                return NotFound();
+            }
+
+            return View("Details", topic);
+        }
+
         // GET: Topics/Create
         [Route("create")]
         public IActionResult Create()
         {
+            // Populate ViewBag.ParentTopicId for dropdown
+            ViewBag.ParentTopicId = new SelectList(_context.Topics, "Id", "Name");
             return View();
         }
 
@@ -84,6 +106,7 @@ namespace LMS.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.ParentTopicId = new SelectList(_context.Topics, "Id", "Name");
             return View(topic);
         }
 
@@ -101,6 +124,7 @@ namespace LMS.Controllers
             {
                 return NotFound();
             }
+            ViewBag.ParentTopicId = new SelectList(_context.Topics.Where(t => t.Id != id), "Id", "Name");
             return View(topic);
         }
 
@@ -136,6 +160,7 @@ namespace LMS.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.ParentTopicId = new SelectList(_context.Topics.Where(t => t.Id != id), "Id", "Name");
             return View(topic);
         }
 

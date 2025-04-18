@@ -95,4 +95,8 @@ public class ApplicationDbContext : IdentityDbContext<User>
     public DbSet<Message> Messages { get; set; }
     public DbSet<Submission> Submissions { get; set; }
     public DbSet<Comment> Comments { get; set; }
+    public DbSet<Lesson> Lessons { get; set; }
+    public DbSet<Lecture> Lectures { get; set; }
+    public DbSet<CompletedLecture> CompletedLectures { get; set; }
+    public DbSet<LectureNote> LectureNotes { get; set; }
 }

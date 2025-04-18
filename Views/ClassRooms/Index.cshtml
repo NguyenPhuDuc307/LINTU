@@ -1,101 +1,170 @@
 @model IEnumerable<LMS.Data.Entities.ClassRoom>
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Classes";
 }
 
-<h1>Index</h1>
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-4 fw-bold text-primary">Classes</h1>
+        <a asp-action="Create" class="btn btn-primary btn-lg">
+            <i class="feather icon-plus me-2"></i>Create New Class
+        </a>
+    </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Topic)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ImageUrl)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Price)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Students)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
+    <!-- Filters and search (could be expanded) -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="input-group">
+                        <span class="input-group-text bg-primary text-white">
+                            <i class="feather icon-search"></i>
+                        </span>
+                        <input type="text" id="searchClasses" class="form-control" placeholder="Search classes...">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Class cards -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4 mb-4">
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @(item.Name!.Length > 10 ? item.Name!.Substring(0, 10) + "..." : item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Topic!.Name)
-                </td>
-                <td>
-                    @(item.Description!.Length > 20 ? item.Description!.Substring(0, 20) + "..." : item.Description)
-                </td>
-                <td>
-                    <img src="@item.ImageUrl" alt="Classroom Image" style="width: 100px; height: auto;" />
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Price)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Students)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Status)
-                <td>
-                    @if (User.IsInRole("Administrator") || User.IsInRole("Manager"))
-                    {
-                        @if (item.Status == LMS.Data.Entities.ClassRoomStatus.Pending)
-                        {
-                            <form method="post" action="@Url.Action("ApproveClassRoom", "ClassRooms", new { id = item.Id })">
-                                <button type="submit" class="btn btn-success">Duyệt</button>
-                            </form>
-                        }
-                    }
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
-            </tr>
+            <div class="col">
+                <div class="card h-100 shadow-sm hover-shadow border-0 rounded-lg">
+                    <img src="@item.ImageUrl" class="card-img-top classroom-thumbnail" alt="@item.Name">
+                    <div
+                        class="card-status-ribbon @(item.Status == LMS.Data.Entities.ClassRoomStatus.Pending ? "bg-warning" : "bg-success")">
+                        <span>@item.Status</span>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold text-primary mb-1">@item.Name</h5>
+                        <p class="card-subtitle mb-2 text-muted">
+                            <i class="feather icon-tag me-1"></i>@item.Topic!.Name
+                        </p>
+                        <p class="card-text small">
+                            @(item.Description!.Length > 100 ? item.Description!.Substring(0, 100) + "..." :
+                                                    item.Description)
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="badge bg-primary rounded-pill">
+                            <i class="feather icon-dollar-sign me-1"></i>@item.Price.ToString("N0") VND
+                        </div>
+                        <div class="badge bg-info rounded-pill">
+                            <i class="feather icon-users me-1"></i>@item.Students students
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-top-0">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary me-1">
+                                <i class="feather icon-info"></i>
+                            </a>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary me-1">
+                                <i class="feather icon-edit-2"></i>
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">
+                                <i class="feather icon-trash-2"></i>
+                            </a>
+                        </div>
+                        @if (User.IsInRole("Administrator") || User.IsInRole("Manager"))
+                            {
+                                <div>
+                                    @if (item.Status == LMS.Data.Entities.ClassRoomStatus.Pending)
+                                    {
+                                        <form method="post"
+                                            action="@Url.Action("ApproveClassRoom", "ClassRooms", new { id = item.Id })"
+                                            class="d-inline">
+                                            <button type="submit" class="btn btn-sm btn-success">
+                                                <i class="feather icon-check me-1"></i>Approve
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
         }
-    </tbody>
-</table>
-<!-- PHÂN TRANG -->
-<nav class="mt-4">
-    <ul class="pagination justify-content-center">
-        @if (ViewBag.CurrentPage > 1)
-        {
-            <li class="page-item">
-                <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage - 1 })">« Trước</a>
-            </li>
-        }
+    </div>
 
-        <li class="page-item disabled">
-            <span class="page-link">Trang @ViewBag.CurrentPage / @ViewBag.TotalPages</span>
-        </li>
+    <!-- No results message -->
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center p-5">
+            <i class="feather icon-info fs-1 mb-3"></i>
+            <h4>No classes found</h4>
+            <p>There are no classes available at the moment.</p>
+        </div>
+    }
 
-        @if (ViewBag.CurrentPage < ViewBag.TotalPages)
-        {
-            <li class="page-item">
-                <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage + 1 })">Sau »</a>
+    <!-- Pagination -->
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            @if (ViewBag.CurrentPage > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage - 1 })">
+                        <i class="feather icon-chevron-left me-1"></i>Previous
+                    </a>
+                </li>
+            }
+
+            <li class="page-item disabled">
+                <span class="page-link">Page @ViewBag.CurrentPage of @ViewBag.TotalPages</span>
             </li>
-        }
-    </ul>
-</nav>
+
+            @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage + 1 })">
+                        Next<i class="feather icon-chevron-right ms-1"></i>
+                    </a>
+                </li>
+            }
+        </ul>
+    </nav>
+</div>
+
+<style>
+    .classroom-thumbnail {
+        height: 180px;
+        object-fit: cover;
+    }
+
+    .hover-shadow:hover {
+        transform: translateY(-5px);
+        transition: transform 0.3s ease;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .card-status-ribbon {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: bold;
+        color: white;
+        text-transform: uppercase;
+    }
+</style>
+
+@section Scripts {
+    <script>
+        // Simple search functionality
+        $(document).ready(function () {
+            $("#searchClasses").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $(".row-cols-1 > .col").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+    </script>
+}
+}

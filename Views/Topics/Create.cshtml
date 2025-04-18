@@ -1,48 +1,154 @@
 @model LMS.Data.Entities.Topic
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Topic";
 }
 
-<h1>Create</h1>
-
-<h4>Topic</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+<div class="page-header">
+    <div class="row align-items-end">
+        <div class="col-lg-8">
+            <div class="page-header-title">
+                <div class="d-inline">
+                    <h4>Create Topic</h4>
+                    <span>Add a new topic to the system</span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Alias" class="control-label"></label>
-                <input asp-for="Alias" class="form-control" />
-                <span asp-validation-for="Alias" class="text-danger"></span>
+        </div>
+        <div class="col-lg-4">
+            <div class="page-header-breadcrumb">
+                <ul class="breadcrumb-title">
+                    <li class="breadcrumb-item">
+                        <a href="/"><i class="feather icon-home"></i></a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a asp-action="Index">Topics</a>
+                    </li>
+                    <li class="breadcrumb-item">Create</li>
+                </ul>
             </div>
-            <div class="form-group">
-                <label asp-for="ImageUrl" class="control-label"></label>
-                <input asp-for="ImageUrl" class="form-control" />
-                <span asp-validation-for="ImageUrl" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ParentTopicId" class="control-label"></label>
-                <input asp-for="ParentTopicId" class="form-control" />
-                <span asp-validation-for="ParentTopicId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
+<div class="page-body">
+    <div class="row">
+        <div class="col-md-12 col-xl-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="feather icon-plus-circle mr-1"></i> New Topic</h5>
+                    <div class="card-header-right">
+                        <ul class="list-unstyled card-option">
+                            <li><i class="feather icon-maximize full-card"></i></li>
+                        </ul>
+                    </div>
+                </div>
+                <form asp-action="Create" method="post">
+                    <div class="card-block">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <div class="form-group row">
+                            <label asp-for="Name" class="col-sm-3 col-form-label">Topic Name</label>
+                            <div class="col-sm-9">
+                                <input asp-for="Name" class="form-control" placeholder="Enter topic name"
+                                    id="topicName" />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                                <small class="form-text text-muted">Choose a descriptive name for this topic</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label asp-for="Alias" class="col-sm-3 col-form-label">Alias</label>
+                            <div class="col-sm-9">
+                                <input asp-for="Alias" class="form-control" placeholder="topic-alias" id="topicAlias" />
+                                <span asp-validation-for="Alias" class="text-danger"></span>
+                                <small class="form-text text-muted">Used in URLs. Will be auto-generated if left
+                                    empty</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label asp-for="ImageUrl" class="col-sm-3 col-form-label">Image URL</label>
+                            <div class="col-sm-9">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="feather icon-image"></i></span>
+                                    </div>
+                                    <input asp-for="ImageUrl" class="form-control"
+                                        placeholder="https://example.com/image.jpg" />
+                                </div>
+                                <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                                <small class="form-text text-muted">URL to an image representing this topic
+                                    (optional)</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label asp-for="ParentTopicId" class="col-sm-3 col-form-label">Parent Topic</label>
+                            <div class="col-sm-9">
+                                <select asp-for="ParentTopicId" class="form-control" asp-items="ViewBag.ParentTopicId">
+                                    <option value="">-- None (Root Topic) --</option>
+                                </select>
+                                <span asp-validation-for="ParentTopicId" class="text-danger"></span>
+                                <small class="form-text text-muted">Select a parent topic if this is a subtopic</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer bg-white">
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" class="btn btn-outline-secondary waves-effect">
+                                <i class="feather icon-x mr-1"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary waves-effect waves-light">
+                                <i class="feather icon-save mr-1"></i> Create Topic
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="col-md-12 col-xl-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="feather icon-info mr-1"></i> Topic Information</h5>
+                </div>
+                <div class="card-block">
+                    <p class="mb-2">Topics are categories used to organize learning content in the system. They can be
+                        hierarchical, with parent and child relationships.</p>
+
+                    <div class="alert alert-info" role="alert">
+                        <div class="alert-heading">
+                            <h6><i class="feather icon-alert-circle mr-1"></i> Tips for creating topics:</h6>
+                        </div>
+                        <ul class="mb-0 pl-3">
+                            <li>Use clear, descriptive names</li>
+                            <li>Keep aliases short and meaningful</li>
+                            <li>Include relevant images when possible</li>
+                            <li>Organize topics hierarchically if appropriate</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Auto-generate alias from name
+        document.getElementById('topicName').addEventListener('input', function () {
+            var name = this.value;
+            var alias = name.toLowerCase()
+                .replace(/[^\w\s-]/g, '') // Remove special characters
+                .replace(/\s+/g, '-')     // Replace spaces with hyphens
+                .replace(/-+/g, '-');     // Replace multiple hyphens with a single one
+
+            document.getElementById('topicAlias').value = alias;
+        });
+    </script>
 }
