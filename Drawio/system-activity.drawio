@@ -1,0 +1,123 @@
+<mxfile host="app.diagrams.net" modified="2024-03-19T04:23:12.285Z" agent="Mozilla/5.0" version="22.1.21">
+  <diagram id="activity-diagram" name="Activity Diagram">
+    <mxGraphModel dx="0" dy="0" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        
+        <!-- Vertical Swimlanes -->
+        <mxCell id="swimlane1" value="User" style="swimlane;startSize=20;horizontal=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="200" height="1000" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="swimlane2" value="Authentication" style="swimlane;startSize=20;horizontal=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="40" width="200" height="1000" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="swimlane3" value="Class Management" style="swimlane;startSize=20;horizontal=1;" vertex="1" parent="1">
+          <mxGeometry x="440" y="40" width="200" height="1000" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="swimlane4" value="Payment System" style="swimlane;startSize=20;horizontal=1;" vertex="1" parent="1">
+          <mxGeometry x="640" y="40" width="200" height="1000" as="geometry"/>
+        </mxCell>
+
+        <!-- Start -->
+        <mxCell id="start" value="" style="ellipse;fillColor=#000000;strokeColor=none;" vertex="1" parent="swimlane1">
+          <mxGeometry x="85" y="40" width="30" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- Authentication Activities -->
+        <mxCell id="login" value="Đăng nhập" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="swimlane2">
+          <mxGeometry x="40" y="120" width="120" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="register" value="Đăng ký" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="swimlane2">
+          <mxGeometry x="40" y="220" width="120" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="authCheck" value="Kiểm tra&#xa;xác thực" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="swimlane2">
+          <mxGeometry x="60" y="320" width="80" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- Class Management Activities -->
+        <mxCell id="viewClasses" value="Xem danh sách&#xa;lớp học" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="swimlane3">
+          <mxGeometry x="40" y="420" width="120" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="joinClass" value="Tham gia&#xa;lớp học" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="swimlane3">
+          <mxGeometry x="40" y="520" width="120" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Payment Activities -->
+        <mxCell id="checkBalance" value="Kiểm tra&#xa;số dư" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="swimlane4">
+          <mxGeometry x="60" y="510" width="80" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="payment" value="Thanh toán" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="swimlane4">
+          <mxGeometry x="40" y="620" width="120" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="topup" value="Nạp tiền" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="swimlane4">
+          <mxGeometry x="40" y="720" width="120" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Success/Error states -->
+        <mxCell id="success" value="Tham gia&#xa;thành công" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="swimlane3">
+          <mxGeometry x="40" y="820" width="120" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- End -->
+        <mxCell id="end" value="" style="ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="swimlane1">
+          <mxGeometry x="85" y="920" width="30" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- Flow arrows -->
+        <mxCell id="flow1" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="start" target="login">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flow2" value="Chưa có tài khoản" style="endArrow=classic;html=1;" edge="1" parent="1" source="login" target="register">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flow3" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="login" target="authCheck">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flow4" value="Thành công" style="endArrow=classic;html=1;" edge="1" parent="1" source="authCheck" target="viewClasses">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flow5" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="viewClasses" target="joinClass">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flow6" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="joinClass" target="checkBalance">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flow7" value="Đủ số dư" style="endArrow=classic;html=1;" edge="1" parent="1" source="checkBalance" target="payment">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flow8" value="Không đủ số dư" style="endArrow=classic;html=1;" edge="1" parent="1" source="checkBalance" target="topup">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flow9" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="payment" target="success">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flow10" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="success" target="end">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flow11" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="topup" target="checkBalance">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

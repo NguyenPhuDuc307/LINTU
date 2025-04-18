@@ -1,0 +1,75 @@
+<mxfile host="app.diagrams.net" modified="2024-03-19T04:30:12.285Z" agent="Mozilla/5.0" version="22.1.21">
+  <diagram id="class-diagram" name="Class Diagram">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        
+        <!-- ClassRoom Class -->
+        <mxCell id="classroom" value="ClassRoom" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" vertex="1" parent="1">
+          <mxGeometry x="320" y="40" width="200" height="320" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="classroom_attrs" value="+ Id: Guid&#xa;+ Name: string&#xa;+ Description: string&#xa;+ Introduction: string&#xa;+ Code: string&#xa;+ ImageUrl: string&#xa;+ Price: decimal&#xa;+ Status: ClassRoomStatus&#xa;+ Students: int&#xa;+ UserId: string&#xa;+ TopicId: Guid&#xa;+ CreateDate: DateTime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="classroom">
+          <mxGeometry y="26" width="200" height="194" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="classroom_methods" value="+ Create()&#xa;+ Edit()&#xa;+ Delete()&#xa;+ ChangeCode()&#xa;+ JoinClass()&#xa;+ GetDetails()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="classroom">
+          <mxGeometry y="220" width="200" height="100" as="geometry"/>
+        </mxCell>
+
+        <!-- Topic Class -->
+        <mxCell id="topic" value="Topic" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="200" height="100" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="topic_attrs" value="+ Id: Guid&#xa;+ Name: string&#xa;+ Description: string" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="topic">
+          <mxGeometry y="26" width="200" height="74" as="geometry"/>
+        </mxCell>
+
+        <!-- ClassDetail Class -->
+        <mxCell id="classdetail" value="ClassDetail" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" vertex="1" parent="1">
+          <mxGeometry x="600" y="40" width="200" height="140" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="classdetail_attrs" value="+ ClassRoomId: Guid&#xa;+ UserId: string&#xa;+ CreateDate: DateTime&#xa;+ IsPaid: bool" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="classdetail">
+          <mxGeometry y="26" width="200" height="114" as="geometry"/>
+        </mxCell>
+
+        <!-- Relationships -->
+        <mxCell id="topic_classroom" value="" style="endArrow=diamondThin;endFill=1;endSize=24;html=1;" edge="1" parent="1" source="topic" target="classroom">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="240" y="89" as="sourcePoint"/>
+            <mxPoint x="320" y="89" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="classroom_classdetail" value="" style="endArrow=diamondThin;endFill=1;endSize=24;html=1;" edge="1" parent="1" source="classroom" target="classdetail">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="520" y="89" as="sourcePoint"/>
+            <mxPoint x="600" y="89" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- ClassRoomStatus Enum -->
+        <mxCell id="status_enum" value="&lt;&lt;enumeration&gt;&gt;&#xa;ClassRoomStatus" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=40;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" vertex="1" parent="1">
+          <mxGeometry x="320" y="400" width="200" height="120" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="status_values" value="Pending&#xa;Active&#xa;Inactive&#xa;Deleted" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="status_enum">
+          <mxGeometry y="40" width="200" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- Status Relationship -->
+        <mxCell id="classroom_status" value="" style="endArrow=open;endFill=1;endSize=12;html=1;dashed=1;" edge="1" parent="1" source="classroom" target="status_enum">
+          <mxGeometry width="160" relative="1" as="geometry">
+            <mxPoint x="420" y="360" as="sourcePoint"/>
+            <mxPoint x="420" y="400" as="targetPoint"/>
+          </mxGeometry>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
+

@@ -1,0 +1,124 @@
+<mxfile host="app.diagrams.net" modified="2024-03-19T04:23:12.285Z" agent="Mozilla/5.0" version="22.1.21">
+  <diagram id="activity-diagram" name="Activity Diagram">
+    <mxGraphModel dx="0" dy="0" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        
+        <!-- Vertical Swimlanes -->
+        <mxCell id="swimlane1" value="User" style="swimlane;startSize=20;horizontal=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="200" height="720" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="swimlane2" value="Form UI" style="swimlane;startSize=20;horizontal=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="40" width="200" height="720" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="swimlane3" value="Form Validation" style="swimlane;startSize=20;horizontal=1;" vertex="1" parent="1">
+          <mxGeometry x="440" y="40" width="200" height="720" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="swimlane4" value="Form Processing" style="swimlane;startSize=20;horizontal=1;" vertex="1" parent="1">
+          <mxGeometry x="640" y="40" width="200" height="720" as="geometry"/>
+        </mxCell>
+
+        <!-- Start -->
+        <mxCell id="start" value="" style="ellipse;fillColor=#000000;strokeColor=none;" vertex="1" parent="swimlane1">
+          <mxGeometry x="85" y="40" width="30" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- Activities in User lane -->
+        <mxCell id="enterData" value="Nhập dữ liệu&#xa;vào form" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="swimlane1">
+          <mxGeometry x="40" y="120" width="120" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Activities in Form UI lane -->
+        <mxCell id="displayForm" value="Hiển thị form&#xa;với các trường" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="swimlane2">
+          <mxGeometry x="40" y="120" width="120" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="submitForm" value="Submit Form" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="swimlane2">
+          <mxGeometry x="40" y="240" width="120" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Activities in Form Validation lane -->
+        <mxCell id="clientValidation" value="Kiểm tra&#xa;Client-side" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="swimlane3">
+          <mxGeometry x="60" y="230" width="80" height="80" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="serverValidation" value="Kiểm tra&#xa;Server-side" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="swimlane3">
+          <mxGeometry x="60" y="360" width="80" height="80" as="geometry"/>
+        </mxCell>
+
+        <!-- Activities in Form Processing lane -->
+        <mxCell id="processForm" value="Xử lý&#xa;Form Data" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="swimlane4">
+          <mxGeometry x="40" y="370" width="120" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Success/Error states -->
+        <mxCell id="success" value="Hiển thị&#xa;thành công" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="swimlane2">
+          <mxGeometry x="40" y="480" width="120" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="error" value="Hiển thị&#xa;lỗi" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="swimlane2">
+          <mxGeometry x="40" y="600" width="120" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- End -->
+        <mxCell id="end" value="" style="ellipse;html=1;shape=endState;fillColor=#000000;strokeColor=#000000;" vertex="1" parent="swimlane1">
+          <mxGeometry x="85" y="660" width="30" height="30" as="geometry"/>
+        </mxCell>
+
+        <!-- Flow arrows -->
+        <mxCell id="flow1" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="start" target="displayForm">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flow2" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="displayForm" target="enterData">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flow3" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="enterData" target="submitForm">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flow4" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="submitForm" target="clientValidation">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flow5" value="Invalid" style="endArrow=classic;html=1;" edge="1" parent="1" source="clientValidation" target="error">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flow6" value="Valid" style="endArrow=classic;html=1;" edge="1" parent="1" source="clientValidation" target="serverValidation">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flow7" value="Invalid" style="endArrow=classic;html=1;" edge="1" parent="1" source="serverValidation" target="error">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flow8" value="Valid" style="endArrow=classic;html=1;" edge="1" parent="1" source="serverValidation" target="processForm">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flow9" value="Success" style="endArrow=classic;html=1;" edge="1" parent="1" source="processForm" target="success">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flow10" value="Error" style="endArrow=classic;html=1;" edge="1" parent="1" source="processForm" target="error">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flow11" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="success" target="end">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="flow12" value="" style="endArrow=classic;html=1;" edge="1" parent="1" source="error" target="end">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

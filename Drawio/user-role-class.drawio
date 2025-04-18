@@ -1,0 +1,47 @@
+<mxfile host="app.diagrams.net" modified="2024-03-19T04:23:12.285Z" agent="Mozilla/5.0" version="22.1.21">
+  <diagram id="class-diagram" name="Class Diagram">
+    <mxGraphModel dx="0" dy="0" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- User Class -->
+        <mxCell id="user" value="User" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" vertex="1" parent="1">
+          <mxGeometry x="320" y="160" width="160" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="userFields" value="+ Id: string&#xa;+ UserName: string&#xa;+ Email: string&#xa;+ FullName: string&#xa;+ PasswordHash: string&#xa;+ Roles: List&lt;Role&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="user">
+          <mxGeometry y="26" width="160" height="104" as="geometry"/>
+        </mxCell>
+        <mxCell id="userMethods" value="+ AddRole(role: Role)&#xa;+ RemoveRole(role: Role)&#xa;+ HasRole(role: Role): bool" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="user">
+          <mxGeometry y="130" width="160" height="50" as="geometry"/>
+        </mxCell>
+
+        <!-- Role Class -->
+        <mxCell id="role" value="Role" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" vertex="1" parent="1">
+          <mxGeometry x="600" y="160" width="160" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="roleFields" value="+ Id: string&#xa;+ Name: string&#xa;+ Description: string" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="role">
+          <mxGeometry y="26" width="160" height="74" as="geometry"/>
+        </mxCell>
+
+        <!-- UserRole Class -->
+        <mxCell id="userRole" value="UserRole" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" vertex="1" parent="1">
+          <mxGeometry x="460" y="360" width="160" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="userRoleFields" value="+ UserId: string&#xa;+ RoleId: string&#xa;+ AssignedDate: DateTime" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="userRole">
+          <mxGeometry y="26" width="160" height="74" as="geometry"/>
+        </mxCell>
+
+        <!-- Relationships -->
+        <mxCell id="rel1" value="" style="endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;" edge="1" parent="1" source="userRole" target="user">
+          <mxGeometry width="160" relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="rel2" value="" style="endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;" edge="1" parent="1" source="userRole" target="role">
+          <mxGeometry width="160" relative="1" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

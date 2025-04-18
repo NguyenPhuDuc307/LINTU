@@ -1,0 +1,77 @@
+<mxfile host="app.diagrams.net" modified="2024-03-19T04:23:12.285Z" agent="Mozilla/5.0" version="22.1.21">
+  <diagram id="use-case-diagram" name="Use Case Diagram">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        
+        <!-- System boundary -->
+        <mxCell id="system" value="Hệ thống quản lý lớp học trực tuyến" style="shape=rectangle;whiteSpace=wrap;html=1;align=center;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="280" y="40" width="400" height="600" as="geometry"/>
+        </mxCell>
+        
+        <!-- Actors -->
+        <mxCell id="user" value="Người dùng" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="120" y="280" width="30" height="60" as="geometry"/>
+        </mxCell>
+        
+        <mxCell id="teacher" value="Giáo viên" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="120" y="120" width="30" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="admin" value="Quản trị viên" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="120" y="440" width="30" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Use Cases -->
+        <!-- Authentication -->
+        <mxCell id="uc1" value="Đăng nhập" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="320" y="280" width="120" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="uc2" value="Đăng ký" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="320" y="360" width="120" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Teacher Features -->
+        <mxCell id="uc3" value="Quản lý lớp học" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="320" y="120" width="120" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Admin Features -->
+        <mxCell id="uc4" value="Quản lý người dùng" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="320" y="440" width="120" height="60" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="uc5" value="Phân quyền" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="320" y="520" width="120" height="60" as="geometry"/>
+        </mxCell>
+
+        <!-- Relationships -->
+        <!-- User to Use Cases -->
+        <mxCell id="rel1" value="" style="endArrow=none;html=1;" edge="1" parent="1" source="user" target="uc1">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="rel2" value="" style="endArrow=none;html=1;" edge="1" parent="1" source="user" target="uc2">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Teacher to Use Cases -->
+        <mxCell id="rel3" value="" style="endArrow=none;html=1;" edge="1" parent="1" source="teacher" target="uc3">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Admin to Use Cases -->
+        <mxCell id="rel4" value="" style="endArrow=none;html=1;" edge="1" parent="1" source="admin" target="uc4">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="rel5" value="" style="endArrow=none;html=1;" edge="1" parent="1" source="admin" target="uc5">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

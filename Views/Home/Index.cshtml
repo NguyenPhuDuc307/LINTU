@@ -1,149 +1,564 @@
 ﻿@model IEnumerable<LMS.Data.Entities.ClassRoom>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Home";
     var now = DateTime.UtcNow;
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <form asp-action="Index" method="get" class="form-inline">
-        <input type="text" name="searchString" class="form-control mr-2" placeholder="Search by name..."
-            value="@Context.Request.Query["searchString"]" />
-
-        <!-- Bộ lọc -->
-        <select name="sortBy" class="form-control mr-2">
-            <option value="">Sort by</option>
-            <option value="name">Name</option>
-            <option value="price">Price</option>
-            <option value="students">Number of Students</option>
-        </select>
-
-        <!-- Chọn thứ tự tăng/giảm -->
-        <select name="sortOrder" class="form-control mr-2">
-            <option value="asc">Ascending</option>
-            <option value="desc">Descending</option>
-        </select>
-
-        <button type="submit" class="btn btn-primary">Filter</button>
-    </form>
-</div>
-
-<style>
-    .card-img-top {
-        width: 100%;
-        height: 280px;
-        object-fit: cover;
-    }
-
-    .card {
-        transition: all 0.3s;
-    }
-
-    .card:hover {
-        transform: scale(1.05);
-    }
-</style>
-
+<!-- Hero Section -->
 <div class="row">
-    @foreach (var item in Model)
-    {
-        var isNew = (DateTime.UtcNow - item.CreateDate).TotalDays <= 1;
-        <div class="col-md-6 col-lg-4 mb-4">
-            <div class="card h-100 shadow-sm">
-                <img src="@item.ImageUrl" class="card-img-top" alt="@item.Name">
-                <div class="card-body flex-column pb-0">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <p class="font-weight-bold mb-0">@item.Name</p>
-                        @if (isNew)
-                        {
-                            <span class="badge bg-primary text-white">New</span>
-                        }
-                    </div>
-                    <span class="text-muted f-14 mb-2">@item.CreateDate.ToString("MMMM dd, yyyy")</span>
-                    <p class="card-text">@item.Introduction</p>
-                    <p class="card-text">
-                        @($"{(ViewBag.MembersCount.ContainsKey(item.Id) ? ViewBag.MembersCount[item.Id] : 0):N0}") students
-                        have joined
-                    </p>
-                    <h5 class="card-text text-danger">
-                        @(item.Price == 0 ? "Free" : String.Format("{0:0,0} VND", item.Price))
-                    </h5>
-                </div>
-                <div class="card-footer">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="badge badge-info">@item.Topic!.Name</span>
-                        <a asp-controller="ClassRooms" asp-action="Introduction" asp-route-id="@item.Id"
-                            class="btn btn-success btn-sm">View Class</a>
+    <div class="col-sm-12">
+        <div class="card bg-primary text-white mb-4">
+            <div class="card-block" style="background: linear-gradient(135deg, #4099ff, #73b4ff, #5E35B1);">
+                <div class="row align-items-center py-4">
+                    <div class="col-md-8 px-4">
+                        <h2 class="text-white mb-3 f-w-500" style="font-size: 2.2rem;"><i class="feather icon-book-open mr-2"></i>Discover Your Next Learning Journey</h2>
+                        <p class="mb-4 lead f-w-400" style="font-size: 1.1rem;">Explore courses from expert instructors and expand your knowledge today</p>
+                        <div class="card-search mb-3 mb-md-0">
+                            <form asp-action="Index" method="get" class="d-flex">
+                                <div class="input-group input-group-lg">
+                                    <input type="text" name="searchString" class="form-control" 
+                                           placeholder="Search for classes..." value="@Context.Request.Query["searchString"]" 
+                                           style="border-radius: 50px 0 0 50px; padding-left: 20px; border: none; box-shadow: 0 2px 10px rgba(0,0,0,0.1);" />
+                                    <div class="input-group-append">
+                                        <button type="submit" class="btn btn-light waves-effect" 
+                                                style="border-radius: 0 50px 50px 0; padding: 0 25px; border: none; box-shadow: 2px 2px 10px rgba(0,0,0,0.1);">
+                                            <i class="feather icon-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    }
+    </div>
 </div>
-@if (ViewBag.NoClassMessage != null)
+
+<!-- Filter Section -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card border-0" style="box-shadow: 0 2px 15px rgba(0,0,0,0.05); border-radius: 8px;">
+            <div class="card-header d-flex justify-content-between align-items-center" style="background: #f8f9fa; border-radius: 8px 8px 0 0; border-bottom: 1px solid rgba(0,0,0,0.05); padding: 15px 20px;">
+                <div class="d-flex align-items-center">
+                    <i class="feather icon-filter text-primary mr-2"></i>
+                    <h5 class="m-0">Filter Options</h5>
+                </div>
+                <button class="btn btn-sm btn-outline-primary waves-effect" id="toggleFilters" style="border-radius: 30px; margin-left: auto;">
+                    <i class="feather icon-sliders mr-1"></i> Toggle Filters
+                </button>
+            </div>
+            <div class="card-block pt-3 pb-3" id="filterSection" style="display: none; border-radius: 0 0 8px 8px;">
+                <form asp-action="Index" method="get" class="row">
+                    <input type="hidden" name="searchString" value="@Context.Request.Query["searchString"]" />
+                    
+                    <div class="col-md-4 form-group">
+                        <label class="text-muted mb-2"><i class="feather icon-trending-up mr-1 text-primary"></i>Sort By</label>
+                        <select name="sortBy" class="form-control" style="border-radius: 5px; border-color: #e2e5e8;">
+                            @if (Context.Request.Query["sortBy"] == "")
+                            {
+                                <option value="" selected>Most Recent</option>
+                            }
+                            else
+                            {
+                                <option value="">Most Recent</option>
+                            }
+                            
+                            @if (Context.Request.Query["sortBy"] == "name")
+                            {
+                                <option value="name" selected>Name</option>
+                            }
+                            else
+                            {
+                                <option value="name">Name</option>
+                            }
+                            
+                            @if (Context.Request.Query["sortBy"] == "price")
+                            {
+                                <option value="price" selected>Price</option>
+                            }
+                            else
+                            {
+                                <option value="price">Price</option>
+                            }
+                            
+                            @if (Context.Request.Query["sortBy"] == "students")
+                            {
+                                <option value="students" selected>Students Count</option>
+                            }
+                            else
+                            {
+                                <option value="students">Students Count</option>
+                            }
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-4 form-group">
+                        <label class="text-muted mb-2"><i class="feather icon-arrow-up-circle mr-1 text-primary"></i>Order</label>
+                        <select name="sortOrder" class="form-control" style="border-radius: 5px; border-color: #e2e5e8;">
+                            @if (Context.Request.Query["sortOrder"] == "asc")
+                            {
+                                <option value="asc" selected>Ascending</option>
+                            }
+                            else
+                            {
+                                <option value="asc">Ascending</option>
+                            }
+                            
+                            @if (Context.Request.Query["sortOrder"] == "desc")
+                            {
+                                <option value="desc" selected>Descending</option>
+                            }
+                            else
+                            {
+                                <option value="desc">Descending</option>
+                            }
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-4 form-group d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary btn-block waves-effect" style="border-radius: 5px; padding: 10px;">
+                            <i class="feather icon-filter mr-1"></i> Apply Filters
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Results Statistics -->
+@if (Model.Any())
 {
-    <div class="alert alert-warning text-center">
-        <strong>@ViewBag.NoClassMessage</strong>
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-c-blue text-white border-0 mb-3" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(64, 153, 255, 0.2);">
+                <div class="card-block">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h4 class="text-white m-b-5 f-w-600">@Model.Count()</h4>
+                            <h6 class="text-white m-b-0 f-w-400">Classes Found</h6>
+                        </div>
+                        <div class="col-auto">
+                            <i class="feather icon-layers f-30" style="opacity: 0.8;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-c-green text-white border-0 mb-3" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(46, 204, 113, 0.2);">
+                <div class="card-block">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h4 class="text-white m-b-5 f-w-600">@Model.Where(c => c.Price == 0).Count()</h4>
+                            <h6 class="text-white m-b-0 f-w-400">Free Courses</h6>
+                        </div>
+                        <div class="col-auto">
+                            <i class="feather icon-gift f-30" style="opacity: 0.8;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-c-yellow text-white border-0 mb-3" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(255, 193, 7, 0.2);">
+                <div class="card-block">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h4 class="text-white m-b-5 f-w-600">@Model.Where(c => (now - c.CreateDate).TotalDays <= 7).Count()</h4>
+                            <h6 class="text-white m-b-0 f-w-400">New This Week</h6>
+                        </div>
+                        <div class="col-auto">
+                            <i class="feather icon-star f-30" style="opacity: 0.8;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-c-purple text-white border-0 mb-3" style="border-radius: 8px; box-shadow: 0 4px 20px rgba(156, 39, 176, 0.2);">
+                <div class="card-block">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <h4 class="text-white m-b-5 f-w-600">@Model.Select(c => c.Topic?.Name).Distinct().Count()</h4>
+                            <h6 class="text-white m-b-0 f-w-400">Topics Available</h6>
+                        </div>
+                        <div class="col-auto">
+                            <i class="feather icon-tag f-30" style="opacity: 0.8;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 }
-<!-- Pagination Controls -->
-<div class="d-flex justify-content-center">
-    <nav>
-        <ul class="pagination">
-            <li class="page-item @(ViewBag.PageNumber == 1 ? "disabled" : "")">
-                <a class="page-link"
-                    href="?page=@(ViewBag.PageNumber - 1)&searchString=@Context.Request.Query["searchString"]&sortBy=@Context.Request.Query["sortBy"]&sortOrder=@Context.Request.Query["sortOrder"]">Previous</a>
-            </li>
-            @for (var i = 1; i <= ViewBag.TotalPages; i++)
-            {
-                <li class="page-item @(i == ViewBag.PageNumber ? "active" : "")">
-                    <a class="page-link"
-                        href="?page=@i&searchString=@Context.Request.Query["searchString"]&sortBy=@Context.Request.Query["sortBy"]&sortOrder=@Context.Request.Query["sortOrder"]">@i</a>
-                </li>
-            }
-            <li class="page-item @(ViewBag.PageNumber == ViewBag.TotalPages ? "disabled" : "")">
-                <a class="page-link"
-                    href="?page=@(ViewBag.PageNumber + 1)&searchString=@Context.Request.Query["searchString"]&sortBy=@Context.Request.Query["sortBy"]&sortOrder=@Context.Request.Query["sortOrder"]">Next</a>
-            </li>
-        </ul>
-    </nav>
+
+<!-- Search Results or Empty State -->
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card border-0" style="box-shadow: 0 2px 15px rgba(0,0,0,0.05); border-radius: 8px;">
+            <div class="card-header" style="border-bottom: 1px solid rgba(0,0,0,0.05); background-color: #ffffff; border-radius: 8px 8px 0 0;">
+                <h5 class="m-0">
+                    @if (!string.IsNullOrEmpty(Context.Request.Query["searchString"]))
+                    {
+                        <i class="feather icon-search mr-2 text-primary"></i>
+                        <span>Search Results for "<span class="text-primary">@Context.Request.Query["searchString"]</span>"</span>
+                    }
+                    else
+                    {
+                        <i class="feather icon-grid mr-2 text-primary"></i>
+                        <span>Available Classes</span>
+                    }
+                </h5>
+                <span class="text-muted">@Model.Count() classes found</span>
+            </div>
+            <div class="card-block p-4">
+                @if (!Model.Any())
+                {
+                    <div class="text-center py-5">
+                        <img src="~/files/assets/images/search-empty.svg" alt="No results" style="max-height: 200px; margin-bottom: 30px;" class="animate-float" />
+                        <h3 class="text-muted mb-3">@ViewBag.NoClassMessage</h3>
+                        <p class="text-muted mb-4">Try adjusting your search or filter to find what you're looking for.</p>
+                        <a asp-action="Index" class="btn btn-primary waves-effect" style="border-radius: 30px; padding: 10px 20px;">
+                            <i class="feather icon-refresh-cw mr-1"></i> Clear All Filters
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div class="row">
+                        @foreach (var item in Model)
+                        {
+                            var isNew = (DateTime.UtcNow - item.CreateDate).TotalDays <= 7;
+                            var isFree = item.Price == 0;
+                            
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card course-card h-100 border-0 hover-shadow-2" style="border-radius: 12px; overflow: hidden; box-shadow: 0 3px 10px rgba(0,0,0,0.06);">
+                                    <div class="position-relative overflow-hidden">
+                                        <img src="@(string.IsNullOrEmpty(item.ImageUrl) ? "/files/assets/images/course-placeholder.jpg" : item.ImageUrl)" 
+                                             class="card-img-top" alt="@item.Name">
+                                        
+                                        <div class="card-badges position-absolute" style="top: 15px; right: 15px;">
+                                            @if (isNew)
+                                            {
+                                                <span class="badge badge-pill badge-success px-2 py-1 mr-2 animate-pulse" style="box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                                    <i class="feather icon-award mr-1"></i> NEW
+                                                </span>
+                                            }
+                                            @if (isFree)
+                                            {
+                                                <span class="badge badge-pill badge-info px-2 py-1" style="box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                                    <i class="feather icon-gift mr-1"></i> FREE
+                                                </span>
+                                            }
+                                        </div>
+                                        
+                                        <div class="course-overlay position-absolute" style="background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%); bottom: 0; left: 0; right: 0; height: 40%; opacity: 0; transition: all 0.3s ease;">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="card-body d-flex flex-column p-4">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="badge badge-light f-12 px-2 py-1" style="background-color: #f8f9fa; border-radius: 20px;">
+                                                <i class="feather icon-tag text-primary mr-1"></i>
+                                                @item.Topic!.Name
+                                            </span>
+                                            <span class="text-muted small">
+                                                <i class="feather icon-calendar text-muted mr-1"></i>
+                                                @item.CreateDate.ToString("MMM dd, yyyy")
+                                            </span>
+                                        </div>
+                                        
+                                        <h5 class="card-title mb-2 text-truncate" style="font-weight: 600;">@item.Name</h5>
+                                        <p class="card-text text-muted mb-3" style="height: 60px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; font-size: 0.9rem;">
+                                            @item.Introduction
+                                        </p>
+                                        
+                                        <div class="mt-auto">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <span class="d-block">
+                                                        <i class="feather icon-users text-muted mr-1"></i>
+                                                        <span class="text-muted" style="font-size: 0.9rem;">
+                                                            @($"{(ViewBag.MembersCount.ContainsKey(item.Id) ? ViewBag.MembersCount[item.Id] : 0):N0}") students
+                                                        </span>
+                                                    </span>
+                                                    <h5 class="font-weight-bold mt-2 mb-0 @(isFree ? "text-success" : "text-primary")">
+                                                        @(item.Price == 0 ? "Free" : String.Format("{0:0,0} VND", item.Price))
+                                                    </h5>
+                                                </div>
+                                                <a asp-controller="ClassRooms" asp-action="Introduction" asp-route-id="@item.Id"
+                                                   class="btn btn-primary btn-sm waves-effect" style="border-radius: 20px; padding: 6px 15px; transition: all 0.3s ease;">
+                                                    <i class="feather icon-eye mr-1"></i> View
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <div class="mt-4">
+                        <div class="row">
+                            <div class="col-md-6 d-flex align-items-center">
+                                <p class="text-muted mb-md-0">
+                                    Showing page @ViewBag.PageNumber of @ViewBag.TotalPages
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <nav>
+                                    <ul class="pagination pagination-primary justify-content-md-end" style="margin-bottom: 0;">
+                                        <li class="page-item @(ViewBag.PageNumber == 1 ? "disabled" : "")">
+                                            <a class="page-link" 
+                                               asp-controller="Home" 
+                                               asp-action="Index" 
+                                               asp-route-page="1"
+                                               asp-route-searchString="@Context.Request.Query["searchString"]"
+                                               asp-route-sortBy="@Context.Request.Query["sortBy"]"
+                                               asp-route-sortOrder="@Context.Request.Query["sortOrder"]"
+                                               style="border-radius: 4px 0 0 4px;">
+                                                <i class="feather icon-chevrons-left"></i>
+                                            </a>
+                                        </li>
+                                        <li class="page-item @(ViewBag.PageNumber == 1 ? "disabled" : "")">
+                                            <a class="page-link" 
+                                               asp-controller="Home" 
+                                               asp-action="Index" 
+                                               asp-route-page="@(ViewBag.PageNumber - 1)"
+                                               asp-route-searchString="@Context.Request.Query["searchString"]"
+                                               asp-route-sortBy="@Context.Request.Query["sortBy"]"
+                                               asp-route-sortOrder="@Context.Request.Query["sortOrder"]">
+                                                <i class="feather icon-chevron-left"></i>
+                                            </a>
+                                        </li>
+                                        
+                                        @{
+                                            var startPage = Math.Max(1, ViewBag.PageNumber - 2);
+                                            var endPage = Math.Min(ViewBag.TotalPages, startPage + 4);
+                                            startPage = Math.Max(1, endPage - 4);
+                                        }
+                                        
+                                        @for (var i = startPage; i <= endPage; i++)
+                                        {
+                                            <li class="page-item @(i == ViewBag.PageNumber ? "active" : "")">
+                                                <a class="page-link" 
+                                                   asp-controller="Home" 
+                                                   asp-action="Index" 
+                                                   asp-route-page="@i"
+                                                   asp-route-searchString="@Context.Request.Query["searchString"]"
+                                                   asp-route-sortBy="@Context.Request.Query["sortBy"]"
+                                                   asp-route-sortOrder="@Context.Request.Query["sortOrder"]">
+                                                    @i
+                                                </a>
+                                            </li>
+                                        }
+                                        
+                                        <li class="page-item @(ViewBag.PageNumber == ViewBag.TotalPages ? "disabled" : "")">
+                                            <a class="page-link" 
+                                               asp-controller="Home" 
+                                               asp-action="Index" 
+                                               asp-route-page="@(ViewBag.PageNumber + 1)"
+                                               asp-route-searchString="@Context.Request.Query["searchString"]"
+                                               asp-route-sortBy="@Context.Request.Query["sortBy"]"
+                                               asp-route-sortOrder="@Context.Request.Query["sortOrder"]">
+                                                <i class="feather icon-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                        <li class="page-item @(ViewBag.PageNumber == ViewBag.TotalPages ? "disabled" : "")">
+                                            <a class="page-link" 
+                                               asp-controller="Home" 
+                                               asp-action="Index" 
+                                               asp-route-page="@ViewBag.TotalPages"
+                                               asp-route-searchString="@Context.Request.Query["searchString"]"
+                                               asp-route-sortBy="@Context.Request.Query["sortBy"]"
+                                               asp-route-sortOrder="@Context.Request.Query["sortOrder"]"
+                                               style="border-radius: 0 4px 4px 0;">
+                                                <i class="feather icon-chevrons-right"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Floating Sidebar -->
 <div id="floatingSidebar" class="floating-sidebar">
-    <div class="sidebar-toggle">
+    <div class="sidebar-toggle" style="box-shadow: 0 5px 15px rgba(0,0,0,0.2); background: linear-gradient(135deg, #4099ff, #73b4ff);">
         <i class="feather icon-plus"></i>
     </div>
-    <div id="sidebarContent" class="sidebar-content">
-        <a asp-action="Create" asp-controller="ClassRooms" class="btn btn-primary btn-block">
+    <div id="sidebarContent" class="sidebar-content" style="box-shadow: 0 5px 20px rgba(0,0,0,0.15);">
+        <a asp-action="Create" asp-controller="ClassRooms" class="btn btn-primary btn-block waves-effect" style="border-radius: 5px; margin-bottom: 10px;">
             <i class="feather icon-plus"></i> Create Class
         </a>
-        <button class="btn btn-success btn-block" data-toggle="modal" data-target="#joinClassModal">
+        <button class="btn btn-success btn-block waves-effect" data-toggle="modal" data-target="#joinClassModal" style="border-radius: 5px;">
             <i class="feather icon-log-in"></i> Join Class
         </button>
     </div>
 </div>
+
 <!-- Modal Tham gia lớp -->
 <div class="modal fade" id="joinClassModal" tabindex="-1" role="dialog" aria-labelledby="joinClassLabel"
     aria-hidden="true">
     <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="joinClassLabel">Nhập mã lớp để tham gia</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <div class="modal-content" style="border-radius: 10px; overflow: hidden; border: none; box-shadow: 0 15px 35px rgba(0,0,0,0.2);">
+            <div class="modal-header bg-success text-white" style="border-bottom: none;">
+                <h5 class="modal-title" id="joinClassLabel">Join with Class Code</h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body p-4">
                 <form action="Home/JoinClass" method="post">
                     <div class="form-group">
-                        <input type="text" name="code" class="form-control" placeholder="Nhập mã lớp (Code)" required>
+                        <label class="text-muted mb-2"><i class="feather icon-key text-success mr-1"></i>Class Code</label>
+                        <input type="text" name="code" class="form-control" placeholder="Enter class code" required
+                               style="border-radius: 5px; padding: 12px 15px; border-color: #e2e5e8;">
                     </div>
-                    <button type="submit" class="btn btn-success btn-block">
-                        Tham gia ngay
+                    <button type="submit" class="btn btn-success btn-block waves-effect" style="border-radius: 5px; padding: 12px;">
+                        <i class="feather icon-log-in mr-1"></i> Join Class
                     </button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .card-img-top {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .course-card {
+        transition: all 0.3s ease;
+        overflow: hidden;
+    }
+    
+    .hover-shadow-2:hover {
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08) !important;
+        transform: translateY(-5px);
+    }
+    
+    .hover-shadow-2:hover .card-img-top {
+        transform: scale(1.05);
+    }
+    
+    .hover-shadow-2:hover .course-overlay {
+        opacity: 1;
+    }
+    
+    .bg-c-blue {
+        background: linear-gradient(45deg, #4099ff, #73b4ff);
+    }
+    
+    .bg-c-green {
+        background: linear-gradient(45deg, #2ecc71, #26de81);
+    }
+    
+    .bg-c-yellow {
+        background: linear-gradient(45deg, #FFB64D, #ffcb80);
+    }
+    
+    .bg-c-purple {
+        background: linear-gradient(45deg, #9C27B0, #BA68C8);
+    }
+    
+    .pagination-primary .page-item.active .page-link {
+        background-color: #4099ff;
+        border-color: #4099ff;
+        box-shadow: 0 2px 6px rgba(64, 153, 255, 0.4);
+    }
+    
+    /* Fix for sticky footer on Firefox */
+    .card-body {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .mt-auto {
+        margin-top: auto !important;
+    }
+    
+    .animate-pulse {
+        animation: pulse 1.5s infinite;
+    }
+    
+    .animate-float {
+        animation: float 3s ease-in-out infinite;
+    }
+</style>
+
+<style>
+    /* Animation keyframes */
+    @@keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.8; }
+    }
+    
+    @@keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+    }
+</style>
+
+<style>
+    /* Media queries */
+    @@media (max-width: 767px) {
+        .card-search .form-control {
+            font-size: 16px;
+        }
+    }
+    
+    /* Custom styling for forms */
+    .form-control:focus {
+        border-color: #4099ff;
+        box-shadow: 0 0 0 0.2rem rgba(64, 153, 255, 0.25);
+    }
+    
+    /* Enhance button hovers */
+    .btn-primary:hover {
+        box-shadow: 0 5px 15px rgba(64, 153, 255, 0.4);
+        transform: translateY(-2px);
+    }
+    
+    .btn-success:hover {
+        box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+        transform: translateY(-2px);
+    }
+</style>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            // Toggle filters with animation
+            $("#toggleFilters").click(function () {
+                $("#filterSection").slideToggle(300);
+            });
+            
+            // Check if any filter is applied
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('sortBy') || urlParams.has('sortOrder') || urlParams.has('searchString')) {
+                $("#filterSection").show();
+            }
+            
+            // Add hover effect to buttons
+            $(".btn").addClass("waves-effect waves-light");
+            
+            // Add smooth transition to all elements
+            $("*").css("transition", "all 0.2s ease-in-out");
+        });
+    </script>
+}

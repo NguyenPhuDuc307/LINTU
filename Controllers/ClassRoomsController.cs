@@ -433,21 +433,54 @@ namespace LMS.Controllers
             return View(classes);
         }
         [Authorize]
-        public async Task<IActionResult> Registered()
+        public async Task<IActionResult> Registered(string searchQuery = null, int page = 1, int pageSize = 6)
         {
             var userId = _userManager.GetUserId(User);
 
             // Lấy các lớp mà người dùng đã tham gia hoặc đã mua
-            var registeredClasses = await _context.ClassDetails
+            var query = _context.ClassDetails
                 .Where(cd => cd.UserId == userId && cd.ClassRoom != null)
                 .Include(cd => cd.ClassRoom)
                 .ThenInclude(c => c!.Topic)
+                .AsQueryable();
+
+            // Apply search filter if provided
+            if (!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                searchQuery = searchQuery.ToLower();
+                query = query.Where(cd =>
+                    cd.ClassRoom!.Name!.ToLower().Contains(searchQuery) ||
+                    cd.ClassRoom.Introduction!.ToLower().Contains(searchQuery) ||
+                    cd.ClassRoom.Topic!.Name!.ToLower().Contains(searchQuery));
+            }
+
+            // Count total items for pagination
+            var totalItems = await query.CountAsync();
+
+            // Calculate total pages
+            var totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            // Ensure the page is within valid range
+            page = Math.Max(1, Math.Min(page, Math.Max(1, totalPages)));
+
+            // Get paginated results
+            var registeredClasses = await query
+                .OrderByDescending(cd => cd.CreateDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .Select(cd => new RegisteredClassViewModel
                 {
                     ClassRoom = cd.ClassRoom!,
                     IsPaid = cd.IsPaid // Kiểm tra trạng thái đã thanh toán
                 })
                 .ToListAsync();
+
+            // Pass pagination info to view
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+            ViewBag.TotalItems = totalItems;
+            ViewBag.PageSize = pageSize;
+            ViewBag.SearchQuery = searchQuery;
 
             return View(registeredClasses);
         }
