@@ -82,6 +82,8 @@ using (var scope = app.Services.CreateScope())
     var serviceProvider = scope.ServiceProvider;
     try
     {
+        var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+        await DbInitializer.CreateRoles(serviceProvider, userManager);
         Log.Information("Seeding data...");
         var dbInitializer = serviceProvider.GetService<DbInitializer>();
         if (dbInitializer != null)
