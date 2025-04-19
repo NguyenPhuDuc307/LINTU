@@ -1,0 +1,125 @@
+/*
+   Navbar CSS mới - LINTU LMS
+   Thiết kế lại thanh điều hướng
+   Tác giả: Augment AI
+*/
+
+/* Thiết lập cơ bản cho navbar */
+.navbar.header-navbar {
+    background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    height: 60px;
+    z-index: 1030;
+    position: relative;
+}
+
+/* Logo container */
+.navbar-logo {
+    display: flex;
+    align-items: center;
+    height: 60px;
+    padding: 0 20px;
+    min-width: 200px;
+    background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Brand/Logo styling */
+.navbar-brand {
+    color: #fff;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 28px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand i {
+    margin-right: 8px;
+    font-size: 24px;
+}
+
+/* Navbar container */
+.navbar-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    padding: 0 20px;
+}
+
+/* Left and right nav sections */
+.nav-left, .nav-right {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.nav-left {
+    flex: 1;
+}
+
+.nav-right {
+    justify-content: flex-end;
+}
+
+/* Mobile menu button */
+.mobile-menu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(67, 97, 238, 0.1);
+    color: #4361ee;
+    margin-right: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mobile-menu:hover {
+    background: rgba(67, 97, 238, 0.2);
+}
+
+.mobile-menu i {
+    font-size: 18px;
+}
+
+/* Mobile options button */
+.mobile-options {
+    display: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .mobile-options {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(67, 97, 238, 0.1);
+        color: #4361ee;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .mobile-options:hover {
+        background: rgba(67, 97, 238, 0.2);
+    }
+
+    .mobile-options i {
+        font-size: 18px;
+    }
+
+    .navbar-container {
+        padding: 0 10px;
+    }
+}

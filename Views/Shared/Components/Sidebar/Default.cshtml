@@ -1,57 +1,76 @@
+@*
+   Sidebar Component - LINTU LMS
+   Thiết kế lại thanh sidebar
+   Tác giả: Augment AI
+*@
+
 <nav class="pcoded-navbar">
     <div class="pcoded-inner-navbar main-menu">
-        <div class="pcoded-navigatio-lavel">Navigation</div>
+        <div class="pcoded-navigatio-lavel">MENU CHÍNH</div>
         <ul class="pcoded-item pcoded-left-item">
-            <li class="pcoded-hasmenu">
+            <li class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")">
                 <a asp-controller="Home" asp-action="Index">
                     <span class="pcoded-micon"><i class="feather icon-home"></i></span>
-                    <span class="pcoded-mtext">Home</span>
+                    <span class="pcoded-mtext">Trang chủ</span>
                 </a>
             </li>
             @if (User.IsInRole("Administrator") || User.IsInRole("Manager"))
             {
-                <li class="pcoded-hasmenu">
+                <li
+                    class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "ClassRooms" && ViewContext.RouteData.Values["action"]?.ToString() == "Index" ? "active" : "")">
                     <a asp-controller="ClassRooms" asp-action="Index">
                         <span class="pcoded-micon"><i class="feather icon-layers"></i></span>
-                        <span class="pcoded-mtext">Classroom</span>
+                        <span class="pcoded-mtext">Lớp học</span>
                     </a>
                 </li>
-                <li class="pcoded-hasmenu">
+                <li class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Topics" ? "active" : "")">
                     <a asp-controller="Topics" asp-action="Index">
                         <span class="pcoded-micon"><i class="feather icon-book"></i></span>
-                        <span class="pcoded-mtext">Topic</span>
+                        <span class="pcoded-mtext">Chủ đề</span>
                     </a>
                 </li>
-                <li class="pcoded-hasmenu">
+                <li class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "UserRoles" ? "active" : "")">
                     <a asp-controller="UserRoles" asp-action="Index">
                         <span class="pcoded-micon"><i class="feather icon-user-check"></i></span>
-                        <span class="pcoded-mtext">Role User</span>
+                        <span class="pcoded-mtext">Phân quyền</span>
                     </a>
                 </li>
             }
-            <li class="pcoded-hasmenu">
+            <li class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Calendar" ? "active" : "")">
                 <a asp-action="Index" asp-controller="Calendar">
                     <span class="pcoded-micon"><i class="feather icon-calendar"></i></span>
-                    <span class="pcoded-mtext">Calendar</span>
+                    <span class="pcoded-mtext">Lịch</span>
                 </a>
             </li>
-            <li class="pcoded-hasmenu">
+            <li class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Chat" ? "active" : "")">
                 <a asp-controller="Chat" asp-action="Index">
                     <span class="pcoded-micon"><i class="feather icon-message-circle"></i></span>
                     <span class="pcoded-mtext">Blog</span>
-                    <span class="pcoded-badge label label-warning">NEW</span>
+                    <span class="pcoded-badge label label-warning">MỚI</span>
                 </a>
             </li>
-            <li class="pcoded-hasmenu">
+
+            <div class="pcoded-navigatio-lavel">KHÓA HỌC</div>
+
+            <li
+                class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "ClassRooms" && ViewContext.RouteData.Values["action"]?.ToString() == "Teach" ? "active" : "")">
                 <a asp-controller="ClassRooms" asp-action="Teach">
                     <span class="pcoded-micon"><i class="feather icon-monitor"></i></span>
-                    <span class="pcoded-mtext">Teach</span>
+                    <span class="pcoded-mtext">Giảng dạy</span>
                 </a>
             </li>
-            <li class="pcoded-hasmenu">
+            <li
+                class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "ClassRooms" && ViewContext.RouteData.Values["action"]?.ToString() == "Registered" ? "active" : "")">
                 <a asp-controller="ClassRooms" asp-action="Registered">
                     <span class="pcoded-micon"><i class="feather icon-user-plus"></i></span>
-                    <span class="pcoded-mtext">Registered</span>
+                    <span class="pcoded-mtext">Đã đăng ký</span>
+                </a>
+            </li>
+            <li class="@(ViewContext.RouteData.Values["controller"]?.ToString() == "Lessons" ? "active" : "")">
+                <a asp-controller="Lessons" asp-action="Index"
+                    asp-route-classRoomId="@(ViewBag.CurrentClassRoomId ?? 0)">
+                    <span class="pcoded-micon"><i class="feather icon-book-open"></i></span>
+                    <span class="pcoded-mtext">Bài giảng</span>
                 </a>
             </li>
         </ul>

@@ -9,5 +9,5 @@ public class ClassRoomViewModel
     public int MembersCount { get; set; }
     public List<Assignment>? Assignments { get; set; }
     public List<User>? Participants { get; set; }
-
+    public List<Lesson>? Lessons { get; set; }
 }

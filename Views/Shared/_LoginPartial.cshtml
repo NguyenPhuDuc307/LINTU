@@ -7,12 +7,13 @@
     @if (SignInManager.IsSignedIn(User))
     {
         var currentUser = await UserManager.GetUserAsync(User);
-        var profileImage = string.IsNullOrEmpty(currentUser?.ImageUrl) ? Url.Content("~/files/assets/images/user.png") : currentUser.ImageUrl;
+        var profileImage = string.IsNullOrEmpty(currentUser?.ImageUrl) ? Url.Content("~/files/assets/images/user.png") :
+        currentUser.ImageUrl;
         <li class="user-profile header-notification">
             <div class="dropdown-primary dropdown">
                 <div class="dropdown-toggle" data-toggle="dropdown">
                     <img src="@profileImage" class="img-radius" alt="User-Image"
-                        style="width:40px; height:40px; border-radius:50%;border: 1px solid #F1B44C" />
+                        style="width:40px; height:40px; border-radius:50%;border: 1px solid #4361ee" />
                     <span>@(UserManager.GetUserAsync(User).Result?.FullName)</span>
                     <i class="feather icon-chevron-down"></i>
                 </div>
@@ -20,18 +21,18 @@
                     data-dropdown-out="fadeOut">
                     <li>
                         <a asp-area="Identity" asp-page="/Account/Manage/Index">
-                            <i class="feather icon-user"></i> Profile
+                            <i class="feather icon-user"></i> Hồ sơ
                         </a>
                     </li>
                     <li>
                         <a asp-controller="Pays" asp-action="Index" id="userBalance">
-                            <i class="feather icon-credit-card"></i> Balance: <span id="balanceAmount">Loading...</span>
+                            <i class="feather icon-credit-card"></i> Số dư: <span id="balanceAmount">Đang tải...</span>
                         </a>
                     </li>
                     <li>
                         <a asp-area="Identity" asp-page="/Account/Logout"
                             asp-route-returnUrl="@Url.Action("Index", "Home")">
-                            <i class="feather icon-log-out"></i> Logout
+                            <i class="feather icon-log-out"></i> Đăng xuất
                         </a>
                     </li>
                 </ul>
@@ -41,24 +42,79 @@
     else
     {
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Login">
-                <i class="feather icon-log-in"></i> Login
+            <a class="btn btn-primary" asp-area="Identity" asp-page="/Account/Login">
+                <i class="feather icon-log-in"></i> Đăng nhập
             </a>
         </li>
     }
 </ul>
 
 <script>
-    async function fetchBalance() {
-        try {
-            const response = await fetch('/Account/GetBalance');
-            const data = await response.json();
-            const formattedBalance = data.balance.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-            document.getElementById('balanceAmount').innerText = formattedBalance;
-        } catch (error) {
-            console.error('Error fetching balance:', error);
+    document.addEventListener('DOMContentLoaded', function () {
+        async function fetchBalance() {
+            try {
+                const response = await fetch('/Account/GetBalance');
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                const formattedBalance = data.balance.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                const balanceElement = document.getElementById('balanceAmount');
+                if (balanceElement) {
+                    balanceElement.innerText = formattedBalance;
+                    // Thêm hiệu ứng fade in
+                    balanceElement.classList.add('fade-in');
+                }
+            } catch (error) {
+                console.error('Error fetching balance:', error);
+                const balanceElement = document.getElementById('balanceAmount');
+                if (balanceElement) {
+                    balanceElement.innerText = 'Không thể tải';
+                }
+            }
         }
+
+        // Gọi hàm khi trang tải xong
+        fetchBalance();
+
+        // Thêm hiệu ứng cho dropdown
+        const dropdownToggle = document.querySelector('.dropdown-toggle');
+        if (dropdownToggle) {
+            dropdownToggle.addEventListener('click', function (e) {
+                e.preventDefault();
+                const dropdown = this.nextElementSibling;
+                if (dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                } else {
+                    dropdown.classList.add('show');
+                }
+            });
+
+            // Đóng dropdown khi click bên ngoài
+            document.addEventListener('click', function (e) {
+                if (!dropdownToggle.contains(e.target)) {
+                    const dropdown = document.querySelector('.profile-notification');
+                    if (dropdown && dropdown.classList.contains('show')) {
+                        dropdown.classList.remove('show');
+                    }
+                }
+            });
+        }
+    });
+</script>
+
+<style>
+    .fade-in {
+        animation: fadeIn 0.5s ease-in-out;
     }
 
-    fetchBalance(); // Call when page loads
-</script>
+    @@keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+</style>

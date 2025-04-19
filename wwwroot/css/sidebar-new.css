@@ -1,0 +1,142 @@
+/* 
+   Sidebar CSS mới - LINTU LMS
+   Thiết kế lại thanh sidebar
+   Tác giả: Augment AI
+*/
+
+/* Thiết lập cơ bản cho sidebar */
+.pcoded-navbar {
+    width: 264px !important;
+    background-color: #404E67;
+    color: #dcdcdc;
+    height: 100%;
+    z-index: 1029;
+    overflow-y: auto;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Tùy chỉnh scrollbar */
+.pcoded-navbar::-webkit-scrollbar {
+    width: 5px;
+}
+
+.pcoded-navbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.pcoded-navbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.pcoded-navbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Tiêu đề phần */
+.pcoded-navigatio-lavel {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 20px 20px 5px;
+    opacity: 0.7;
+}
+
+/* Menu chính */
+.pcoded-inner-navbar {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+/* Các mục menu */
+.pcoded-inner-navbar .pcoded-item {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pcoded-inner-navbar .pcoded-item > li {
+    display: block;
+    position: relative;
+}
+
+.pcoded-inner-navbar .pcoded-item > li > a {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    color: #dcdcdc;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.pcoded-inner-navbar .pcoded-item > li > a:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+}
+
+/* Icon trong menu */
+.pcoded-inner-navbar .pcoded-item > li > a .pcoded-micon {
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+/* Text trong menu */
+.pcoded-inner-navbar .pcoded-item > li > a .pcoded-mtext {
+    position: relative;
+    font-size: 14px;
+}
+
+/* Menu active */
+.pcoded-inner-navbar .pcoded-item > li.active > a {
+    background: rgba(67, 97, 238, 0.2);
+    color: #fff;
+    font-weight: 600;
+}
+
+.pcoded-inner-navbar .pcoded-item > li.active > a:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background: #4361ee;
+}
+
+/* Badge mới */
+.pcoded-badge {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 10px;
+    margin-left: 8px;
+}
+
+.pcoded-badge.label-warning {
+    background: #4361ee;
+    color: #fff;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .pcoded-navbar {
+        position: fixed;
+        left: -264px;
+        height: 100vh;
+        transition: all 0.3s ease;
+    }
+    
+    .pcoded-navbar.mob-open {
+        left: 0;
+    }
+}

@@ -10,7 +10,9 @@
     <link rel="icon" href="~/files/assets/images/favicon.ico" type="image/x-icon">
     <!-- Google font-->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Quicksand:500,700" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&family=Rubik+Bubbles&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
 
     <link rel="icon" href="~/files/assets/images/favicon.ico" type="image/x-icon" />
     <!-- Google font-->
@@ -32,8 +34,6 @@
     <!-- Style.css -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&family=Rubik+Bubbles&display=swap"
-        rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="~/files/assets/css/style.css" />
 
     <link rel="stylesheet" type="text/css" href="~/files/assets/css/jquery.mCustomScrollbar.css" />
@@ -53,15 +53,42 @@
         src='https://cdn.jsdelivr.net/npm/froala-editor@latest/js/froala_editor.pkgd.min.js'></script>
 
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/modern-theme.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/animations.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/sidebar-new.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/navbar-new.css" asp-append-version="true" />
     <style>
-        
+        /* Ripple effect for buttons */
+        .btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ripple-effect {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            pointer-events: none;
+            width: 100px;
+            height: 100px;
+        }
+
+        @@keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
         .floating-sidebar {
             position: fixed;
             bottom: 20px;
             right: 20px;
             width: 50px;
             height: 50px;
-            background: #2196f3;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
             color: white;
             border-radius: 50%;
             display: flex;
@@ -69,16 +96,16 @@
             justify-content: center;
             cursor: pointer;
             transition: all 0.3s ease-in-out;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: var(--shadow-lg);
             z-index: 999;
         }
 
         .floating-sidebar:hover {
             width: 180px;
             height: auto;
-            border-radius: 10px;
+            border-radius: var(--radius-lg);
             flex-direction: column;
-            padding: 10px;
+            padding: 15px;
             background: white;
         }
 
@@ -200,65 +227,13 @@
     <!-- Custom js -->
     <script type="text/javascript" src="~/files/assets/js/script.js"></script>
 
-    <script>
-        $(document).ready(function () {
-            fetchLatestAssignments();
-        });
-
-        function fetchLatestAssignments() {
-            $.ajax({
-                url: "/ClassRooms/GetLatestAssignments",
-                type: "GET",
-                success: function (response) {
-                    console.log("API Response:", response); // Debug toàn bộ response
-                    let notificationList = $("#notificationList");
-                    let notificationCount = $("#notificationCount");
-
-                    // Xóa thông báo cũ, giữ lại tiêu đề
-                    notificationList.find("li:not(:first)").remove();
-
-                    if (response.success && response.assignments.length > 0) {
-                        notificationCount.text(response.assignments.length);
-
-                        response.assignments.forEach(item => {
-                            console.log("Assignment Data:", item); // Debug từng bài tập
-
-                            let className = item.className && item.className !== "Unknown Class" ? item.className : "Không có lớp";
-                            let classImage = item.classImage && item.classImage !== "/files/assets/images/default-class.png" ? item.classImage : "/files/assets/images/default-class.png";
-                            let assignmentTitle = item.assignmentTitle && item.assignmentTitle !== "No Title" ? item.assignmentTitle : "Không có tiêu đề";
-                            let dueDate = item.dueDate && item.dueDate !== "No Due Date" ? item.dueDate : "Không có hạn nộp";
-
-                            let notificationItem = `
-                    <li>
-                        <div class="media">
-                            <img class="d-flex align-self-center img-radius"
-                                src="${classImage}" alt="Class Image" width="50" height="50"/>
-                            <div class="media-body">
-                                <h5 class="notification-user">${className}</h5>
-                                <p class="notification-msg">
-                                    <strong>${assignmentTitle}</strong> - Due: ${dueDate}
-                                </p>
-                            </div>
-                        </div>
-                    </li>
-                    `;
-                            notificationList.append(notificationItem);
-                        });
-                    } else {
-                        notificationList.append('<li><p class="text-center">Không có bài tập mới</p></li>');
-                        notificationCount.text("0");
-                    }
-                },
-                error: function () {
-                    console.error("Lỗi khi lấy danh sách bài tập.");
-                }
-            });
-        }
-    </script>
+    <!-- Notification script removed -->
 
     <!-- PAGE PLUGINS -->
     <!-- AdminLTE for demo purposes -->
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/modern-theme.js" asp-append-version="true"></script>
+    <script src="~/js/navigation.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 
 

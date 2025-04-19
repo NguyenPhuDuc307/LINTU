@@ -1,0 +1,149 @@
+@model LectureEditViewModel
+@{
+    ViewData["Title"] = "Edit Lecture";
+}
+
+<div class="container-fluid py-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0 text-primary">
+                        <i class="feather icon-edit me-2"></i>Edit Lecture
+                    </h5>
+                    <p class="text-muted mb-0">Update lecture information</p>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="ClassRoomId" />
+                        <input type="hidden" asp-for="FileUrl" />
+
+                        <div class="mb-3">
+                            <label asp-for="LessonId" class="form-label">Lesson</label>
+                            <select asp-for="LessonId" asp-items="Model.LessonList" class="form-select">
+                                <option value="">-- Select Lesson --</option>
+                            </select>
+                            <span asp-validation-for="LessonId" class="text-danger"></span>
+                            <div class="form-text">Select the lesson this lecture belongs to</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label">Lecture Title</label>
+                            <input asp-for="Title" class="form-control" placeholder="Enter lecture title" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                            <div class="form-text">Give your lecture a clear and descriptive title</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Description (Optional)</label>
+                            <textarea asp-for="Description" class="form-control" rows="3" placeholder="Enter lecture description"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                            <div class="form-text">Briefly describe what students will learn in this lecture</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Order" class="form-label">Display Order</label>
+                            <input asp-for="Order" class="form-control" type="number" min="1" />
+                            <span asp-validation-for="Order" class="text-danger"></span>
+                            <div class="form-text">Set the order in which this lecture appears in the lesson</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="DurationMinutes" class="form-label">Duration (minutes)</label>
+                            <input asp-for="DurationMinutes" class="form-control" type="number" min="1" />
+                            <span asp-validation-for="DurationMinutes" class="text-danger"></span>
+                            <div class="form-text">Estimated time to complete this lecture</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Content Type</label>
+                            <div class="d-flex flex-wrap gap-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" asp-for="ContentType" id="videoUrl" value="@LectureContentType.VideoUrl" />
+                                    <label class="form-check-label" for="videoUrl">
+                                        <i class="feather icon-video me-1 text-danger"></i> Video URL
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" asp-for="ContentType" id="uploadedFile" value="@LectureContentType.UploadedFile" />
+                                    <label class="form-check-label" for="uploadedFile">
+                                        <i class="feather icon-file me-1 text-primary"></i> Upload File
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" asp-for="ContentType" id="textContent" value="@LectureContentType.TextContent" />
+                                    <label class="form-check-label" for="textContent">
+                                        <i class="feather icon-file-text me-1 text-success"></i> Text Content
+                                    </label>
+                                </div>
+                            </div>
+                            <span asp-validation-for="ContentType" class="text-danger"></span>
+                        </div>
+
+                        <div id="videoUrlContent" class="content-type-section mb-3 @(Model.ContentType != LectureContentType.VideoUrl ? "d-none" : "")">
+                            <label asp-for="VideoUrl" class="form-label">Video URL</label>
+                            <input asp-for="VideoUrl" class="form-control" placeholder="Enter video URL (YouTube, Vimeo, etc.)" />
+                            <span asp-validation-for="VideoUrl" class="text-danger"></span>
+                            <div class="form-text">Enter the URL of the video (YouTube, Vimeo, etc.)</div>
+                        </div>
+
+                        <div id="uploadedFileContent" class="content-type-section mb-3 @(Model.ContentType != LectureContentType.UploadedFile ? "d-none" : "")">
+                            <label asp-for="UploadedFile" class="form-label">Upload File</label>
+                            @if (!string.IsNullOrEmpty(Model.FileUrl))
+                            {
+                                <div class="mb-2">
+                                    <span class="text-muted">Current file: </span>
+                                    <a href="@Model.FileUrl" target="_blank">@System.IO.Path.GetFileName(Model.FileUrl)</a>
+                                </div>
+                            }
+                            <input asp-for="UploadedFile" class="form-control" type="file" />
+                            <span asp-validation-for="UploadedFile" class="text-danger"></span>
+                            <div class="form-text">Upload a new file to replace the current one (max 50MB)</div>
+                        </div>
+
+                        <div id="textContentSection" class="content-type-section mb-3 @(Model.ContentType != LectureContentType.TextContent ? "d-none" : "")">
+                            <label asp-for="TextContent" class="form-label">Text Content</label>
+                            <textarea asp-for="TextContent" class="form-control" rows="10" placeholder="Enter lecture content"></textarea>
+                            <span asp-validation-for="TextContent" class="text-danger"></span>
+                            <div class="form-text">Enter the text content for this lecture</div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a asp-controller="Lessons" asp-action="Index" asp-route-classRoomId="@Model.ClassRoomId" class="btn btn-outline-secondary">
+                                <i class="feather icon-arrow-left me-2"></i>Back to List
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="feather icon-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function () {
+            // Show/hide content type sections based on selected radio button
+            $('input[name="ContentType"]').change(function () {
+                $('.content-type-section').addClass('d-none');
+                
+                if ($(this).val() === '@((int)LectureContentType.VideoUrl)') {
+                    $('#videoUrlContent').removeClass('d-none');
+                } else if ($(this).val() === '@((int)LectureContentType.UploadedFile)') {
+                    $('#uploadedFileContent').removeClass('d-none');
+                } else if ($(this).val() === '@((int)LectureContentType.TextContent)') {
+                    $('#textContentSection').removeClass('d-none');
+                }
+            });
+
+            // Trigger change event on page load to show the correct section
+            $('input[name="ContentType"]:checked').trigger('change');
+        });
+    </script>
+}

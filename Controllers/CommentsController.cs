@@ -44,10 +44,15 @@ namespace LMS.Controllers
 
             // Get current user
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Json(new { success = false, message = "User not authenticated" });
+            }
+
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
             if (user == null)
             {
-                return Json(new { success = false, message = "User not authenticated" });
+                return Json(new { success = false, message = "User not found" });
             }
 
             // Create and save comment
@@ -88,17 +93,20 @@ namespace LMS.Controllers
             var comments = await _context.Comments
                 .Where(c => c.PostId == postId)
                 .OrderBy(c => c.CreatedAt)
-                .Select(c => new
-                {
-                    id = c.Id,
-                    userImage = c.User.ImageUrl,
-                    userName = c.User.FullName,
-                    content = c.Content,
-                    createdAt = c.CreatedAt.ToString("dd/MM/yyyy HH:mm")
-                })
+                .Include(c => c.User)
                 .ToListAsync();
 
-            return Json(new { success = true, comments });
+            // Map to anonymous type after fetching from database
+            var commentData = comments.Select(c => new
+            {
+                id = c.Id,
+                userImage = c.User != null ? c.User.ImageUrl : "/files/assets/images/default-avatar.png",
+                userName = c.User != null ? c.User.FullName : "Unknown User",
+                content = c.Content,
+                createdAt = c.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+            }).ToList();
+
+            return Json(new { success = true, comments = commentData });
         }
     }
 }

@@ -1,0 +1,161 @@
+/* 
+   Sidebar Fix CSS - LINTU LMS
+   Khắc phục các vấn đề hiển thị cho sidebar
+   Tác giả: Augment AI
+*/
+
+/* Đảm bảo sidebar hiển thị đúng */
+.pcoded-navbar {
+    width: 264px !important;
+    overflow: hidden;
+}
+
+.pcoded-navbar:hover {
+    overflow-y: auto;
+}
+
+/* Tùy chỉnh scrollbar cho sidebar */
+.pcoded-navbar::-webkit-scrollbar {
+    width: 5px;
+}
+
+.pcoded-navbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.pcoded-navbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.pcoded-navbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Đảm bảo logo hiển thị đúng */
+.navbar-brand {
+    padding: 10px 0;
+}
+
+.navbar-logo {
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Hiệu ứng hover cho các mục menu */
+.pcoded-inner-navbar .pcoded-item > li > a {
+    position: relative;
+    z-index: 1;
+}
+
+.pcoded-inner-navbar .pcoded-item > li > a:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    z-index: -1;
+    transition: width 0.3s ease;
+}
+
+.pcoded-inner-navbar .pcoded-item > li > a:hover:after {
+    width: 100%;
+}
+
+/* Hiệu ứng cho badge "MỚI" */
+.pcoded-badge.label-warning {
+    background: linear-gradient(135deg, #4361ee, #4cc9f0);
+    color: white;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(76, 201, 240, 0.3);
+    animation: pulse 2s infinite;
+}
+
+/* Đảm bảo các mục menu không bị tràn */
+.pcoded-inner-navbar .pcoded-item > li > a {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Hiệu ứng khi menu active */
+.pcoded-inner-navbar .pcoded-item > li.active > a {
+    position: relative;
+    overflow: hidden;
+}
+
+.pcoded-inner-navbar .pcoded-item > li.active > a:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 5px;
+    height: 100%;
+    background: linear-gradient(to bottom, var(--primary), var(--primary-light));
+    border-radius: 5px 0 0 5px;
+}
+
+/* Hiệu ứng ripple khi click vào menu */
+.pcoded-inner-navbar .pcoded-item > li > a {
+    position: relative;
+    overflow: hidden;
+}
+
+.pcoded-inner-navbar .pcoded-item > li > a .ripple {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: scale(0);
+    animation: ripple 0.6s linear;
+    pointer-events: none;
+}
+
+@keyframes ripple {
+    to {
+        transform: scale(2.5);
+        opacity: 0;
+    }
+}
+
+/* Đảm bảo các tiêu đề phần hiển thị đúng */
+.pcoded-navigatio-lavel {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Hiệu ứng hover cho icon */
+.pcoded-inner-navbar .pcoded-item > li > a:hover .pcoded-micon {
+    transform: scale(1.1);
+}
+
+/* Đảm bảo menu không bị che khuất bởi các phần tử khác */
+.pcoded-navbar {
+    z-index: 1031 !important;
+}
+
+/* Hiệu ứng khi mở rộng menu */
+.pcoded-navbar.navbar-collapsed .pcoded-inner-navbar .pcoded-navigatio-lavel {
+    opacity: 0;
+}
+
+.pcoded-navbar.navbar-collapsed:hover .pcoded-inner-navbar .pcoded-navigatio-lavel {
+    opacity: 1;
+}
+
+/* Đảm bảo menu hiển thị đúng trên thiết bị di động */
+@media (max-width: 992px) {
+    .pcoded-navbar {
+        width: 264px !important;
+        left: -264px;
+    }
+    
+    .pcoded-navbar.mob-open {
+        left: 0;
+    }
+}

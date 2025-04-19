@@ -1,0 +1,69 @@
+/* 
+   Course Layout CSS - LINTU LMS
+   Thiết kế cho trang khóa học
+   Tác giả: Augment AI
+*/
+
+/* Nút quay lại */
+.back-button {
+    display: flex;
+    align-items: center;
+    padding: 8px 15px;
+    background-color: rgba(67, 97, 238, 0.1);
+    color: #4361ee;
+    border-radius: 20px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.back-button:hover {
+    background-color: rgba(67, 97, 238, 0.2);
+    transform: translateX(-5px);
+    color: #4361ee;
+    text-decoration: none;
+}
+
+.back-button i {
+    margin-right: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.back-button:hover i {
+    transform: translateX(-3px);
+}
+
+/* Container chính */
+.course-container {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+}
+
+.course-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .back-button {
+        padding: 6px 12px;
+        font-size: 14px;
+    }
+    
+    .course-container {
+        padding: 15px;
+    }
+    
+    .course-title {
+        font-size: 20px;
+    }
+}

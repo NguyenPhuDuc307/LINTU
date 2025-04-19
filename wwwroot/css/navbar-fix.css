@@ -1,0 +1,145 @@
+/*
+   Navbar Fix CSS - LINTU LMS
+   Khắc phục các vấn đề hiển thị cho navbar
+   Tác giả: Augment AI
+*/
+
+/* Đảm bảo navbar hiển thị đúng */
+.navbar.header-navbar {
+    background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    height: 60px;
+    z-index: 1030;
+}
+
+/* Cải thiện logo */
+.navbar-logo {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    padding: 0 20px;
+    height: 60px;
+    min-width: 200px;
+    z-index: 1000;
+}
+
+.navbar-brand {
+    padding: 0;
+    margin: 0;
+    font-size: 28px;
+    font-weight: bold;
+    display: flex !important;
+    align-items: center;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative;
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.navbar-brand:hover {
+    transform: scale(1.05);
+}
+
+.navbar-brand span {
+    position: relative;
+}
+
+.navbar-brand span::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 3px;
+    background: linear-gradient(to right, var(--primary), var(--primary-light));
+    transition: width 0.3s ease;
+    border-radius: 3px;
+}
+
+.navbar-brand:hover span::after {
+    width: 100%;
+}
+
+/* Cải thiện container */
+.navbar-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    padding: 0 20px;
+}
+
+/* Cải thiện nav-left và nav-right */
+.nav-left, .nav-right {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* Đảm bảo cân đối khi không có nút */
+.nav-left {
+    flex: 1;
+}
+
+.nav-right {
+    justify-content: flex-end;
+}
+
+/* Cải thiện mobile menu */
+.mobile-menu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary);
+    margin-right: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mobile-menu:hover {
+    background: rgba(var(--primary-rgb), 0.2);
+}
+
+.mobile-menu i {
+    font-size: 18px;
+}
+
+/* Cải thiện mobile options */
+.mobile-options {
+    display: none;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .mobile-options {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: rgba(var(--primary-rgb), 0.1);
+        color: var(--primary);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .mobile-options:hover {
+        background: rgba(var(--primary-rgb), 0.2);
+    }
+
+    .mobile-options i {
+        font-size: 18px;
+    }
+
+    .navbar-container {
+        padding: 0 10px;
+    }
+}

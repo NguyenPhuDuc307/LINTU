@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Identity.UI.Services;// Thêm cho Razor Runtime Compilation
 using LMS.Data;
 using LMS.Data.Entities;
 using Serilog;
@@ -20,11 +19,25 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddControllersWithViews();
-// builder.Services.AddScoped<DbInitializer>();
+// Sử dụng AddIdentity thay vì AddDefaultIdentity để tránh cảnh báo
+builder.Services.AddIdentity<User, IdentityRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = true;
+    // Thêm các cấu hình password để tránh cảnh báo
+    options.Password.RequiredLength = 6;
+    options.Password.RequireDigit = true;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireLowercase = true;
+})
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
+// Thêm Razor Runtime Compilation để khắc phục vấn đề với RazorSourceGenerator
+builder.Services.AddControllersWithViews()
+    .AddRazorRuntimeCompilation(); // Giúp tránh cảnh báo CS8785
+
+builder.Services.AddRazorPages()
+    .AddRazorRuntimeCompilation(); // Giúp tránh cảnh báo CS8785
 #region Chatbot
 
 #endregion
@@ -52,7 +65,8 @@ if (app.Environment.IsDevelopment())
 else
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    // The default HTTP Strict Transport Security value is 30 days.
+    // This is a security enhancement to prevent man-in-the-middle attacks.
     app.UseHsts();
 }
 app.UseHttpsRedirection();
@@ -85,10 +99,9 @@ using (var scope = app.Services.CreateScope())
         var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
         await DbInitializer.CreateRoles(serviceProvider, userManager);
         Log.Information("Seeding data...");
-        var dbInitializer = serviceProvider.GetService<DbInitializer>();
-        if (dbInitializer != null)
-            dbInitializer.Seed()
-                         .Wait();
+        // Sử dụng GetRequiredService thay vì GetService để tránh cảnh báo null check
+        var dbInitializer = serviceProvider.GetRequiredService<DbInitializer>();
+        dbInitializer.Seed().Wait();
     }
     catch (Exception ex)
     {
@@ -101,16 +114,13 @@ app.Run();
 
 void AddAuthorizationPolicies()
 {
-    builder.Services.AddAuthorization(options =>
-    {
-        options.AddPolicy("EmployeeOnly", policy => policy.RequireClaim("EmployeeNumber"));
-    });
+    // Sử dụng AddAuthorizationBuilder để tránh cảnh báo
+    var authBuilder = builder.Services.AddAuthorizationBuilder();
 
-    builder.Services.AddAuthorization(options =>
-    {
-        options.AddPolicy(Constants.Policies.RequireAdmin, policy => policy.RequireRole(Constants.Roles.Administrator));
-        options.AddPolicy(Constants.Policies.RequireManager, policy => policy.RequireRole(Constants.Roles.Manager));
-    });
+    // Thêm các policy
+    authBuilder.AddPolicy("EmployeeOnly", policy => policy.RequireClaim("EmployeeNumber"));
+    authBuilder.AddPolicy(Constants.Policies.RequireAdmin, policy => policy.RequireRole(Constants.Roles.Administrator));
+    authBuilder.AddPolicy(Constants.Policies.RequireManager, policy => policy.RequireRole(Constants.Roles.Manager));
 }
 #region Scoped
 void AddScoped()

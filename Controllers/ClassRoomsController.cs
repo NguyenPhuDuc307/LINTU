@@ -133,13 +133,21 @@ namespace LMS.Controllers
                 .Select(cd => cd.User)
                 .ToListAsync();
 
+            // Lấy danh sách bài học và bài giảng
+            var lessons = await _context.Lessons
+                .Where(l => l.ClassRoomId == classRoom.Id)
+                .Include(l => l.Lectures)
+                .OrderBy(l => l.Order)
+                .ToListAsync();
+
             var classRoomViewModel = new ClassRoomViewModel
             {
                 ClassRoom = classRoom,
                 Posts = posts,
                 MembersCount = membersCount,
                 Assignments = assignments,
-                Participants = participants!
+                Participants = participants!,
+                Lessons = lessons
             };
             return View(classRoomViewModel);
         }
@@ -433,7 +441,7 @@ namespace LMS.Controllers
             return View(classes);
         }
         [Authorize]
-        public async Task<IActionResult> Registered(string searchQuery = null, int page = 1, int pageSize = 6)
+        public async Task<IActionResult> Registered(string? searchQuery = null, int page = 1, int pageSize = 6)
         {
             var userId = _userManager.GetUserId(User);
 
@@ -571,6 +579,5 @@ namespace LMS.Controllers
             return new string(Enumerable.Repeat(chars, length)
                 .Select(s => s[random.Next(s.Length)]).ToArray());
         }
-
     }
 }

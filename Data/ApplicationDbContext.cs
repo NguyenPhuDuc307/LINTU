@@ -83,6 +83,31 @@ public class ApplicationDbContext : IdentityDbContext<User>
             .HasForeignKey(c => c.UserId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        // Cấu hình mối quan hệ cho CompletedLecture để tránh multiple cascade paths
+        builder.Entity<CompletedLecture>()
+            .HasOne(cl => cl.ClassRoom)
+            .WithMany()
+            .HasForeignKey(cl => cl.ClassRoomId)
+            .OnDelete(DeleteBehavior.Restrict); // Change from Cascade to Restrict
+
+        builder.Entity<CompletedLecture>()
+            .HasOne(cl => cl.Lecture)
+            .WithMany()
+            .HasForeignKey(cl => cl.LectureId)
+            .OnDelete(DeleteBehavior.Cascade); // Keep this as Cascade
+
+        builder.Entity<CompletedLecture>()
+            .HasOne(cl => cl.User)
+            .WithMany()
+            .HasForeignKey(cl => cl.UserId)
+            .OnDelete(DeleteBehavior.Restrict); // Set this to Restrict as well
+
+        // Apply the same fix for LectureNote to prevent similar issues
+        builder.Entity<LectureNote>()
+            .HasOne(ln => ln.ClassRoom)
+            .WithMany()
+            .HasForeignKey(ln => ln.ClassRoomId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
     public DbSet<Topic> Topics { get; set; }
     public DbSet<ClassRoom> ClassRooms { get; set; }

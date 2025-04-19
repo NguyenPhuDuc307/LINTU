@@ -1,33 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - LMS</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <title>@ViewData["Title"] - LINTU</title>
+
+    <!-- Favicon icon -->
+    <link rel="icon" href="~/files/assets/images/favicon.ico" type="image/x-icon">
+    <!-- Google font-->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Required Fremwork -->
+    <link rel="stylesheet" type="text/css" href="~/files/bower_components/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- feather Awesome -->
+    <link rel="stylesheet" type="text/css" href="~/files/assets/icon/feather/css/feather.css" />
+    <!-- Style.css -->
+    <link rel="stylesheet" type="text/css" href="~/files/assets/css/style.css" />
+
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/LMS.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/modern-theme.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/animations.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/sidebar-new.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/navbar-new.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/course-layout.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 </head>
+
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">LMS</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav">
-                        <!-- Minimal navigation for course view -->
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="ClassRooms" asp-action="Details" asp-route-id="@ViewBag.ClassRoomId">
-                                <i class="fas fa-arrow-left me-1"></i>Back to Course
+        <nav class="navbar header-navbar pcoded-header">
+            <div class="navbar-wrapper">
+                <div class="navbar-logo">
+                    <a asp-controller="Home" asp-action="Index" class="navbar-brand">
+                        <i class="feather icon-globe"></i>LINTU
+                    </a>
+                </div>
+
+                <div class="navbar-container">
+                    <ul class="nav-left">
+                        <li>
+                            <a class="back-button" asp-controller="ClassRooms" asp-action="Details"
+                                asp-route-id="@ViewBag.ClassRoomId">
+                                <i class="feather icon-arrow-left me-1"></i>Quay lại khóa học
                             </a>
                         </li>
                     </ul>
-                    <partial name="_LoginPartial" />
+                    <ul class="nav-right">
+                        <partial name="_LoginPartial" />
+                    </ul>
                 </div>
             </div>
         </nav>
@@ -37,9 +61,17 @@
         @RenderBody()
     </main>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="~/files/bower_components/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="~/files/bower_components/jquery-ui/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="~/files/bower_components/popper.js/dist/umd/popper.min.js"></script>
+    <script type="text/javascript" src="~/files/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="~/files/assets/js/pcoded.min.js"></script>
+    <script src="~/files/assets/js/vartical-layout.min.js"></script>
+    <script type="text/javascript" src="~/files/assets/js/script.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/modern-theme.js" asp-append-version="true"></script>
+    <script src="~/js/navigation.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
-</html> 
+
+</html>
